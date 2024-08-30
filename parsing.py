@@ -1,7 +1,13 @@
 class Node:
     def __init__(self):
-        self.type = 1
-        self.prereqs = None
+        self.typeList = None
+        self.prereqs = []
+        
+    def __str__(self):
+        retStr = f"{'Or group' if self.typeList == 1 else 'And group'} with prereqs: ["
+        for prereq in self.prereqs:
+            retStr += f" {prereq},"
+        return retStr[:-1] + " ]"
 
 def simplifyList(listData:list[str]) -> list[str]:
     newList = ["("]
@@ -37,11 +43,6 @@ def simplifyList(listData:list[str]) -> list[str]:
     newList.append(")")
     return newList
 
-def parseBinaryTest(stringData:str) -> tuple:
-    relationsList = stringData.split()
-    relationsList = simplifyList(relationsList)
-    addParenthesis(relationsList,1,len(relationsList) - 1)
-    return parsingHelper(relationsList)
             
 # (CS 1044 or CS 1705 or CS 1114 or CS 1124) 
 # and
@@ -123,6 +124,73 @@ def addParenthesis(relationsList:list[str], start, end) -> None:
         iter += 1
 
 
+
+def parseBinary(stringData):
+    relationsList = stringData.split()
+    relationsList = simplifyList(relationsList)
+    addParenthesis(relationsList,1,len(relationsList) - 1)
+    return graphingHelper(relationsList)
+    
+    
+def graphParenthesis(relationsList:list[str], start, retNode):
+    stack = list()
+    stack.append(start)
+    iter = start + 1
+    
+    while stack:
+        if relationsList[iter] == ")":
+            if len(stack) == 1:
+                retNode.prereqs.append(graphingHelper(relationsList[stack.pop(): iter + 1]))
+                break
+            else: 
+                stack.pop()
+        elif relationsList[iter] == "(" :
+            stack.append(iter)
+        iter += 1
+    return iter
+
+
+
+def graphingHelper(relationsList:list) -> Node:
+    retNode = Node()
+    typeList = None
+    iter = 0
+    relationsList.pop(0)
+    relationsList.pop(-1)
+    while iter < len(relationsList):
+        if relationsList[iter] == "and":
+            if typeList == 1:
+                raise Exception("Unexpected behavior, investigate further")
+            typeList = 0
+        elif relationsList[iter] == "or":
+            if typeList == 0:
+                raise Exception("Unexpected behavior, investigate further")
+            typeList = 1
+        elif relationsList[iter].isalnum():
+            retNode.prereqs.append(relationsList[iter])
+        elif relationsList[iter] == "(":
+            iter = graphParenthesis(relationsList, iter, retNode)
+        else:
+            raise Exception("Unexpected behavior, investigate further")
+        iter += 1
+    retNode.typeList = typeList
+    return retNode
+    
+    
+    
+    
+    
+def parseBinaryTest(stringData:str) -> tuple:
+    relationsList = stringData.split()
+    relationsList = simplifyList(relationsList)
+    addParenthesis(relationsList,1,len(relationsList) - 1)
+    return parsingHelper(relationsList)
+
+
+
+
+
+
 def parseParenthesis(relationsList:list[str], start, retList):
     stack = list()
     stack.append(start)
@@ -139,6 +207,8 @@ def parseParenthesis(relationsList:list[str], start, retList):
             stack.append(iter)
         iter += 1
     return iter
+
+
 
 def parsingHelper(relationsList:list) -> tuple:
     retList = []
@@ -192,3 +262,4 @@ assert(parseBinaryTest("(ECE 3514 or CS 2114) and (STAT 3704 or STAT 4105 or STA
 assert(parseBinaryTest("(CS 1044 or CS 1705 or CS 1114 or CS 1124) and (MATH 2406H or (CMDA 2005 and CMDA 2006) or (MATH 2214 or MATH 2214H)) and (MATH 2204 or MATH 2204H)") == (0,[(1,["CS1044","CS1705","CS1114","CS1124"]),(1,["MATH2406H",(0,["CMDA2005","CMDA2006"]),(1,["MATH2214","MATH2214H"])]),(1,["MATH2204","MATH2204H"])]))
 # print(parseBinaryTest("(CS 1044 or CS 1705 or CS 1114 or CS 1124) and MATH 2406H or (CMDA 2005 and CMDA 2006) or (MATH 2214 or MATH 2214H) and (MATH 2204 or MATH 2204H)"))
 assert(parseBinaryTest("(CS 1044 or CS 1705 or CS 1114 or CS 1124) and MATH 2406H or (CMDA 2005 and CMDA 2006) or (MATH 2214 or MATH 2214H) and (MATH 2204 or MATH 2204H)") == (0,[(1,["CS1044","CS1705","CS1114","CS1124"]),(1,["MATH2406H",(0,["CMDA2005","CMDA2006"]),(1,["MATH2214","MATH2214H"])]),(1,["MATH2204","MATH2204H"])]))
+print(parseBinary("(CS 1044 or CS 1705 or CS 1114 or CS 1124) and (MATH 2406H or (CMDA 2005 and CMDA 2006) or (MATH 2214 or MATH 2214H)) and (MATH 2204 or MATH 2204H)"))
