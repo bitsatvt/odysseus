@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Group {
+  id         Int      @id @default(autoincrement())
+  names      String[] // has 1 name (or more if crosslisted)
+  // Implicit many-many relation
+  requires   Group[]  @relation("GroupReqs") // pre
+  requiredBy Group[]  @relation("GroupReqs") // post
+  // TODO: Add coreqs
+}
+
+model Course {
+  id            Int       @id @default(autoincrement())
+  title         String
+  repeatability String?
+  description   String?
+  pathways      String?
+  hours         Int?
+  sections      Section[]
+}
+
+model Section {
+  id           Int        @id @default(autoincrement())
+  semester     String?
+  gradeData    String?
+  course       Course     @relation(fields: [courseId], references: [id])
+  courseId     Int
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  instructorId Int
+}
+
+model Instructor {
+  id       Int       @id @default(autoincrement())
+  name     String
+  rating   String?
+  sections Section[]
+}
