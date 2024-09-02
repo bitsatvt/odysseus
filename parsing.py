@@ -1,13 +1,105 @@
-class Node:
-    def __init__(self):
-        self.typeList = None
+class Group:
+    currGroupID = 0
+    
+    def __init__(self, perm = False):
+        self.groupID = -1
+        self.preReqType = None
+        self.coReqType = None
         self.prereqs = []
+        self.coreqs = ""
+        self.postreqs = []
+        self.courseID = -1
+        if perm:
+            self.groupID = Group.currGroupID
+            Group.currGroupID += 1
+        
+    def setPermanent(self):
+        self.groupID = Group.currGroupID
+        Group.currGroupID += 1
+        
+    def lockPrereqs(self):
+        self.prereqs = sorted(self.prereqs)
+        self.prereqs = tuple(self.prereqs)
+
+        
+    def lockCoreqs(self):
+        self.coreqs = sorted(self.coreqs)
+        self.coreqs = tuple(self.coreqs)
+        
+    def lockPostreqs(self):
+        self.postreqs = sorted(self.postreqs)
+        self.postreqs = tuple(self.postreqs)
         
     def __str__(self):
-        retStr = f"{'Or group' if self.typeList == 1 else 'And group'} with prereqs: ["
+        retStr = f"{'O' if self.preReqType == 1 else 'A'}: "
+        retStr += "["
         for prereq in self.prereqs:
             retStr += f" {prereq},"
-        return retStr[:-1] + " ]"
+        if self.prereqs:
+            retStr = retStr[:-1] + " ]"
+        else:
+            retStr = retStr + " ]"
+            
+        return retStr
+    
+    def __repr__(self):
+        return self.__str__()
+
+    def __eq__(self, value: object) -> bool:
+        if isinstance(value, Group):
+            if self.courseID != -1:
+                return self.courseID == value.courseID
+            else:
+                return set(self.prereqs) == set(self.prereqs)
+        else:
+            return False
+        
+    def __hash__(self) -> int:
+        if isinstance(self.prereqs, tuple):
+            # print(";".join(self.prereqs))
+            # print(str(self.courseID) + ":" + ";".join(self.prereqs) + ":" + ";".join(self.coreqs))
+            return hash(str(self.courseID) + ":" + ";".join(self.prereqs))
+        else:
+            raise Exception("Hashing is only allowed after prereqs and coreqs have been locked")
+        
+        
+        
+class Course:
+    def __init__(self, courseID, courseCode, courseName, crossList, repeatability, description, pathways, creditHours):
+        self.courseID = courseID
+        self.courseCode = courseCode
+        self.courseName = courseName
+        self.crossList = crossList
+        self.repeatability = repeatability
+        self.description = description
+        self.pathways = pathways
+        self.creditHours = creditHours
+    
+    def __str__(self):
+        return (f"Course ID: {self.courseID}\n"
+                f"Course Code: {self.courseCode}\n"
+                f"Course Name: {self.courseName}\n"
+                f"Cross-Listed: {self.crossList}\n"
+                f"Repeatability: {self.repeatability}\n"
+                f"Description: {self.description}\n"
+                f"Pathways: {self.pathways}\n"
+                f"Credit Hours: {self.creditHours}")
+
+def close(relationsList):
+    paren = 0
+    for token in relationsList:
+        if token == "(":
+            paren += 1
+        elif token == ")":
+            paren -= 1
+    if paren != 0:
+        print("Unexpected behavior, investigate further")
+    while paren > 0:
+        paren -= 1
+        relationsList.append(")")
+    while paren < 0:
+        paren += 1
+        relationsList.insert(0,"(")
 
 def simplifyList(listData:list[str]) -> list[str]:
     newList = ["("]
@@ -34,7 +126,7 @@ def simplifyList(listData:list[str]) -> list[str]:
                     listData[iter] = listData[iter][1:]
                 classToken = "" # Unneed but added for clarity
                 
-            elif listData[iter][-1].isnumeric:
+            elif listData[iter][-1].isalnum:
                 newList.append(classToken + listData[iter])
                 classToken = "" # Unneed but added for clarity
                 
@@ -50,15 +142,15 @@ def simplifyList(listData:list[str]) -> list[str]:
 # and 
 # (MATH 2204 or MATH 2204H)
 
-def processParenthesis(relationsList:list[str], start, end):
+def processParenthesis(relationsList:list[str], start):
     stack = list()
     stack.append(start)
     iter = start + 1
     
-    while stack and iter < end:
+    while stack and iter < len(relationsList):
         if relationsList[iter] == ")":
             if len(stack) == 1:
-                addParenthesis(relationsList,stack.pop() + 1, iter)
+                iter = addParenthesis(relationsList,stack.pop() + 1)
                 break
             else:
                 stack.pop()
@@ -68,25 +160,34 @@ def processParenthesis(relationsList:list[str], start, end):
     return iter
 
 
-def addParenthesis(relationsList:list[str], start, end) -> None:
+def addParenthesis(relationsList:list[str], start) -> None:
     typeList = None
-    iter = start
-    while iter < end:
+    iter = start 
+    # print(relationsList)
+    while iter < len(relationsList):
         if relationsList[iter] == "and":
             if typeList == 1:
                 print("Unexpected behavior, investigate further")
                 newIter = iter
-                
+                # 3
                 # Reverse back to first registered command
-                while relationsList[newIter - 1] != "or":
+                paren = 0
+                while newIter >= 0 and ( paren or relationsList[newIter] != "or"):
+                    if relationsList[newIter] == ")":
+                        paren += 1
+                    elif relationsList[newIter] == "(":
+                        paren -=1
                     newIter -= 1
                 # Insert a parenthesis
-                relationsList.insert(newIter,"(")
+                relationsList.insert(newIter + 1,"(")
                 # Move forward until next correct command or end
-                newIter += 1
-                while newIter < end and relationsList[newIter] != "or":
+                newIter = iter + 1
+                while newIter < len(relationsList) and relationsList[newIter] != "or":
                     if relationsList[newIter] == "(":
-                        newIter = processParenthesis(relationsList, newIter, end)
+                        newIter = processParenthesis(relationsList, newIter) + 1
+                        continue
+                    if relationsList[newIter] == ")":
+                        break
                     newIter += 1
                 relationsList.insert(newIter,")")
                 iter = newIter
@@ -100,15 +201,23 @@ def addParenthesis(relationsList:list[str], start, end) -> None:
                 newIter = iter
                 
                 # Reverse back to first registered command
-                while relationsList[newIter - 1] != "and":
+                paren = 0
+                while newIter >= 0 and ( paren or relationsList[newIter] != "and"):
+                    if relationsList[newIter] == ")":
+                        paren += 1
+                    elif relationsList[newIter] == "(":
+                        paren -=1
                     newIter -= 1
                 # Insert a parenthesis
-                relationsList.insert(newIter,"(")
+                relationsList.insert(newIter + 1,"(")
                 # Move forward until next correct command or end
-                newIter += 1
-                while newIter < end and relationsList[newIter] != "and":
+                newIter = iter + 1
+                while newIter <= len(relationsList) and relationsList[newIter] != "and":
                     if relationsList[newIter] == "(":
-                        newIter = processParenthesis(relationsList, newIter, end)
+                        newIter = processParenthesis(relationsList, newIter) + 1
+                        continue
+                    if relationsList[newIter] == ")":
+                        break
                     newIter += 1
                 relationsList.insert(newIter,")")
                 iter = newIter
@@ -116,20 +225,15 @@ def addParenthesis(relationsList:list[str], start, end) -> None:
                 typeList = 1
         
         elif relationsList[iter] == "(":
-            iter = processParenthesis(relationsList, iter, end)
-            
+            iter = processParenthesis(relationsList, iter)
+        elif relationsList[iter] == ")":
+            return iter
         elif not relationsList[iter].isalnum():
+            # breakpoint()
             raise Exception("Unexpected behavior, investigate further")
         
         iter += 1
 
-
-
-def parseBinary(stringData):
-    relationsList = stringData.split()
-    relationsList = simplifyList(relationsList)
-    addParenthesis(relationsList,1,len(relationsList) - 1)
-    return graphingHelper(relationsList)
     
     
 def graphParenthesis(relationsList:list[str], start, retNode):
@@ -151,8 +255,8 @@ def graphParenthesis(relationsList:list[str], start, retNode):
 
 
 
-def graphingHelper(relationsList:list) -> Node:
-    retNode = Node()
+def graphingHelper(relationsList:list) -> Group:
+    retNode = Group()
     typeList = None
     iter = 0
     relationsList.pop(0)
@@ -183,12 +287,18 @@ def graphingHelper(relationsList:list) -> Node:
 def parseBinaryTest(stringData:str) -> tuple:
     relationsList = stringData.split()
     relationsList = simplifyList(relationsList)
-    addParenthesis(relationsList,1,len(relationsList) - 1)
+    addParenthesis(relationsList,1)
+    close(relationsList)
     return parsingHelper(relationsList)
 
 
 
-
+def parseBinary(stringData):
+    relationsList = stringData.split()
+    relationsList = simplifyList(relationsList)
+    addParenthesis(relationsList,0)
+    close(relationsList)
+    return graphingHelper(relationsList)
 
 
 def parseParenthesis(relationsList:list[str], start, retList):
@@ -234,32 +344,3 @@ def parsingHelper(relationsList:list) -> tuple:
         iter += 1
     return (typeList, retList)
     
-# # MATH 3134 -> Simple and group
-# # MATH 1226 and (MATH 2534 or MATH 3034)
-assert(parseBinaryTest("MATH 1226 and (MATH 2534 or MATH 3034)") == (0, ["MATH1226", (1,["MATH2534", "MATH3034"])]))
-
-# # CS 3214 -> simple or group
-# # (CS 2506 and CS 2114) or (ECE 2564 and ECE 3574)
-assert(parseBinaryTest("(CS 2506 and CS 2114) or (ECE 2564 and ECE 3574)") == (1, [(0,["CS2506", "CS2114"]), (0,["ECE2564", "ECE3574"])]))
-
-
-# # ISE 3414 -> More complicated and group
-# # ISE 2004 and ISE 2024 and (MATH 2204 or MATH 2204H or MATH 2406H) and (MATH 2214 or MATH 2214H) and (CS 1044 or CS 1064 or CS 1114 or ECE 1574)
-assert(parseBinaryTest("ISE 2004 and ISE 2024 and (MATH 2204 or MATH 2204H or MATH 2406H) and (MATH 2214 or MATH 2214H) and (CS 1044 or CS 1064 or CS 1114 or ECE 1574)") == (0, ["ISE2004", "ISE2024",(1,["MATH2204","MATH2204H","MATH2406H"]),(1,["MATH2214","MATH2214H"]), (1,["CS1044","CS1064","CS1114","ECE1574"])]))
-
-
-# # CS 4824 -> simple and group
-# # (ECE 3514 or CS 2114) and (STAT 3704 or STAT 4105 or STAT 4604 or STAT 4705 or STAT 4714 or CMDA 2006)
-assert(parseBinaryTest("(ECE 3514 or CS 2114) and (STAT 3704 or STAT 4105 or STAT 4604 or STAT 4705 or STAT 4714 or CMDA 2006)") == (0,[(1,["ECE3514","CS2114"]),(1,["STAT3704","STAT4105","STAT4604","STAT4705","STAT4714","CMDA2006"])]))
-
-
-# MATH 3414 -> what the fuck is this
-# (CS 1044 or CS 1705 or CS 1114 or CS 1124) and
-# MATH 2406H or (CMDA 2005 and CMDA 2006) or (MATH 2214 or MATH 2214H) and 
-# (MATH 2204 or MATH 2204H)
-# print(parseBinaryTest("(CS 1044 or CS 1705 or CS 1114 or CS 1124) and (MATH 2406H or (CMDA 2005 and CMDA 2006) or (MATH 2214 or MATH 2214H)) and (MATH 2204 or MATH 2204H)"))
-# print("")
-assert(parseBinaryTest("(CS 1044 or CS 1705 or CS 1114 or CS 1124) and (MATH 2406H or (CMDA 2005 and CMDA 2006) or (MATH 2214 or MATH 2214H)) and (MATH 2204 or MATH 2204H)") == (0,[(1,["CS1044","CS1705","CS1114","CS1124"]),(1,["MATH2406H",(0,["CMDA2005","CMDA2006"]),(1,["MATH2214","MATH2214H"])]),(1,["MATH2204","MATH2204H"])]))
-# print(parseBinaryTest("(CS 1044 or CS 1705 or CS 1114 or CS 1124) and MATH 2406H or (CMDA 2005 and CMDA 2006) or (MATH 2214 or MATH 2214H) and (MATH 2204 or MATH 2204H)"))
-assert(parseBinaryTest("(CS 1044 or CS 1705 or CS 1114 or CS 1124) and MATH 2406H or (CMDA 2005 and CMDA 2006) or (MATH 2214 or MATH 2214H) and (MATH 2204 or MATH 2204H)") == (0,[(1,["CS1044","CS1705","CS1114","CS1124"]),(1,["MATH2406H",(0,["CMDA2005","CMDA2006"]),(1,["MATH2214","MATH2214H"])]),(1,["MATH2204","MATH2204H"])]))
-print(parseBinary("(CS 1044 or CS 1705 or CS 1114 or CS 1124) and (MATH 2406H or (CMDA 2005 and CMDA 2006) or (MATH 2214 or MATH 2214H)) and (MATH 2204 or MATH 2204H)"))
