@@ -4,11 +4,10 @@ class Group:
     def __init__(self, perm = False):
         self.groupID = -1
         self.preReqType = None
-        self.coReqType = None
         self.prereqs = []
         self.coreqs = ""
         self.postreqs = []
-        self.courseID = -1
+        self.courseID = None
         if perm:
             self.groupID = Group.currGroupID
             Group.currGroupID += 1
@@ -47,7 +46,7 @@ class Group:
 
     def __eq__(self, value: object) -> bool:
         if isinstance(value, Group):
-            if self.courseID != -1:
+            if self.courseID != None:
                 return self.courseID == value.courseID
             else:
                 return set(self.prereqs) == set(self.prereqs)
@@ -61,8 +60,17 @@ class Group:
             return hash(str(self.courseID) + ":" + ";".join(self.prereqs))
         else:
             raise Exception("Hashing is only allowed after prereqs and coreqs have been locked")
-        
-        
+    
+    def to_dict(self):
+        return {
+            'id': self.groupID,
+            'type': self.preReqType,
+            'requires': self.prereqs,
+            'coreqs': self.coreqs,
+            'requiredBy': self.postreqs,
+            'courseID': self.courseID,
+            'hash': str(self.courseID) + "|" + ";".join(self.prereqs)
+        }
         
 class Course:
     def __init__(self, courseID, courseCode, courseName, crossList, repeatability, description, pathways, creditHours):
@@ -84,7 +92,17 @@ class Course:
                 f"Description: {self.description}\n"
                 f"Pathways: {self.pathways}\n"
                 f"Credit Hours: {self.creditHours}")
-
+    def to_dict(self):
+        return {
+            'subject': self.courseCode[:self.courseCode.find(" ")],
+            'code': self.courseCode[self.courseCode.find(" ")+ 1:],
+            'title': self.courseName,
+            'repeatability': self.repeatability,
+            'description': self.description,
+            'pathways': self.pathways,
+            'hours': self.creditHours,
+            'crosslist': self.crossList
+        }
 def close(relationsList):
     paren = 0
     for token in relationsList:

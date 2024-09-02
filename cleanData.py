@@ -14,7 +14,7 @@ def graphParenthesis(relationsList:list[str], start, retNode, groupStorage):
                 newNode.lockCoreqs()
                 newNode.lockPrereqs()
                 if newNode in groupStorage[0]:
-                    retNode.prereqs.append(groupStorage[0][newNode])
+                    retNode.prereqs.append(str(groupStorage[0][newNode]))
                 else:
                     newNode.setPermanent()
                     groupStorage[0][newNode] = str(newNode.groupID)
@@ -61,9 +61,7 @@ GrouptoID = dict()
 groupStorage = (IDtoGroup, GrouptoID)
 courseDict = dict()
 courseDict[-1] = "MidNode"
-
-import sys
-import io
+classDict = dict()
 
 for ID, rawClass in enumerate(rawClasses):
     crossList = []
@@ -78,10 +76,13 @@ for ID, rawClass in enumerate(rawClasses):
     rawClass['repeatability'] = BeautifulSoup(rawClass['repeatability'], "html.parser").text
     
     rawClass['cross_listed'] = BeautifulSoup(rawClass['cross_listed'], "html.parser").text
-    rawClass['cross_listed'] = rawClass['cross_listed'][rawClass['cross_listed'].find(":") + 2:]
-    # cleanClass = Course(ID, rawClass['code'], rawClass['title'], rawClass['cross_listed'].split(", "), rawClass['repeatability'], rawClass['description'], rawClass['pathway'], rawClass['hours_html'])
+    rawClass['cross_listed'] = rawClass['cross_listed'][rawClass['cross_listed'].find(":") + 2:] 
+    rawClass['cross_listed'] = rawClass['cross_listed'].split(", ")
+    cleanClass = Course(ID, rawClass['code'], rawClass['title'], rawClass['cross_listed'] if rawClass['cross_listed'][0] != "" else [] , rawClass['repeatability'], rawClass['description'], rawClass['pathway'], rawClass['hours_html'])
     currGroup = Group(perm = True)
-    currGroup.courseID = ID    
+    currGroup.courseID = rawClass['code'].replace(" ", "")  
+
+    classDict[rawClass['code'].replace(" ", "")] = cleanClass
     try:
         temp = rawClass['prereq']
         rawClass['prereq'] = BeautifulSoup(rawClass['prereq'], "html.parser").text
@@ -101,6 +102,7 @@ for ID, rawClass in enumerate(rawClasses):
     # print(rawClass['coreq'])
     rawClass['coreq'] = BeautifulSoup(rawClass['coreq'], "html.parser").text
     rawClass['coreq'] = rawClass['coreq'][rawClass['coreq'].find(":") + 2:]
+    currGroup.coreqs = rawClass['coreq']
     # rawClass['coreq'] = rawClass['coreq'].split()
     # rawClass['coreq'] = simplifyList(rawClass['coreq'])
     # addParenthesis(rawClass['coreq'],1,len(rawClass['coreq']) - 1)
@@ -113,9 +115,9 @@ for ID, rawClass in enumerate(rawClasses):
     currGroup.lockPrereqs()
     # print(currGroup.prereqs is tuple)
     # print(currGroup)
-    groupStorage[0][currGroup] = currGroup.groupID
-    groupStorage[1][currGroup.groupID] = currGroup
-    courseDict[rawClass['code'].replace(" ","")] = currGroup.groupID   
+    groupStorage[0][currGroup] = str(currGroup.groupID)
+    groupStorage[1][str(currGroup.groupID)] = currGroup
+    courseDict[rawClass['code'].replace(" ","")] = str(currGroup.groupID) 
     # print(cleanClass)
     # print()
     
@@ -125,7 +127,7 @@ for ID, rawClass in enumerate(rawClasses):
 # print(courseDict)
 for groupID in groupStorage[1]:
     # print(groupID)
-    if groupStorage[1][groupID].courseID != -1:
+    if groupStorage[1][groupID].courseID != None:
         preStack = list()
         for prereq in groupStorage[1][groupID].prereqs:
             preStack.append(prereq)
@@ -141,15 +143,28 @@ for groupID in groupStorage[1]:
                 else:
                     currPrereq = courseDict[currPrereq]
             currPrereq = groupStorage[1][currPrereq]
-            if currPrereq.courseID == -1:
+            if currPrereq.courseID == None:
+                # currPrereq.postreqs.append(groupID)
                 for prereq in currPrereq.prereqs:
                     preStack.append(prereq)
             else:
-                currPrereq.postreqs.append(groupID)
-            
-        
-            
-            
-        
+                currPrereq.postreqs.append(groupStorage[1][groupID].courseID)     
+
+jsonGroup = dict()
+for obj in groupStorage[1]:
+    jsonGroup[obj] = groupStorage[1][obj].to_dict()
+# Write the JSON string to a file
+with open('group.json', 'w') as file:
+    json.dump(jsonGroup, file, indent=4)
+
+jsonCourse = dict()
+for obj in classDict:
+    jsonCourse[obj] = classDict[obj].to_dict()
+# Write the JSON string to a file
+with open('class.json', 'w') as file:
+    json.dump(jsonCourse, file, indent=4)
+# print(groupStorage[1][str(prereqs[0])])
+# print(groupStorage[1][prereqs[1]])
+# print()
 # print(groupStorage)
 # Need to parse under assumption that group may not exist currently
