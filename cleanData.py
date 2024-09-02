@@ -78,10 +78,10 @@ for ID, rawClass in enumerate(rawClasses):
     rawClass['cross_listed'] = BeautifulSoup(rawClass['cross_listed'], "html.parser").text
     rawClass['cross_listed'] = rawClass['cross_listed'][rawClass['cross_listed'].find(":") + 2:] 
     rawClass['cross_listed'] = rawClass['cross_listed'].split(", ")
-    cleanClass = Course(ID, rawClass['code'], rawClass['title'], rawClass['cross_listed'] if rawClass['cross_listed'][0] != "" else [] , rawClass['repeatability'], rawClass['description'], rawClass['pathway'], rawClass['hours_html'])
+    
     currGroup = Group(perm = True)
     currGroup.courseID = rawClass['code'].replace(" ", "")  
-
+    cleanClass = Course(ID, currGroup.groupID, rawClass['code'], rawClass['title'], rawClass['cross_listed'] if rawClass['cross_listed'][0] != "" else [] , rawClass['repeatability'], rawClass['description'], rawClass['pathway'], rawClass['hours_html'])
     classDict[rawClass['code'].replace(" ", "")] = cleanClass
     try:
         temp = rawClass['prereq']
@@ -125,6 +125,7 @@ for ID, rawClass in enumerate(rawClasses):
 # print(courseDict[groupStorage[1][208].courseID])
 # visitedGroups = set()
 # print(courseDict)
+unlisted = set()
 for groupID in groupStorage[1]:
     # print(groupID)
     if groupStorage[1][groupID].courseID != None:
@@ -135,21 +136,73 @@ for groupID in groupStorage[1]:
             currPrereq = preStack.pop()
             if currPrereq not in groupStorage[1]:
                 if currPrereq not in courseDict:
-                    if currPrereq[:-1] not in courseDict:
-                        print(f"Course not listed: {currPrereq}")
-                        continue
-                    else:
-                        currPrereq = courseDict[currPrereq[:-1]] 
-                else:
-                    currPrereq = courseDict[currPrereq]
+                    unlisted.add(currPrereq)
+                    continue
+                currPrereq = courseDict[currPrereq]
+            currPrereq = groupStorage[1][currPrereq]
+            if currPrereq.courseID == None:
+                # currPrereq.postreqs.append(groupID)
+                for prereq in currPrereq.prereqs:
+                    preStack.append(prereq)  
+
+print(len(unlisted))
+for course in unlisted: 
+
+    currGroup = Group(perm = True)
+    currGroup.courseID = course.replace(" ", "")  
+    cleanClass = Course(ID, currGroup.groupID, course, "", [], "", "", "","")
+    
+    classDict[course.replace(" ", "")] = cleanClass
+
+    currGroup.prereqs = []
+    currGroup.preReqType = None
+    currGroup.coreqs = ""
+    
+    currGroup.lockPrereqs()
+    groupStorage[0][currGroup] = str(currGroup.groupID)
+    groupStorage[1][str(currGroup.groupID)] = currGroup
+    courseDict[course.replace(" ","")] = str(currGroup.groupID) 
+
+for groupID in groupStorage[1]:
+# print(groupID)
+    if groupStorage[1][groupID].courseID != None:
+        preStack = list()
+        for prereq in groupStorage[1][groupID].prereqs:
+            preStack.append(prereq)
+        while preStack:
+            currPrereq = preStack.pop()
+            if currPrereq not in groupStorage[1]:
+                if currPrereq not in courseDict:
+                    raise Exception(f"Course not listed: { currPrereq}")
+                currPrereq = courseDict[currPrereq]
             currPrereq = groupStorage[1][currPrereq]
             if currPrereq.courseID == None:
                 # currPrereq.postreqs.append(groupID)
                 for prereq in currPrereq.prereqs:
                     preStack.append(prereq)
             else:
-                currPrereq.postreqs.append(groupStorage[1][groupID].courseID)     
+                currPrereq.postreqs.append(groupStorage[1][groupID].groupID)  
 
+    
+    
+visited = set()
+for groupID in groupStorage[1]:
+    visited.add(groupID)
+    groupStorage[1][groupID].unlockPrereqs()
+    prereqs = groupStorage[1][groupID].prereqs
+    for currPrereq in range(len(prereqs)):
+        if prereqs[currPrereq] not in groupStorage[1]:
+            if prereqs[currPrereq] not in courseDict:
+                raise Exception(f"Course not listed: { prereqs[currPrereq]}")
+            else:
+                 prereqs[currPrereq] = int(courseDict[prereqs[currPrereq]])
+        else:
+            prereqs[currPrereq] = int(prereqs[currPrereq]) 
+    
+
+
+
+# breakpoint()
 jsonGroup = dict()
 for obj in groupStorage[1]:
     jsonGroup[obj] = groupStorage[1][obj].to_dict()
@@ -159,7 +212,11 @@ with open('group.json', 'w') as file:
 
 jsonCourse = dict()
 for obj in classDict:
-    jsonCourse[obj] = classDict[obj].to_dict()
+    try:
+        jsonCourse[obj] = classDict[obj].to_dict()
+    except Exception:
+        print(obj)
+        raise Exception
 # Write the JSON string to a file
 with open('class.json', 'w') as file:
     json.dump(jsonCourse, file, indent=4)

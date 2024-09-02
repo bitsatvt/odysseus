@@ -8,6 +8,7 @@ class Group:
         self.coreqs = ""
         self.postreqs = []
         self.courseID = None
+        self.hash = None
         if perm:
             self.groupID = Group.currGroupID
             Group.currGroupID += 1
@@ -19,8 +20,11 @@ class Group:
     def lockPrereqs(self):
         self.prereqs = sorted(self.prereqs)
         self.prereqs = tuple(self.prereqs)
-
+        self.hash = str(self.courseID) + ":" + ";".join(self.prereqs)
         
+    def unlockPrereqs(self):
+        self.prereqs = list(self.prereqs)
+
     def lockCoreqs(self):
         self.coreqs = sorted(self.coreqs)
         self.coreqs = tuple(self.coreqs)
@@ -69,12 +73,13 @@ class Group:
             'coreqs': self.coreqs,
             'requiredBy': self.postreqs,
             'courseID': self.courseID,
-            'hash': str(self.courseID) + "|" + ";".join(self.prereqs)
+            'hash': self.hash
         }
         
 class Course:
-    def __init__(self, courseID, courseCode, courseName, crossList, repeatability, description, pathways, creditHours):
+    def __init__(self, courseID, groupID, courseCode, courseName, crossList, repeatability, description, pathways, creditHours):
         self.courseID = courseID
+        self.groupID = groupID
         self.courseCode = courseCode
         self.courseName = courseName
         self.crossList = crossList
