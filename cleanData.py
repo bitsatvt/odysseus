@@ -11,7 +11,6 @@ def graphParenthesis(relationsList:list[str], start, retNode, groupStorage):
         if relationsList[iter] == ")":
             if len(stack) == 1:
                 newNode = graphingHelper(relationsList[stack.pop(): iter + 1], groupStorage)
-                newNode.lockCoreqs()
                 newNode.lockPrereqs()
                 if newNode in groupStorage[0]:
                     retNode.prereqs.append(str(groupStorage[0][newNode]))
