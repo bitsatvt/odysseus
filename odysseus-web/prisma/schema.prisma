@@ -8,30 +8,42 @@ datasource db {
 }
 
 model Group {
-  id         Int      @id @default(autoincrement())
-  names      String[] // has 1 name (or more if crosslisted)
+  id         Int      @id
+  hash       String   @unique
+  type       Boolean? // AND: 0, OR: 1
+  coreqs     String
+  course     Course?
   // Implicit many-many relation
   requires   Group[]  @relation("GroupReqs") // pre
-  requiredBy Group[]  @relation("GroupReqs") // post
-  // TODO: Add coreqs
+  requiredBy Group[]  @relation("GroupReqs") // pos
 }
 
 model Course {
-  id            Int       @id @default(autoincrement())
-  title         String
-  repeatability String?
-  description   String?
-  pathways      String?
-  hours         Int?
-  sections      Section[]
+  id                String    @id
+  subject           String
+  code              String
+  level             Int
+  title             String?
+  repeatability     String?
+  description       String?
+  pathways          String?
+  hours             String?
+  sections          Section[]
+  group             Group     @relation(fields: [groupId], references: [id])
+  groupId           Int       @unique
+  crosslist         Course[]  @relation("Crosslist")
+  // We don't use this field, it's just for prisma
+  crosslistSymetric Course[]  @relation("Crosslist")
 }
 
 model Section {
-  id           Int        @id @default(autoincrement())
-  semester     String?
-  gradeData    String?
-  course       Course     @relation(fields: [courseId], references: [id])
-  courseId     Int
+  id        Int     @id @default(autoincrement())
+  semester  String?
+  gradeData String?
+
+  course   Course @relation(fields: [courseId], references: [id])
+  courseId String
+
   instructor   Instructor @relation(fields: [instructorId], references: [id])
   instructorId Int
 }
