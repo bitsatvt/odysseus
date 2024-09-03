@@ -110,7 +110,8 @@ class Course:
             'description': self.description,
             'pathways': self.pathways,
             'hours': self.creditHours,
-            'crosslist': self.crossList
+            'crosslist': self.crossList,
+            'groupId':self.groupID
         }
 def close(relationsList):
     paren = 0
