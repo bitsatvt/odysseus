@@ -42,7 +42,7 @@ def graphingHelper(relationsList:list, groupStorage) -> Group:
             if typeList == 0:
                 raise Exception("Unexpected behavior, investigate further")
             typeList = 1
-        elif relationsList[iter].isalnum():
+        elif relationsList[iter].replace("-","").isalnum():
             retNode.prereqs.append(relationsList[iter])
         elif relationsList[iter] == "(":
             iter = graphParenthesis(relationsList, iter, retNode, groupStorage)
@@ -77,11 +77,12 @@ for ID, rawClass in enumerate(rawClasses):
     rawClass['cross_listed'] = BeautifulSoup(rawClass['cross_listed'], "html.parser").text
     rawClass['cross_listed'] = rawClass['cross_listed'][rawClass['cross_listed'].find(":") + 2:] 
     rawClass['cross_listed'] = rawClass['cross_listed'].split(", ")
+    rawClass['cross_listed'] = [rawClass.replace(" ", "-") for rawClass in rawClass['cross_listed']]
     
     currGroup = Group(perm = True)
-    currGroup.courseID = rawClass['code'].replace(" ", "")  
+    currGroup.courseID = rawClass['code'].replace(" ", "-")  
     cleanClass = Course(ID, currGroup.groupID, rawClass['code'], rawClass['title'], rawClass['cross_listed'] if rawClass['cross_listed'][0] != "" else [] , rawClass['repeatability'], rawClass['description'], rawClass['pathway'], rawClass['hours_html'])
-    classDict[rawClass['code'].replace(" ", "")] = cleanClass
+    classDict[rawClass['code'].replace(" ", "-")] = cleanClass
     try:
         temp = rawClass['prereq']
         rawClass['prereq'] = BeautifulSoup(rawClass['prereq'], "html.parser").text
@@ -116,7 +117,7 @@ for ID, rawClass in enumerate(rawClasses):
     # print(currGroup)
     groupStorage[0][currGroup] = str(currGroup.groupID)
     groupStorage[1][str(currGroup.groupID)] = currGroup
-    courseDict[rawClass['code'].replace(" ","")] = str(currGroup.groupID) 
+    courseDict[rawClass['code'].replace(" ","-")] = str(currGroup.groupID) 
     # print(cleanClass)
     # print()
     
@@ -145,13 +146,13 @@ for groupID in groupStorage[1]:
                     preStack.append(prereq)  
 
 print(len(unlisted))
-for course in unlisted: 
-
+for course in unlisted:         
+    course = course.replace(" ", "-")
     currGroup = Group(perm = True)
-    currGroup.courseID = course.replace(" ", "")  
+    currGroup.courseID = course
     cleanClass = Course(ID, currGroup.groupID, course, "", [], "", "", "","")
     
-    classDict[course.replace(" ", "")] = cleanClass
+    classDict[course] = cleanClass
 
     currGroup.prereqs = []
     currGroup.preReqType = None
@@ -160,7 +161,7 @@ for course in unlisted:
     currGroup.lockPrereqs()
     groupStorage[0][currGroup] = str(currGroup.groupID)
     groupStorage[1][str(currGroup.groupID)] = currGroup
-    courseDict[course.replace(" ","")] = str(currGroup.groupID) 
+    courseDict[course] = str(currGroup.groupID) 
 
 for groupID in groupStorage[1]:
 # print(groupID)

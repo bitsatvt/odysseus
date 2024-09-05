@@ -147,7 +147,7 @@ def simplifyList(listData:list[str]) -> list[str]:
                 
             elif listData[iter][-1] == ")":
                 classNum = listData[iter][:listData[iter].find(")")]
-                newList.append(classToken + classNum)
+                newList.append(classToken + "-" + classNum)
                 listData[iter] = listData[iter][listData[iter].find(")"):]
                 while len(listData[iter]) > 0:
                     newList.append(")")
@@ -155,7 +155,7 @@ def simplifyList(listData:list[str]) -> list[str]:
                 classToken = "" # Unneed but added for clarity
                 
             elif listData[iter][-1].isalnum:
-                newList.append(classToken + listData[iter])
+                newList.append(classToken + "-" + listData[iter])
                 classToken = "" # Unneed but added for clarity
                 
             else:
@@ -256,7 +256,7 @@ def addParenthesis(relationsList:list[str], start) -> None:
             iter = processParenthesis(relationsList, iter)
         elif relationsList[iter] == ")":
             return iter
-        elif not relationsList[iter].isalnum():
+        elif not relationsList[iter].replace("-","").isalnum():
             # breakpoint()
             raise Exception("Unexpected behavior, investigate further")
         
@@ -298,7 +298,7 @@ def graphingHelper(relationsList:list) -> Group:
             if typeList == 0:
                 raise Exception("Unexpected behavior, investigate further")
             typeList = 1
-        elif relationsList[iter].isalnum():
+        elif relationsList[iter].replace("-","").isalnum():
             retNode.prereqs.append(relationsList[iter])
         elif relationsList[iter] == "(":
             iter = graphParenthesis(relationsList, iter, retNode)
@@ -363,7 +363,7 @@ def parsingHelper(relationsList:list) -> tuple:
             if typeList == 0:
                 raise Exception("Unexpected behavior, investigate further")
             typeList = 1
-        elif relationsList[iter].isalnum():
+        elif relationsList[iter].replace("-","").isalnum():
             retList.append(relationsList[iter])
         elif relationsList[iter] == "(":
             iter = parseParenthesis(relationsList, iter, retList)
