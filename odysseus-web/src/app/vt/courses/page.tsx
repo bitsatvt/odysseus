@@ -2,22 +2,24 @@
 
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react';
-import { getCourseIds } from './server/page';
+import { getCourseNamesIDs } from './server/page';
 
 export default function Page() {
-  const [ids, setIds] = useState([]);
+  const [courseInfo, setCourseInfo] = useState([]);
+
   const router = useRouter()
 
   useEffect(() => {
-    async function fetchCourseIds() {
-      const ids = await getCourseIds();
-      setIds(ids as never[]);
+    async function fetchCourseInfo() {
+      const ids = await getCourseNamesIDs();
+      setCourseInfo(ids as never[]);
     }
-    fetchCourseIds();
+    fetchCourseInfo();
   }, []);
 
   return (
     <div>
+      <p>Search for courses by ID or Name</p>
       <form
         onSubmit={(e) => {
           e.preventDefault(); // Prevent the form from actually submitting
@@ -28,10 +30,14 @@ export default function Page() {
         <input list="courses" name="courseInput" />
       </form>
       <datalist id="courses">
-        {ids.map((id) => (
-          <option key={id} value={id} />
+        {courseInfo.map((courseInfo) => (
+          <div>
+            <option key={courseInfo.id} value={courseInfo.id} />
+            <option key={courseInfo.title} value={courseInfo.title} />
+          </div>
         ))}
       </datalist>
+
     </div>
 
   )
