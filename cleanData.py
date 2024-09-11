@@ -149,7 +149,7 @@ with open('Grade-Distribution.csv', newline='') as csvfile:
         if iter == 0:
             iter += 1
             continue
-        if int(row[0][:row[0].find("-")]) < current_year - 20 or row[2] + "-" + row[3] not in courseDict:
+        if int(row[0][:row[0].find("-")]) < current_year - 20 or row[2] + "-" + row[3] not in classDict:
             continue
         rowJson = dict()
         rowJson["year"] = row[0][:row[0].find("-")]
