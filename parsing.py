@@ -98,11 +98,11 @@ class Course:
                 f"Pathways: {self.pathways}\n"
                 f"Credit Hours: {self.creditHours}")
     def to_dict(self):
-        code = self.courseCode[self.courseCode.find(" ")+ 1:]
+        code = self.courseCode[self.courseCode.find("-")+ 1:]
         level = int(code[0]) if code[0].isnumeric() else 9
         return {
-            'id':self.courseCode.replace(" ", "-"),
-            'subject': self.courseCode[:self.courseCode.find(" ")],
+            'id':self.courseCode,
+            'subject': self.courseCode[:self.courseCode.find("-")],
             'code': code,
             'level': level,
             'title': self.courseName,
