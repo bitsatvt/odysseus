@@ -127,8 +127,6 @@ import csv
 import json
 from datetime import datetime
 current_year = datetime.now().year
-
-csvJson = dict()
 with open('Grade-Distribution.csv', newline='') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
     iter = 0
@@ -139,8 +137,20 @@ with open('Grade-Distribution.csv', newline='') as csvfile:
         if int(row[0][:row[0].find("-")]) < current_year - 20:
             continue
         if row[2] + "-" + row[3] not in courseDict:
-            if int(row[0][:row[0].find("-")]) < current_year - 5:
-                continue
+            if int(row[0][:row[0].find("-")]) >= current_year - 5:
+                cleanClass = Course(-1, -1, row[2] + "-" + row[3], "", [], "", "", "","")
+                classDict[row[2] + "-" + row[3]] = cleanClass
+
+csvJson = dict()
+with open('Grade-Distribution.csv', newline='') as csvfile:
+    spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+    iter = 0
+    for row in spamreader:
+        if iter == 0:
+            iter += 1
+            continue
+        if int(row[0][:row[0].find("-")]) < current_year - 20 or row[2] + "-" + row[3] not in courseDict:
+            continue
         rowJson = dict()
         rowJson["year"] = row[0][:row[0].find("-")]
         rowJson["term"] = row[1]
