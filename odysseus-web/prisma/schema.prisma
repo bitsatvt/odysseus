@@ -9,10 +9,10 @@ datasource db {
 
 model Group {
   id         Int      @id
-  hash       String   @unique
+  hash       String?  @unique
   type       Boolean? // AND: 0, OR: 1
-  coreqs     String
-  course     Course?
+  coreqs     String?
+  course     Course[]
   // Implicit many-many relation
   requires   Group[]  @relation("GroupReqs") // pre
   requiredBy Group[]  @relation("GroupReqs") // pos
@@ -30,7 +30,7 @@ model Course {
   hours             String?
   sections          Section[]
   group             Group     @relation(fields: [groupId], references: [id])
-  groupId           Int       @unique
+  groupId           Int
   crosslist         Course[]  @relation("Crosslist")
   // We don't use this field, it's just for prisma
   crosslistSymetric Course[]  @relation("Crosslist")
