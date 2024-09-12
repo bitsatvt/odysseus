@@ -123,57 +123,6 @@ for ID, rawClass in enumerate(rawClasses):
     # print()
     
     
-import csv
-import json
-from datetime import datetime
-current_year = datetime.now().year
-with open('Grade-Distribution.csv', newline='') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
-    iter = 0
-    for row in spamreader:
-        if iter == 0:
-            iter += 1
-            continue
-        if int(row[0][:row[0].find("-")]) < current_year - 20:
-            continue
-        if row[2] + "-" + row[3] not in courseDict:
-            if int(row[0][:row[0].find("-")]) >= current_year - 5:
-                cleanClass = Course(-1, -1, row[2] + "-" + row[3], "", [], "", "", "","")
-                classDict[row[2] + "-" + row[3]] = cleanClass
-
-csvJson = dict()
-with open('Grade-Distribution.csv', newline='') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
-    iter = 0
-    for row in spamreader:
-        if iter == 0:
-            iter += 1
-            continue
-        if int(row[0][:row[0].find("-")]) < current_year - 20 or row[2] + "-" + row[3] not in classDict:
-            continue
-        rowJson = dict()
-        rowJson["year"] = row[0][:row[0].find("-")]
-        rowJson["term"] = row[1]
-        rowJson["course_id"] = row[2] + "-" + row[3]
-        rowJson["title"] = row[4]
-        rowJson["Instructor"] = row[5]
-        rowJson["GPA"] = row[6]
-        rowJson["Grades_Dist"] = [row[i] for i in range(7,19)]   
-        rowJson["W_rate"] = row[19]
-        rowJson["Enrollment"] = row[20]          # Updated index for Enrollment
-        rowJson["CRN"] = row[21]                 # Updated index for CRN
-        rowJson["Credits"] = row[22]             # Updated index for Credits
-        termNum = "0"
-        if rowJson["term"].endswith("l"):
-            termNum = "1"
-        if rowJson["term"].endswith("II"):
-            termNum = "3"
-        if rowJson["term"].endswith("I"):
-            termNum = "2"
-        rowJson["super_CRN"] = rowJson["year"] +";" + termNum + ";" + rowJson["CRN"]
-        csvJson[rowJson["super_CRN"]] = rowJson
-with open('section.json', 'w') as file:
-    json.dump(csvJson, file, indent=4)
 
 
 unlisted = set()
@@ -200,7 +149,7 @@ for course in unlisted:
     course = course.replace(" ", "-")
     currGroup = Group(perm = True)
     currGroup.courseID = course
-    cleanClass = Course(ID, currGroup.groupID, course, "", [], "", "", "","")
+    cleanClass = Course(-1, currGroup.groupID, course, "", [], "", "", "","")
     
     classDict[course] = cleanClass
 
@@ -213,6 +162,78 @@ for course in unlisted:
     groupStorage[1][str(currGroup.groupID)] = currGroup
     courseDict[course] = str(currGroup.groupID) 
 
+import csv
+import json
+from datetime import datetime
+current_year = datetime.now().year
+with open('Grade-Distribution.csv', newline='') as csvfile:
+    spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+    iter = 0
+    for row in spamreader:
+        if iter == 0:
+            iter += 1
+            continue
+        if int(row[0][:row[0].find("-")]) < current_year - 20:
+            continue
+        if row[2] + "-" + row[3] not in courseDict:
+            if int(row[0][:row[0].find("-")]) >= current_year - 5:
+                course =  row[2] + "-" + row[3]
+                currGroup = Group(perm = True)
+                currGroup.courseID = course
+                cleanClass = Course(-1, currGroup.groupID, course, "", [], "", "", "","")
+                classDict[course] = cleanClass
+                
+                currGroup.prereqs = []
+                currGroup.preReqType = None
+                currGroup.coreqs = ""
+                
+                currGroup.lockPrereqs()
+                groupStorage[0][currGroup] = str(currGroup.groupID)
+                groupStorage[1][str(currGroup.groupID)] = currGroup
+                courseDict[course] = str(currGroup.groupID) 
+
+csvJson = dict()
+with open('Grade-Distribution.csv', newline='') as csvfile:
+    spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+    iter = 0
+    for row in spamreader:
+        if iter == 0:
+            iter += 1
+            continue
+        if int(row[0][:row[0].find("-")]) < current_year - 20 or row[2] + "-" + row[3] not in classDict:
+            continue
+        rowJson = dict()
+        rowJson["year"] = int(row[0][:row[0].find("-")])
+        rowJson["term"] = row[1]
+        rowJson["course_id"] = row[2] + "-" + row[3]
+        rowJson["title"] = row[4]
+        rowJson["Instructor"] = row[5]
+        rowJson["GPA"] = float(row[6])
+        rowJson["Grades_Dist"] = [float(row[i]) for i in range(7,19)]   
+        rowJson["W_rate"] = int(row[19])
+        rowJson["Enrollment"] = int(row[20])          # Updated index for Enrollment
+        rowJson["CRN"] = int(row[21])                 # Updated index for CRN
+        rowJson["Credits"] = row[22]             # Updated index for Credits
+        termNum = "-1"
+        if rowJson["term"] == "Fall":
+            termNum = "0"
+        elif rowJson["term"] == "Winter":
+            termNum = "1"
+        elif rowJson["term"] == "Spring":
+            termNum = "2"
+        elif rowJson["term"] == "Summer I":
+            termNum = "3"
+        elif rowJson["term"] == "Summer II":
+            termNum = "4"
+        elif rowJson["term"].endswith("I"):
+            termNum = "5"
+        else:
+            raise Exception("Unidentified semester")
+        rowJson["super_CRN"] = str(rowJson["year"]) +";" + termNum + ";" + str(rowJson["CRN"])
+        csvJson[rowJson["super_CRN"]] = rowJson
+with open('section.json', 'w') as file:
+    json.dump(csvJson, file, indent=4)
+    
 for groupID in groupStorage[1]:
 # print(groupID)
     if groupStorage[1][groupID].courseID != None:

@@ -8,49 +8,44 @@ datasource db {
 }
 
 model Group {
-  id         Int      @id
-  hash       String   @unique
-  type       Boolean? // AND: 0, OR: 1
-  coreqs     String
-  course     Course?
-  // Implicit many-many relation
-  requires   Group[]  @relation("GroupReqs") // pre
-  requiredBy Group[]  @relation("GroupReqs") // pos
+  id      Int      @id
+  hash    String   @unique
+  type    Boolean?
+  coreqs  String
+  course  Course?
+  requires Group[]  @relation("GroupReqs")
+  requiredBy Group[]  @relation("GroupReqs")
 }
 
 model Course {
-  id                String    @id
-  subject           String
-  code              String
-  level             Int
-  title             String?
-  repeatability     String?
-  description       String?
-  pathways          String?
-  hours             String?
-  sections          Section[]
-  group             Group     @relation(fields: [groupId], references: [id])
-  groupId           Int       @unique
-  crosslist         Course[]  @relation("Crosslist")
-  // We don't use this field, it's just for prisma
-  crosslistSymetric Course[]  @relation("Crosslist")
+  id            String    @id
+  subject       String
+  code          String
+  level         Int
+  title         String?
+  repeatability String?
+  description   String?
+  pathways      String?
+  hours         String?
+  groupId       Int       @unique
+  group         Group     @relation(fields: [groupId], references: [id])
+  sections      Section[]
+  crosslist      Course[]  @relation("Crosslist")
+  crosslistSymmetric     Course[]  @relation("Crosslist")
 }
 
 model Section {
-  id        Int     @id @default(autoincrement())
-  semester  String?
-  gradeData String?
-
-  course   Course @relation(fields: [courseId], references: [id])
-  courseId String
-
-  instructor   Instructor @relation(fields: [instructorId], references: [id])
-  instructorId Int
-}
-
-model Instructor {
-  id       Int       @id @default(autoincrement())
-  name     String
-  rating   String?
-  sections Section[]
+  id          String  @id
+  course_id   String
+  title       String
+  crn         Int
+  year        Int
+  term        String
+  enrollment  Int
+  gpa         Float
+  gradeData   Float[]
+  withdrawals Int
+  credits     String
+  instructorId  Int
+  course      Course  @relation(fields: [course_id], references: [id])
 }

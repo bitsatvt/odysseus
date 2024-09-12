@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import courses from "../../class.json" assert { type: "json" };
 import groups from "../../group.json" assert { type: "json" };
+import sections from "../../section.json" assert { type: "json" };
 
 const prisma = new PrismaClient();
 
@@ -92,7 +93,7 @@ async function updateCrosslistRelations(classes) {
         crosslist: {
           connect: crosslist.map((id) => ({ id })),
         },
-        crosslistSymetric: {
+        crosslistSymmetric: {
           connect: crosslist.map((id) => ({ id })),
         },
       },
@@ -100,6 +101,31 @@ async function updateCrosslistRelations(classes) {
   }
 }
 
+async function insertSections(sections) {
+  for (const key in sections) {
+    const sectionData = sections[key];
+    try {
+      await prisma.section.create({
+        data: {
+          id: sectionData.super_CRN,
+          year: sectionData.year,
+          term: sectionData.term,
+          title: sectionData.title,
+          gpa: sectionData.GPA,
+          gradeData: sectionData.Grades_Dist,
+          withdrawals: sectionData.W_rate,
+          enrollment: sectionData.Enrollment,
+          crn: sectionData.CRN,
+          instructorId: -1,
+          credits: sectionData.Credits,
+          course: { connect: { id: sectionData.course_id } },
+        },
+      });
+    } catch (error) {
+      console.error(`Error inserting/updating class ${sectionData.id}:`, error);
+    }
+  }
+}
 async function importData() {
   try {
     await createGroups(groups);
@@ -110,6 +136,8 @@ async function importData() {
     console.log("All classes inserted");
     await updateCrosslistRelations(courses);
     console.log("All crosslists inserted");
+    await insertSections(sections);
+    console.log("All sections created");
   } catch (error) {
     console.error("Error importing groups:", error);
   }
