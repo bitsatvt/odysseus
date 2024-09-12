@@ -5,19 +5,15 @@ import sections from "../../section.json" assert { type: "json" };
 
 const prisma = new PrismaClient();
 
-const courseIds = new Set(Object.values(courses).map((val) => val.id));
-
 async function createGroups() {
+  // null group
+  await prisma.group.create({
+    data: { id: -1 },
+  });
   for (const key in groups) {
     const group = groups[key];
-    await prisma.group.upsert({
-      where: { id: group.id },
-      update: {
-        type: group.type ? true : false,
-        coreqs: group.coreqs,
-        hash: group.hash,
-      },
-      create: {
+    await prisma.group.create({
+      data: {
         id: group.id,
         type: group.type ? true : false,
         coreqs: group.coreqs,
@@ -36,9 +32,6 @@ async function updateGroupRelations(groups) {
         requires: {
           connect: group.requires.map((id) => ({ id })),
         },
-        requiredBy: {
-          connect: group.requiredBy.map((id) => ({ id })),
-        },
       },
     });
   }
@@ -47,45 +40,26 @@ async function updateGroupRelations(groups) {
 async function insertClasses(classes) {
   for (const key in classes) {
     const classData = classes[key];
-    try {
-      await prisma.course.upsert({
-        where: { id: classData.id },
-        update: {
-          subject: classData.subject,
-          code: classData.code,
-          level: classData.level,
-          title: classData.title,
-          repeatability: classData.repeatability,
-          description: classData.description,
-          pathways: classData.pathways,
-          hours: classData.hours,
-          group: { connect: { id: classData.groupId } },
-        },
-        create: {
-          id: classData.id,
-          subject: classData.subject,
-          code: classData.code,
-          level: classData.level,
-          title: classData.title,
-          repeatability: classData.repeatability,
-          description: classData.description,
-          pathways: classData.pathways,
-          hours: classData.hours,
-          group: { connect: { id: classData.groupId } },
-        },
-      });
-    } catch (error) {
-      console.error(`Error inserting/updating class ${classData.id}:`, error);
-    }
+    await prisma.course.create({
+      data: {
+        id: classData.id,
+        subject: classData.subject,
+        code: classData.code,
+        level: classData.level,
+        title: classData.title,
+        repeatability: classData.repeatability,
+        description: classData.description,
+        pathways: classData.pathways,
+        hours: classData.hours,
+        group: { connect: { id: classData.groupId } },
+      },
+    });
   }
 }
 
 async function updateCrosslistRelations(classes) {
   for (const key in classes) {
     const course = classes[key];
-    const crosslist = course.crosslist
-      .map((val) => val.replace(" ", "-"))
-      .filter((val) => courseIds.has(val));
 
     await prisma.course.update({
       where: { id: course.id },
