@@ -7,9 +7,6 @@ const prisma = new PrismaClient();
 
 async function createGroups() {
   // null group
-  await prisma.group.create({
-    data: { id: -1 },
-  });
   for (const key in groups) {
     const group = groups[key];
     await prisma.group.create({
@@ -32,6 +29,9 @@ async function updateGroupRelations(groups) {
         requires: {
           connect: group.requires.map((id) => ({ id })),
         },
+        requiredBy: {
+          connect: group.requiredBy.map((id) => ({ id })),
+        },
       },
     });
   }
@@ -40,38 +40,43 @@ async function updateGroupRelations(groups) {
 async function insertClasses(classes) {
   for (const key in classes) {
     const classData = classes[key];
-    await prisma.course.create({
-      data: {
-        id: classData.id,
-        subject: classData.subject,
-        code: classData.code,
-        level: classData.level,
-        title: classData.title,
-        repeatability: classData.repeatability,
-        description: classData.description,
-        pathways: classData.pathways,
-        hours: classData.hours,
-        group: { connect: { id: classData.groupId } },
-      },
-    });
+
+    const data = {
+      id: classData.id,
+      subject: classData.subject,
+      code: classData.code,
+      level: classData.level,
+      title: classData.title,
+      repeatability: classData.repeatability,
+      description: classData.description,
+      pathways: classData.pathways,
+      hours: classData.hours,
+    }
+    if (classData.groupId != -1) {
+      data.group = { connect: { id: classData.groupId } }
+    }
+    await prisma.course.create({ data: data });
   }
 }
 
 async function updateCrosslistRelations(classes) {
   for (const key in classes) {
     const course = classes[key];
-
-    await prisma.course.update({
-      where: { id: course.id },
-      data: {
-        crosslist: {
-          connect: crosslist.map((id) => ({ id })),
+    try {
+      await prisma.course.update({
+        where: { id: course.id },
+        data: {
+          crosslist: {
+            connect: course.crosslist.map((id) => ({ id })),
+          },
+          crosslistSymmetric: {
+            connect: course.crosslist.map((id) => ({ id })),
+          },
         },
-        crosslistSymmetric: {
-          connect: crosslist.map((id) => ({ id })),
-        },
-      },
-    });
+      });
+    } catch (error) {
+      console.error(`Error inserting/updating class ${course.crosslist}:`, error);
+    }
   }
 }
 

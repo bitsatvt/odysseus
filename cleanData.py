@@ -178,19 +178,9 @@ with open('Grade-Distribution.csv', newline='') as csvfile:
         if row[2] + "-" + row[3] not in courseDict:
             if int(row[0][:row[0].find("-")]) >= current_year - 5:
                 course =  row[2] + "-" + row[3]
-                currGroup = Group(perm = True)
-                currGroup.courseID = course
-                cleanClass = Course(-1, currGroup.groupID, course, "", [], "", "", "","")
+                cleanClass = Course(-1, -1, course, row[4], [], "", "", "",row[22])
                 classDict[course] = cleanClass
-                
-                currGroup.prereqs = []
-                currGroup.preReqType = None
-                currGroup.coreqs = ""
-                
-                currGroup.lockPrereqs()
-                groupStorage[0][currGroup] = str(currGroup.groupID)
-                groupStorage[1][str(currGroup.groupID)] = currGroup
-                courseDict[course] = str(currGroup.groupID) 
+                courseDict[course] = str(-1) 
 
 csvJson = dict()
 with open('Grade-Distribution.csv', newline='') as csvfile:

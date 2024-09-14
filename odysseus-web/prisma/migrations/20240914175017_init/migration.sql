@@ -19,29 +19,27 @@ CREATE TABLE "Course" (
     "description" TEXT,
     "pathways" TEXT,
     "hours" TEXT,
-    "groupId" INTEGER NOT NULL,
+    "groupId" INTEGER,
 
     CONSTRAINT "Course_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Section" (
-    "id" SERIAL NOT NULL,
-    "semester" TEXT,
-    "gradeData" TEXT,
-    "courseId" TEXT NOT NULL,
+    "id" TEXT NOT NULL,
     "instructorId" INTEGER NOT NULL,
+    "course_id" TEXT NOT NULL,
+    "credits" TEXT NOT NULL,
+    "crn" INTEGER NOT NULL,
+    "enrollment" INTEGER NOT NULL,
+    "gpa" DOUBLE PRECISION NOT NULL,
+    "term" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "withdrawals" INTEGER NOT NULL,
+    "year" INTEGER NOT NULL,
+    "gradeData" DOUBLE PRECISION[],
 
     CONSTRAINT "Section_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Instructor" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "rating" TEXT,
-
-    CONSTRAINT "Instructor_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -75,13 +73,10 @@ CREATE UNIQUE INDEX "_Crosslist_AB_unique" ON "_Crosslist"("A", "B");
 CREATE INDEX "_Crosslist_B_index" ON "_Crosslist"("B");
 
 -- AddForeignKey
-ALTER TABLE "Course" ADD CONSTRAINT "Course_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Course" ADD CONSTRAINT "Course_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Section" ADD CONSTRAINT "Section_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Section" ADD CONSTRAINT "Section_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "Instructor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Section" ADD CONSTRAINT "Section_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_GroupReqs" ADD CONSTRAINT "_GroupReqs_A_fkey" FOREIGN KEY ("A") REFERENCES "Group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
