@@ -8,12 +8,12 @@ datasource db {
 }
 
 model Group {
-  id       Int      @id
-  hash     String   @unique
-  type     Boolean?
-  coreqs   String
-  course   Course?
-  requires Group[]  @relation("GroupReqs")
+  id         Int      @id
+  hash       String   @unique
+  type       Boolean?
+  coreqs     String
+  course     Course?
+  requires   Group[]  @relation("GroupReqs")
   requiredBy Group[]  @relation("GroupReqs")
 }
 

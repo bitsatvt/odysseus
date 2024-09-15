@@ -11,7 +11,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
       <h1>{course.id} {course.title}</h1>
       <p>{course.description}</p>
       <p>{course.hours}</p>
-      <p>{JSON.stringify(root)}</p>
+      <p>{root.toString()}</p>
     </div>
   }
 }
@@ -46,7 +46,7 @@ class TreeNode {
       include: { requires: true, course: true }
     })
     const course = group?.course!
-    const courseId = course?.length > 0 ? course[0].id : null
+    const courseId = course?.id
     const children = new Array<TreeNode>()
     for (const r of group!.requires) {
       if (courseId == null) {
@@ -60,7 +60,31 @@ class TreeNode {
     return new TreeNode(id, children, courseId, group!.type!)
   }
 
-  /*toString(): string {
-
-  }*/
+  toString(depth = 1): string {
+    let result = ""
+    if (this.courseId) {
+      if (depth > 0) {
+        result += "("
+        result += this.children[0].toString(depth - 1)
+        for (let i = 1; i < this.children.length; i++) {
+          result += (this.type ? " and " : " or ")
+          result += this.children[i].toString(depth - 1)
+        }
+        result += ")"
+      }
+      else {
+        return String(this.courseId)
+      }
+    }
+    else {
+      result += "("
+      result += this.children[0].toString(depth)
+      for (let i = 1; i < this.children.length; i++) {
+        result += (this.type ? " and " : " or ")
+        result += this.children[i].toString(depth)
+      }
+      result += ")"
+    }
+    return result
+  }
 }

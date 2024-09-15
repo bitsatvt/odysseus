@@ -29,9 +29,6 @@ async function updateGroupRelations(groups) {
         requires: {
           connect: group.requires.map((id) => ({ id })),
         },
-        requiredBy: {
-          connect: group.requiredBy.map((id) => ({ id })),
-        },
       },
     });
   }
