@@ -5,8 +5,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
   if (!course) {
     notFound()
   } else {
-    const prereqs = await PrereqTreeNode.fetchPreReqs(course.groupId, 1)
-    const postreqs = await PostreqTreeNode.fetchPostReqs(course.groupId, 1)
+    const prereqs = await PrereqTreeNode.fetchPreReqs(course.groupId!, 1)
+    const postreqs = await PostreqTreeNode.fetchPostReqs(course.groupId!, 1)
     return <div>
       <h1>Course: {course.id} {course.title}</h1>
       <p>Description: {course.description}</p>
