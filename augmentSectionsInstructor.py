@@ -40,7 +40,7 @@ with open("data/sectionInstructorErrors.txt", 'w') as file:
         newLastName = fullName[:fullName.rfind(",")]
         if lastname == newLastName:
             sections[section]["Instructor"] = fullName
-            key = f'{sections[section]["course_id"][:sections[section]["course_id"].find("-")]};{newLastName}'            
+            key = newLastName          
             if key not in instructorLib:
                 instructorLib[key] = dict()
                 nextKey = fullName[fullName.rfind(",") + 2:]
@@ -69,7 +69,7 @@ with open("data/sectionInstructorErrors.txt", 'w') as file:
 
 success = 0
 for section in errors:
-    key = f'{errors[section]["Subject"]};{errors[section]["Instructor"]}'
+    key = errors[section]["Instructor"]
     success += 1
     if key in instructorLib:
         possibleInstructors = instructorLib[key]
@@ -87,11 +87,11 @@ for section in errors:
                 maxCoursesTaught = possibleInstructors[instructors]["CoursesTaught"]
                 maxProf = instructors
                 
-        sections[section]["Instructor"] = f"{errors[section]['Instructor']}, {instructor}"
+        sections[section]["Instructor"] = f"{errors[section]['Instructor']}, {instructor}".strip("\n")
         instructorLib[key][instructors]["CoursesTaught"] += 1
         instructorLib[key][instructors]["Courses"].add(errors[section]["CourseID"])
     else:
-        sections[section]["Instructor"] = f"{errors[section]['Instructor']}, Staff"
+        sections[section]["Instructor"] = f"{errors[section]['Instructor']}, Staff".strip("\n")
         instructorLib[key] = dict()
         instructorLib[key]["Staff"] = dict()
         instructorLib[key]["Staff"]["CoursesTaught"] = 0
