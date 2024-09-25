@@ -3,7 +3,7 @@ import json
 
 
 csvJson = dict()
-with open('Grade-Distribution.csv', newline='') as csvfile:
+with open('data/Grade-Distribution.csv', newline='') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
     iter = 0
     for row in spamreader:
@@ -24,14 +24,20 @@ with open('Grade-Distribution.csv', newline='') as csvfile:
         rowJson["Enrollment"] = row[20]          # Updated index for Enrollment
         rowJson["CRN"] = row[21]                 # Updated index for CRN
         rowJson["Credits"] = row[22]             # Updated index for Credits
-        termNum = "0"
-        if rowJson["term"].endswith("l"):
-            termNum = "1"
-        if rowJson["term"].endswith("II"):
-            termNum = "3"
-        if rowJson["term"].endswith("I"):
-            termNum = "2"
+        if rowJson["term"] == "Fall":
+            termNum = "09"
+        elif rowJson["term"] == "Winter":
+            termNum = "12"
+        elif rowJson["term"] == "Spring":
+            termNum = "01"
+        elif rowJson["term"] == "Summer I":
+            termNum = "06"
+        elif rowJson["term"] == "Summer II":
+            termNum = "07"
+        else:
+            raise Exception(f"{rowJson['term']} is not currently accounted for")
         rowJson["super_CRN"] = rowJson["year"] +";" + termNum + ";" + rowJson["CRN"]
         csvJson[rowJson["super_CRN"]] = rowJson
-with open('section.json', 'w') as file:
+        
+with open('data/rawSection.json', 'w') as file:
     json.dump(csvJson, file, indent=4)
