@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import courses from "../../class.json" assert { type: "json" };
-import groups from "../../group.json" assert { type: "json" };
-import sections from "../../section.json" assert { type: "json" };
+import courses from "../../data/class.json" assert { type: "json" };
+import groups from "../../data/group.json" assert { type: "json" };
+import sections from "../../data/section.json" assert { type: "json" };
 
 const prisma = new PrismaClient();
 
