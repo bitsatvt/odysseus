@@ -1,193 +1,210 @@
 import prisma from "@/db";
 import { notFound } from "next/navigation";
-export default async function Page({ params }: { params: { slug: string } }) {
-  const course = await prisma.course.findUnique({ where: { id: params.slug }, include: { group: true } })
-  if (!course) {
-    notFound()
-  } else {
-    const prereqs = await PrereqTreeNode.fetchPreReqs(course.groupId!, 1)
-    const postreqs = await PostreqTreeNode.fetchPostReqs(course.groupId!, 1)
-    return <div>
-      <h1>Course: {course.id} {course.title}</h1>
-      <p>Description: {course.description}</p>
-      <p>Hours: {course.hours}</p>
-      <p>Prereqs: <span dangerouslySetInnerHTML={{ __html: prereqs.toStringPreReqs().substring(1, prereqs.toStringLength - 1) }} /></p>
-      <p>Postreqs:<span dangerouslySetInnerHTML={{ __html: postreqs.toStringPostReqs() }} /></p>
+import Link from 'next/link';
+import React from 'react';
 
-    </div>
+export default async function Page({ params }: { params: { slug: string } }) {
+  const course = await prisma.course.findUnique({
+    where: { id: params.slug },
+    include: { group: true },
+  });
+
+  if (!course) {
+    notFound();
+  } else {
+    const prereqs = await PrereqTreeNode.fetchPreReqs(course.groupId!, 1);
+    const postreqs = await PostreqTreeNode.fetchPostReqs(course.groupId!, course.id, 1);
+
+    return (
+      <div>
+        <h1>
+          Course: {course.id} {course.title}
+        </h1>
+        <p>Description: {course.description}</p>
+        <p>Hours: {course.hours}</p>
+        <p>
+          Prereqs: {prereqs.renderPreReqs(1, false)}
+        </p>
+        <p>
+          Postreqs: {postreqs.renderPostReqs()}
+        </p>
+      </div>
+    );
   }
 }
 
-// the site still runs without this but it might be more optimized cuz it generates the routes in build time
+// The site still runs without this but it might be more optimized because it generates the routes at build time
 export async function generateStaticParams() {
   const ids = await prisma.course.findMany({
-    select: { id: true }
-  })
+    select: { id: true },
+  });
 
-  return ids.map(course => ({
-    slug: course.id
-  }))
+  return ids.map((course) => ({
+    slug: course.id,
+  }));
 }
 
 class PrereqTreeNode {
-  id: number
-  type: boolean
-  courseId: string | null
-  children: Array<PrereqTreeNode> = []
-  toStringLength: number = 0
+  id: number;
+  type: boolean;
+  courseId: string | null;
+  children: PrereqTreeNode[] = [];
 
-  constructor(groupId: number, children: Array<PrereqTreeNode>, courseId: string | null, type: boolean) {
-    this.id = groupId
-    this.children = children
-    this.courseId = courseId
-    this.type = type
+  constructor(
+    groupId: number,
+    children: PrereqTreeNode[],
+    courseId: string | null,
+    type: boolean
+  ) {
+    this.id = groupId;
+    this.children = children;
+    this.courseId = courseId;
+    this.type = type;
   }
 
   static async fetchPreReqs(id: number, depth = 1) {
     const group = await prisma.group.findUnique({
       where: { id },
-      include: { requires: true, course: true }
-    })
-    const course = group?.course!
-    const courseId = course?.id
-    const children = new Array<PrereqTreeNode>()
+      include: { requires: true, course: true },
+    });
+    const course = group?.course!;
+    const courseId = course?.id;
+    const children = new Array<PrereqTreeNode>();
+
     for (const r of group!.requires) {
       if (courseId == null) {
-        let child = await PrereqTreeNode.fetchPreReqs(r.id, depth)
-        children.push(child)
-      } else if (depth != 0) {
-        let child = await PrereqTreeNode.fetchPreReqs(r.id, depth - 1)
-        children.push(child)
+        let child = await PrereqTreeNode.fetchPreReqs(r.id, depth);
+        children.push(child);
+      } else if (depth !== 0) {
+        let child = await PrereqTreeNode.fetchPreReqs(r.id, depth - 1);
+        children.push(child);
       }
     }
-    return new PrereqTreeNode(id, children, courseId, group!.type!)
+    return new PrereqTreeNode(id, children, courseId, group!.type!);
   }
 
-  toStringPreReqs(depth = 1): string {
-    let result = ``
+  renderPreReqs(depth = 1, includeParens = true): React.ReactNode {
     if (this.courseId) {
-      if (depth > 0) {
-        result += `(`
-        result += this.children.length > 0 ? this.children[0].toStringPreReqs(depth - 1) : ""
-        for (let i = 1; i < this.children.length; i++) {
-          result += (this.type ? ` or ` : ` and `)
-          result += this.children[i].toStringPreReqs(depth - 1)
-        }
-        result += `)`
+      if (depth > 0 && this.children.length > 0) {
+        const childElements = this.children.map((child, index) => (
+          <React.Fragment key={index}>
+            {index > 0 && (this.type ? ' or ' : ' and ')}
+            {child.renderPreReqs(depth - 1)}
+          </React.Fragment>
+        ));
+        return includeParens ? (
+          <>
+            (
+            {childElements}
+            )
+          </>
+        ) : (
+          <>{childElements}</>
+        );
+      } else {
+        return (
+          <Link href={`./${String(this.courseId)}`}>
+            {String(this.courseId)}
+          </Link>
+        );
       }
-      else {
-        return `<a href="./${String(this.courseId)}"}>${String(this.courseId)}</a>`
-      }
+    } else {
+      const childElements = this.children.map((child, index) => (
+        <React.Fragment key={index}>
+          {index > 0 && (this.type ? ' or ' : ' and ')}
+          {child.renderPreReqs(depth, true)}
+        </React.Fragment>
+      ));
+      return includeParens ? (
+        <>
+          (
+          {childElements}
+          )
+        </>
+      ) : (
+        <>{childElements}</>
+      );
     }
-    else {
-      result += `(`
-      result += this.children[0].toStringPreReqs(depth)
-      for (let i = 1; i < this.children.length; i++) {
-        result += (this.type ? ` or ` : ` and `)
-        result += this.children[i].toStringPreReqs(depth)
-      }
-      result += `)`
-    }
-    this.toStringLength = result.length
-    return result
   }
-  // toString(depth: number = 1): JSX.Element | string {
-  //   if (this.courseId) {
-  //     if (depth > 0) {
-  //       return (
-  //         <>
-  //           (
-  //           {this.children.map((child, index) => (
-  //             <React.Fragment key={index}>
-  //               {index > 0 && (this.type ? " and " : " or ")}
-  //               {child.toString(depth - 1)}
-  //             </React.Fragment>
-  //           ))}
-  //           )
-  //         </>
-  //       );
-  //     } else {
-  //       return (
-  //         <Link href={`../${String(this.courseId)}`}>
-  //           {String(this.courseId)}
-  //         </Link>
-  //       );
-  //     }
-  //   } else {
-  //     return (
-  //       <>
-  //         (
-  //         {this.children.map((child, index) => (
-  //           <React.Fragment key={index}>
-  //             {index > 0 && (this.type ? " and " : " or ")}
-  //             {child.toString(depth)}
-  //           </React.Fragment>
-  //         ))}
-  //         )
-  //       </>
-  //     );
-  //   }
-  // }
 }
 
-
 class PostreqTreeNode {
-  id: number
-  type: boolean
-  courseId: string | null
-  children: Array<PostreqTreeNode> = []
-  toStringLength: number = 0
+  id: number;
+  type: boolean;
+  courseId: string | null;
+  children: PostreqTreeNode[] = [];
 
-  constructor(groupId: number, children: Array<PostreqTreeNode>, courseId: string | null, type: boolean) {
-    this.id = groupId
-    this.children = children
-    this.courseId = courseId
-    this.type = type
+  constructor(
+    groupId: number,
+    children: PostreqTreeNode[],
+    courseId: string | null,
+    type: boolean
+  ) {
+    this.id = groupId;
+    this.children = children;
+    this.courseId = courseId;
+    this.type = type;
   }
 
-  static async fetchPostReqs(id: number, depth = 1) {
+  static async fetchPostReqs(id: number, currentCourseId: string, depth = 1) {
     const group = await prisma.group.findUnique({
       where: { id },
-      include: { requiredBy: true, course: true }
-    })
-    const course = group?.course!
-    const courseId = course?.id
-    const children = new Array<PostreqTreeNode>()
-    const queue = new Array<PostreqTreeNode>()
+      include: { requiredBy: true, course: true },
+    });
+    const course = group?.course!;
+    const courseId = course?.id;
+
+    // Skip adding the current course to avoid self-reference
+    const children = new Array<PostreqTreeNode>();
     for (const r of group!.requiredBy) {
+      let child: PostreqTreeNode | null = null;
       if (courseId == null) {
-        let child = await PostreqTreeNode.fetchPostReqs(r.id, depth)
-        children.push(child)
-      } else if (depth != 0) {
-        let child = await PostreqTreeNode.fetchPostReqs(r.id, depth - 1)
-        children.push(child)
+        child = await PostreqTreeNode.fetchPostReqs(r.id, currentCourseId, depth);
+      } else if (depth !== 0) {
+        child = await PostreqTreeNode.fetchPostReqs(r.id, currentCourseId, depth - 1);
+      }
+
+      if (child && child.courseId !== currentCourseId) {
+        children.push(child);
       }
     }
-    return new PostreqTreeNode(id, children, courseId, group!.type!)
+
+    // Only add nodes that are not the current course
+    if (courseId !== currentCourseId) {
+      return new PostreqTreeNode(id, children, courseId, group!.type!);
+    } else {
+      return new PostreqTreeNode(id, children, null, group!.type!);
+    }
   }
 
-  toStringPostReqs(depth = 1): string {
-    let result = ``
+  renderPostReqs(depth = 1): React.ReactNode {
     if (this.courseId) {
-      if (depth > 0) {
-        result += this.children.length > 0 ? this.children[0].toStringPostReqs(depth - 1) : ""
-        for (let i = 1; i < this.children.length; i++) {
-          result += `, `
-          result += this.children[i].toStringPostReqs(depth - 1)
-        }
+      if (depth > 0 && this.children.length > 0) {
+        const childElements = this.children.map((child, index) => (
+          <React.Fragment key={index}>
+            {index > 0 && ', '}
+            {child.renderPostReqs(depth - 1)}
+          </React.Fragment>
+        ));
+        return <>{childElements}</>;
+      } else {
+        return (
+          <Link href={`./${String(this.courseId)}`}>
+            {String(this.courseId)}
+          </Link>
+        );
       }
-      else {
-        return `<a href="./${String(this.courseId)}"}>${String(this.courseId)}</a>`
+    } else {
+      if (this.children.length === 0) {
+        return null;
       }
+      const childElements = this.children.map((child, index) => (
+        <React.Fragment key={index}>
+          {index > 0 && ', '}
+          {child.renderPostReqs(depth)}
+        </React.Fragment>
+      ));
+      return <>{childElements}</>;
     }
-    else {
-      result += this.children[0].toStringPostReqs(depth)
-      for (let i = 1; i < this.children.length; i++) {
-        result += `, `
-        result += this.children[i].toStringPostReqs(depth)
-      }
-    }
-    this.toStringLength = result.length
-    return result
   }
 }
