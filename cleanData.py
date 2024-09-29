@@ -204,24 +204,22 @@ with open('data/Grade-Distribution.csv', newline='') as csvfile:
         rowJson["Enrollment"] = int(row[20])          # Updated index for Enrollment
         rowJson["CRN"] = int(row[21])                 # Updated index for CRN
         rowJson["Credits"] = row[22]             # Updated index for Credits
-        termNum = "-1"
         if rowJson["term"] == "Fall":
-            termNum = "0"
+            termNum = "09"
         elif rowJson["term"] == "Winter":
-            termNum = "1"
+            termNum = "12"
         elif rowJson["term"] == "Spring":
-            termNum = "2"
+            termNum = "01"
         elif rowJson["term"] == "Summer I":
-            termNum = "3"
+            termNum = "06"
         elif rowJson["term"] == "Summer II":
-            termNum = "4"
-        elif rowJson["term"].endswith("I"):
-            termNum = "5"
+            termNum = "07"
         else:
-            raise Exception("Unidentified semester")
+            raise Exception(f"{rowJson['term']} is not currently accounted for")
         rowJson["super_CRN"] = str(rowJson["year"]) +";" + termNum + ";" + str(rowJson["CRN"])
         csvJson[rowJson["super_CRN"]] = rowJson
-with open('data/section.json', 'w') as file:
+        
+with open('data/rawSection.json', 'w') as file:
     json.dump(csvJson, file, indent=4)
     
 for groupID in groupStorage[1]:
