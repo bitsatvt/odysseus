@@ -54,10 +54,10 @@ async def main():
                 if i % 100 == 0:
                     print(f"sent {i} requests, scraped {scrapeCounter} sections")
                 if i % 5000 == 0:
-                    while scrapeCounter < i - i/5:
+                    while scrapeCounter < i - i / 5:
                         print(f"sent {i} requests, scraped {scrapeCounter} sections")
                         await asyncio.sleep(1)
-            while scrapeCounter < i :
+            while scrapeCounter < i:
                 print(f"sent {i} requests, scraped {scrapeCounter} sections")
                 await asyncio.sleep(1)
             print(f"sent {i} requests, scraped {scrapeCounter} sections")
