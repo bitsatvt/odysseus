@@ -13,11 +13,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mantine/charts": "^7.13.0",
+    "@mantine/core": "^7.13.0",
+    "@mantine/form": "^7.13.0",
+    "@mantine/hooks": "^7.13.0",
     "@prisma/client": "^5.19.0",
     "fuse.js": "^7.0.0",
     "next": "14.2.7",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "recharts": "^2.12.7"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -26,6 +31,9 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.7",
+    "postcss": "^8.4.47",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1",
     "prisma": "^5.19.1",
     "typescript": "^5"
   }
