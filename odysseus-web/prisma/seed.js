@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import courses from "../../data/class.json" assert { type: "json" };
 import groups from "../../data/group.json" assert { type: "json" };
 import sections from "../../data/section.json" assert { type: "json" };
+import instructors from "../../data/instructors.json" assert { type: "json" };
+
 
 const prisma = new PrismaClient();
 
@@ -66,13 +68,48 @@ async function updateCrosslistRelations(classes) {
           crosslist: {
             connect: course.crosslist.map((id) => ({ id })),
           },
-          crosslistSymmetric: {
-            connect: course.crosslist.map((id) => ({ id })),
-          },
         },
       });
     } catch (error) {
       console.error(`Error inserting/updating class ${course.crosslist}:`, error);
+    }
+  }
+}
+
+async function insertInstructors(instructors) {
+  for (const key in instructors) {
+    const instructorData = instructors[key];
+    try {
+      await prisma.instructor.create({
+        data: {
+          id: instructorData.lastName + ", " + instructorData.firstName,
+          difficulty: instructorData.difficulty,
+          rating: instructorData.rating,
+          recommendedPct: instructorData.recommendedPct,
+          numRatings: instructorData.numRatings,
+          coursesTaught: instructorData.CoursesTaught,
+        },
+      });
+    } catch (error) {
+      console.error(`Error inserting instructor ${instructorData.id}:`, error);
+    }
+  }
+}
+
+async function updateInstructorCourseRelations(instructors) {
+  for (const key in instructors) {
+    const instructorData = instructors[key];
+    try {
+      await prisma.instructor.update({
+        where: { id: instructorData.lastName + ", " + instructorData.firstName },
+        data: {
+          courses: {
+            connect: instructorData.Courses.map((id) => ({ id })),
+          },
+        },
+      });
+    } catch (error) {
+      console.error(`Error updating instructor ${instructorData.id}:`, error);
     }
   }
 }
@@ -92,13 +129,14 @@ async function insertSections(sections) {
           withdrawals: sectionData.W_rate,
           enrollment: sectionData.Enrollment,
           crn: sectionData.CRN,
-          instructorId: -1,
+          instructor: { connect: { id: sectionData.Instructor } },
           credits: sectionData.Credits,
           course: { connect: { id: sectionData.course_id } },
         },
       });
     } catch (error) {
-      console.error(`Error inserting/updating class ${sectionData.id}:`, error);
+      console.error(`Error inserting/updating class ${sectionData.super_CRN} with instructor ${sectionData.Instructor}:`, error);
+
     }
   }
 }
@@ -112,8 +150,12 @@ async function importData() {
     console.log("All classes inserted");
     await updateCrosslistRelations(courses);
     console.log("All crosslists inserted");
+    await insertInstructors(instructors);
+    console.log("All instructors inserted");
+    await updateInstructorCourseRelations(instructors);
+    console.log("All instructors/course relations inserted");
     await insertSections(sections);
-    console.log("All sections created");
+    console.log("All sections inserted");
   } catch (error) {
     console.error("Error importing groups:", error);
   }

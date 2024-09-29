@@ -18,7 +18,7 @@ model Group {
 }
 
 model Course {
-  id                 String    @id
+  id                 String       @id
   subject            String
   code               String
   level              Int
@@ -27,25 +27,38 @@ model Course {
   description        String?
   pathways           String?
   hours              String?
-  groupId            Int?      @unique
-  group              Group?    @relation(fields: [groupId], references: [id])
+  groupId            Int?         @unique
+  group              Group?       @relation(fields: [groupId], references: [id])
   sections           Section[]
-  crosslist          Course[]  @relation("Crosslist")
-  crosslistSymmetric Course[]  @relation("Crosslist")
+  crosslist          Course[]     @relation("Crosslist")
+  crosslistSymmetric Course[]     @relation("Crosslist")
+  Instructor         Instructor[] @relation("InstructorCourses")
 }
 
 model Section {
-  id           String  @id
-  instructorId Int
-  course_id    String
-  credits      String
-  crn          Int
-  enrollment   Int
-  gpa          Float
-  term         String
-  title        String
-  withdrawals  Int
-  year         Int
-  gradeData    Float[]
-  course       Course  @relation(fields: [course_id], references: [id])
+  id             String     @id
+  instructorName String
+  course_id      String
+  credits        String
+  crn            Int
+  enrollment     Int
+  gpa            Float
+  term           String
+  title          String
+  withdrawals    Int
+  year           Int
+  gradeData      Float[]
+  course         Course     @relation(fields: [course_id], references: [id])
+  instructor     Instructor @relation(fields: [instructorName], references: [id])
+}
+
+model Instructor {
+  id             String    @id
+  difficulty     Float
+  rating         Float
+  recommendedPct Float
+  numRatings     Int
+  coursesTaught  Int
+  sections       Section[]
+  courses        Course[]  @relation("InstructorCourses")
 }
