@@ -45,7 +45,7 @@ with open("data/sectionInstructorErrors.txt", 'w') as file:
                 instructorLib[key] = dict()
                 nextKey = fullName[fullName.rfind(",") + 2:].lower()
                 instructorLib[key][nextKey] = dict()
-                instructorLib[key][nextKey]["CoursesTaught"] = 0
+                instructorLib[key][nextKey]["CoursesTaught"] = 1
                 instructorLib[key][nextKey]["Courses"] = {sections[section]["course_id"]}
             else:
                 nextKey = fullName[fullName.rfind(",") + 2:].lower()
@@ -54,7 +54,7 @@ with open("data/sectionInstructorErrors.txt", 'w') as file:
                     instructorLib[key][nextKey]["Courses"].add(sections[section]["course_id"])
                 else:
                     instructorLib[key][nextKey] = dict()
-                    instructorLib[key][nextKey]["CoursesTaught"] = 0
+                    instructorLib[key][nextKey]["CoursesTaught"] = 1
                     instructorLib[key][nextKey]["Courses"] = {sections[section]["course_id"]}
                     
             instructorLib[key][nextKey]["difficulty"] = -1
