@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { fetchPrereqTree, fetchPostreqTree } from "@/server/utils/fetchTrees";
 import PrereqTreeRenderer from "@/components/PrereqTreeRenderer";
-import { SectionsGraph } from "@/components/SectionsCharts";
 import PostreqTreeRenderer from "@/components/PostreqTreeRenderer";
+import { SectionsGraph, ProfessorsTable } from "@/components/SectionsCharts";
 import prisma from "@/db";
 
 export default async function Page({ params }: { params: { slug: string } }) {
@@ -31,6 +31,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
           Postreqs:{" "}
           <PostreqTreeRenderer tree={postreqTree} depth={1} />
         </p>
+        <ProfessorsTable sections={course.sections} />
         <SectionsGraph sections={course.sections} />
       </div>
     );
