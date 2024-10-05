@@ -54,6 +54,8 @@ model Section {
 
 model Instructor {
   id             String    @id
+  firstName      String
+  lastName       String
   difficulty     Float
   rating         Float
   recommendedPct Float

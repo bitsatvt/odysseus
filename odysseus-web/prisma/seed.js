@@ -82,12 +82,14 @@ async function insertInstructors(instructors) {
     try {
       await prisma.instructor.create({
         data: {
-          id: instructorData.lastName + ", " + instructorData.firstName,
+          id: key,
           difficulty: instructorData.difficulty,
           rating: instructorData.rating,
           recommendedPct: instructorData.recommendedPct,
           numRatings: instructorData.numRatings,
           coursesTaught: instructorData.CoursesTaught,
+          firstName: instructorData.firstName,
+          lastName: instructorData.lastName,
         },
       });
     } catch (error) {
@@ -101,7 +103,7 @@ async function updateInstructorCourseRelations(instructors) {
     const instructorData = instructors[key];
     try {
       await prisma.instructor.update({
-        where: { id: instructorData.lastName + ", " + instructorData.firstName },
+        where: { id: key },
         data: {
           courses: {
             connect: instructorData.Courses.map((id) => ({ id })),
@@ -136,8 +138,8 @@ async function insertSections(sections) {
       });
     } catch (error) {
       console.error(`Error inserting/updating class ${sectionData.super_CRN} with instructor ${sectionData.Instructor}:`, error);
-
     }
+    break;
   }
 }
 async function importData() {
