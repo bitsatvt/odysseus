@@ -139,7 +139,6 @@ async function insertSections(sections) {
     } catch (error) {
       console.error(`Error inserting/updating class ${sectionData.super_CRN} with instructor ${sectionData.Instructor}:`, error);
     }
-    break;
   }
 }
 async function importData() {
