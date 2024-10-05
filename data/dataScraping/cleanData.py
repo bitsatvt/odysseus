@@ -52,7 +52,7 @@ def graphingHelper(relationsList:list, groupStorage) -> Group:
     retNode.preReqType = typeList
     return retNode
 
-with open("rawData/rawClasses.json", "r") as jsonFile:
+with open("../rawData/rawClasses.json", "r") as jsonFile:
     rawClasses = json.loads(jsonFile.read())
     
 IDtoGroup = dict()
@@ -166,7 +166,7 @@ import csv
 import json
 from datetime import datetime
 current_year = datetime.now().year
-with open('rawData/Grade-Distribution.csv', newline='') as csvfile:
+with open('../rawData/Grade-Distribution.csv', newline='') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
     iter = 0
     for row in spamreader:
@@ -183,7 +183,7 @@ with open('rawData/Grade-Distribution.csv', newline='') as csvfile:
                 courseDict[course] = str(-1) 
 
 csvJson = dict()
-with open('rawData/Grade-Distribution.csv', newline='') as csvfile:
+with open('../rawData/Grade-Distribution.csv', newline='') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
     iter = 0
     for row in spamreader:
@@ -219,7 +219,7 @@ with open('rawData/Grade-Distribution.csv', newline='') as csvfile:
         rowJson["super_CRN"] = str(rowJson["year"]) +";" + termNum + ";" + str(rowJson["CRN"])
         csvJson[rowJson["super_CRN"]] = rowJson
         
-with open('rawData/rawSection.json', 'w') as file:
+with open('../rawData/rawSection.json', 'w') as file:
     json.dump(csvJson, file, indent=4)
     
 for groupID in groupStorage[1]:
@@ -266,7 +266,7 @@ jsonGroup = dict()
 for obj in groupStorage[1]:
     jsonGroup[obj] = groupStorage[1][obj].to_dict()
 # Write the JSON string to a file
-with open('rawData/group.json', 'w') as file:
+with open('../rawData/group.json', 'w') as file:
     json.dump(jsonGroup, file, indent=4)
 
 jsonCourse = dict()
@@ -277,7 +277,7 @@ for obj in classDict:
         print(obj)
         raise Exception
 # Write the JSON string to a file
-with open('rawData/class.json', 'w') as file:
+with open('../rawData/class.json', 'w') as file:
     json.dump(jsonCourse, file, indent=4)
 # print(groupStorage[1][str(prereqs[0])])
 # print(groupStorage[1][prereqs[1]])

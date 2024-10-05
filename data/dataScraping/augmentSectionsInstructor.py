@@ -1,19 +1,19 @@
 import json
 
-with open("rawData/rawSection.json", "r") as jsonFile:
+with open("../rawData/rawSection.json", "r") as jsonFile:
     sections = json.loads(jsonFile.read())
     
 instructors = dict()
-with open("rawData/superCrnToProfessor.txt", "r") as instructorFile:
+with open("../rawData/superCrnToProfessor.txt", "r") as instructorFile:
     for line in instructorFile.readlines():
         superCrn, instructor = line.split(":")
         instructors[superCrn] = instructor
         
 instructorLib = dict()
 errors = dict()
-with open("rawData/sectionInstructorErrors.txt", 'w') as file:
+with open("../rawData/sectionInstructorErrors.txt", 'w') as file:
     for section in sections:
-        lastname = sections[section]["Instructor"].strip("\n")
+        lastname = sections[section]["Instructor"].strip("\n").replace(" ", "-").lower()
         if section not in instructors:
             errors[section] = dict()
             errors[section]["Error"] = "Missing"
@@ -23,10 +23,10 @@ with open("rawData/sectionInstructorErrors.txt", 'w') as file:
             errors[section]["SuperCRN"] = section
             errors[section]["Year"] = sections[section]["year"]
             errors[section]["Term"] = sections[section]["term"]
-            errors[section]["Instructor"] = sections[section]["Instructor"]
+            errors[section]["Instructor"] = lastname
             continue
-        fullName = instructors[section].strip("\n")
-        if fullName == "Staff":
+        fullName = instructors[section].strip("\n").lower()
+        if fullName == "staff":
             errors[section] = dict()
             errors[section]["Error"] = "Staff"
             errors[section]["Subject"] = sections[section]["course_id"][:sections[section]["course_id"].find("-")]
@@ -35,32 +35,30 @@ with open("rawData/sectionInstructorErrors.txt", 'w') as file:
             errors[section]["SuperCRN"] = section
             errors[section]["Year"] = sections[section]["year"]
             errors[section]["Term"] = sections[section]["term"]
-            errors[section]["Instructor"] = sections[section]["Instructor"]
+            errors[section]["Instructor"] = lastname
             continue
-        newLastName = fullName[:fullName.rfind(",")]
-        if lastname.lower() == newLastName.lower():
-            sections[section]["Instructor"] = fullName.lower()
-            key = newLastName.lower()
-            if key not in instructorLib:
-                instructorLib[key] = dict()
-                nextKey = fullName[fullName.rfind(",") + 2:].lower()
-                instructorLib[key][nextKey] = dict()
-                instructorLib[key][nextKey]["CoursesTaught"] = 1
-                instructorLib[key][nextKey]["Courses"] = {sections[section]["course_id"]}
+        newLastName = fullName[:fullName.rfind(",")].replace(" ", "-")
+        if lastname == newLastName:
+            newFirstName = fullName[fullName.rfind(",") + 2:].replace(" ", "-")
+            sections[section]["Instructor"] = f'{newLastName};{newFirstName}'.strip("\n")
+            if newLastName not in instructorLib:
+                instructorLib[newLastName] = dict()
+                instructorLib[newLastName][newFirstName] = dict()
+                instructorLib[newLastName][newFirstName]["CoursesTaught"] = 1
+                instructorLib[newLastName][newFirstName]["Courses"] = {sections[section]["course_id"]}
             else:
-                nextKey = fullName[fullName.rfind(",") + 2:].lower()
-                if nextKey in instructorLib[key]:
-                    instructorLib[key][nextKey]["CoursesTaught"] += 1
-                    instructorLib[key][nextKey]["Courses"].add(sections[section]["course_id"])
+                if newFirstName in instructorLib[newLastName]:
+                    instructorLib[newLastName][newFirstName]["CoursesTaught"] += 1
+                    instructorLib[newLastName][newFirstName]["Courses"].add(sections[section]["course_id"])
                 else:
-                    instructorLib[key][nextKey] = dict()
-                    instructorLib[key][nextKey]["CoursesTaught"] = 1
-                    instructorLib[key][nextKey]["Courses"] = {sections[section]["course_id"]}
+                    instructorLib[newLastName][newFirstName] = dict()
+                    instructorLib[newLastName][newFirstName]["CoursesTaught"] = 1
+                    instructorLib[newLastName][newFirstName]["Courses"] = {sections[section]["course_id"]}
                     
-            instructorLib[key][nextKey]["difficulty"] = -1
-            instructorLib[key][nextKey]["rating"] = -1
-            instructorLib[key][nextKey]["recommendedPct"] = -1
-            instructorLib[key][nextKey]["numRatings"] = 0
+            instructorLib[newLastName][newFirstName]["difficulty"] = -1
+            instructorLib[newLastName][newFirstName]["rating"] = -1
+            instructorLib[newLastName][newFirstName]["recommendedPct"] = -1
+            instructorLib[newLastName][newFirstName]["numRatings"] = 0
         else:
             errors[section] = dict()
             errors[section]["Error"] = "Mismatch"
@@ -70,58 +68,58 @@ with open("rawData/sectionInstructorErrors.txt", 'w') as file:
             errors[section]["SuperCRN"] = section
             errors[section]["Year"] = sections[section]["year"]
             errors[section]["Term"] = sections[section]["term"]
-            errors[section]["Instructor"] = sections[section]["Instructor"]
+            errors[section]["Instructor"] = lastname
 
 success = 0
 for section in errors:
-    key = errors[section]["Instructor"].lower()
+    lastname = errors[section]["Instructor"]
     success += 1
-    if key in instructorLib:
-        possibleInstructors = instructorLib[key]
-        filteredList = []
-        for instructors in possibleInstructors:
-            if errors[section]["CourseID"] in possibleInstructors[instructors]["Courses"]:
-                filteredList.append(instructors)
-        if not filteredList:        
-            for instructors in possibleInstructors:
-                    filteredList.append(instructors)
+    if lastname in instructorLib:
+        possibleFirstNames = instructorLib[lastname]
+        filteredFirstNames = []
+        for currFirstName in possibleFirstNames:
+            if errors[section]["CourseID"] in possibleFirstNames[currFirstName]["Courses"]:
+                filteredFirstNames.append(currFirstName)
+        if not filteredFirstNames:        
+            for currFirstName in possibleFirstNames:
+                    filteredFirstNames.append(currFirstName)
         maxCoursesTaught = -1
         maxProf = ""
-        for instructors in filteredList:
-            if possibleInstructors[instructors]["CoursesTaught"] > maxCoursesTaught:
-                maxCoursesTaught = possibleInstructors[instructors]["CoursesTaught"]
-                maxProf = instructors
+        for currFirstName in filteredFirstNames:
+            if possibleFirstNames[currFirstName]["CoursesTaught"] > maxCoursesTaught:
+                maxCoursesTaught = possibleFirstNames[currFirstName]["CoursesTaught"]
+                maxFirstName = currFirstName
                 
-        sections[section]["Instructor"] = f"{errors[section]['Instructor']}, {instructors}".strip("\n").lower()
-        instructorLib[key][instructors]["CoursesTaught"] += 1
-        instructorLib[key][instructors]["Courses"].add(errors[section]["CourseID"])
-        instructorLib[key][instructors]["difficulty"] = -1
-        instructorLib[key][instructors]["rating"] = -1
-        instructorLib[key][instructors]["recommendedPct"] = -1
-        instructorLib[key][instructors]["numRatings"] = 0
+        sections[section]["Instructor"] = f"{errors[section]['Instructor']};{maxFirstName}".strip("\n")
+        instructorLib[lastname][maxFirstName]["CoursesTaught"] += 1
+        instructorLib[lastname][maxFirstName]["Courses"].add(errors[section]["CourseID"])
+        instructorLib[lastname][maxFirstName]["difficulty"] = -1
+        instructorLib[lastname][maxFirstName]["rating"] = -1
+        instructorLib[lastname][maxFirstName]["recommendedPct"] = -1
+        instructorLib[lastname][maxFirstName]["numRatings"] = 0
     else:
-        sections[section]["Instructor"] = f"{errors[section]['Instructor']}, Staff".strip("\n").lower()
-        instructorLib[key] = dict()
-        instructorLib[key]["staff"] = dict()
-        instructorLib[key]["staff"]["CoursesTaught"] = 1
-        instructorLib[key]["staff"]["Courses"] = {sections[section]["course_id"]}
-        instructorLib[key]["staff"]["difficulty"] = -1
-        instructorLib[key]["staff"]["rating"] = -1
-        instructorLib[key]["staff"]["recommendedPct"] = -1
-        instructorLib[key]["staff"]["numRatings"] = 0
+        sections[section]["Instructor"] = f"{errors[section]['Instructor']};staff".strip("\n")
+        instructorLib[lastname] = dict()
+        instructorLib[lastname]["staff"] = dict()
+        instructorLib[lastname]["staff"]["CoursesTaught"] = 1
+        instructorLib[lastname]["staff"]["Courses"] = {sections[section]["course_id"]}
+        instructorLib[lastname]["staff"]["difficulty"] = -1
+        instructorLib[lastname]["staff"]["rating"] = -1
+        instructorLib[lastname]["staff"]["recommendedPct"] = -1
+        instructorLib[lastname]["staff"]["numRatings"] = 0
     
-with open('rawData/section.json', 'w') as file:
+with open('../rawData/section.json', 'w') as file:
     json.dump(sections, file, indent=4)
     
 
         
-with open("rawData/professors.json", "r") as jsonFile:
+with open("../rawData/professors.json", "r") as jsonFile:
     professorRatings = json.loads(jsonFile.read())
 success = 0
 
 for professor in professorRatings:
-    professorRatings[professor]['lastName'] = professorRatings[professor]['lastName'].lower() 
-    professorRatings[professor]['firstName'] = professorRatings[professor]['firstName'].lower() 
+    professorRatings[professor]['lastName'] = professorRatings[professor]['lastName'].replace(" ", "-").lower() 
+    professorRatings[professor]['firstName'] = professorRatings[professor]['firstName'].replace(" ", "-").lower()  
     success-=1
     if professorRatings[professor]['lastName'] not in instructorLib:
         print(professorRatings[professor]['firstName'] + " " + professorRatings[professor]['lastName'] + " " + str(professorRatings[professor]['numRatings']))
@@ -161,7 +159,7 @@ for lastName in instructorLib:
         flattenedInstruct[f'{lastName};{firstName}']['lastName'] = lastName
         flattenedInstruct[f'{lastName};{firstName}']['firstName'] = firstName
 
-with open('rawData/instructors.json', 'w') as file:
+with open('../rawData/instructors.json', 'w') as file:
     json.dump(flattenedInstruct, file, indent=4)
 
         

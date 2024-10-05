@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 sections = {}
 scrapeCounter = 0
-with open("rawData/rawSection.json") as f:
+with open("../rawData/rawSection.json") as f:
     sections = json.load(f)
 
 
@@ -46,7 +46,7 @@ async def fetch(session, super_crn, file):
 
 
 async def main():
-    with open("rawData/superCrnToProfessor.txt", "w") as f:
+    with open("../rawData/superCrnToProfessor.txt", "w") as f:
         async with aiohttp.ClientSession() as session:
             for i, section in enumerate(sections):
                 asyncio.create_task(fetch(session, sections[section]["super_CRN"], f))

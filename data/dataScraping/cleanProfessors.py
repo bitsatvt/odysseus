@@ -6,7 +6,7 @@ def adjustRatings(rating):
     rating = min(rating, 10.0)
     rating = max(rating, 1.0)
     return rating
-with open("rawData/rawProfessors.json", "r") as jsonFile:
+with open("../rawData/rawProfessors.json", "r") as jsonFile:
     rawProfessors = json.loads(jsonFile.read())
 professors = {}
 departments = set()
@@ -37,7 +37,7 @@ for professor in rawProfessors:
             professors[key]['rating'] /= professors[key]['numRatings']
         else:
             professors[key] = currProf
-with open('rawData/professors.json', 'w') as file:
+with open('../rawData/professors.json', 'w') as file:
     json.dump(professors, file, indent=4)
 print(departments)
     

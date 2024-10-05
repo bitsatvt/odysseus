@@ -21,8 +21,8 @@ async def fetch(session, i):
 
 
 async def main():
-    if os.path.exists("rawData/classes.json"):
-        os.remove("rawData/classes.json")
+    if os.path.exists("../rawData/classes.json"):
+        os.remove("../rawData/classes.json")
 
     async with aiohttp.ClientSession() as session:
         step = 10
@@ -33,7 +33,7 @@ async def main():
             )
             print("sleeping")
             await asyncio.sleep(1)
-    with open("rawData/classes.json", "w") as f:
+    with open("../rawData/classes.json", "w") as f:
         f.write(json.dumps(classes))
 
 
