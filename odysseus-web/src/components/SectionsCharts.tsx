@@ -33,6 +33,7 @@ type CombinedProfs = {
 }
 function ChartTooltip({ label, payload }: ChartTooltipProps) {
   if (!payload) return null;
+  console.log(payload)
   const reversedPayload = [...payload].reverse();
   return (
     <Paper px="md" py="sm" withBorder shadow="md" radius="md">
@@ -41,7 +42,8 @@ function ChartTooltip({ label, payload }: ChartTooltipProps) {
       </Text>
       {getFilteredChartTooltipPayload(reversedPayload).map((item: any) => (
         <Text key={item.name} c={item.color} fz="sm">
-          {item.name}: {Math.round(item.value / item.payload.avgGPA * 1000) / 10}%
+          {item.name}: {item.name === "F" ? (Math.round((item.value + item.payload.W) / item.payload.avgGPA * 1000) / 10) :
+            item.name === "W" ? (-Math.round(item.value / item.payload.avgGPA * 1000) / 10) : (Math.round(item.value / item.payload.avgGPA * 1000) / 10)}%
         </Text>
       ))}
     </Paper>
@@ -87,8 +89,9 @@ export function SectionsGraph({ sections }: SectionsGraphProps) {
     termData[index].B = (currTerm.B * 10) / 10 * termData[index].avgGPA / 100
     termData[index].C = (currTerm.C * 10) / 10 * termData[index].avgGPA / 100
     termData[index].D = (currTerm.D * 10) / 10 * termData[index].avgGPA / 100
-    termData[index].F = (currTerm.F * 10) / 10 * termData[index].avgGPA / 100
-    termData[index].W = (currTerm.W * 10) / 10 * termData[index].avgGPA / 100
+    termData[index].W = -(currTerm.W * 10) / 10 * termData[index].avgGPA / 100
+    termData[index].F = (currTerm.F * 10) / 10 * termData[index].avgGPA / 100 - termData[index].W
+
   })
 
   return (
@@ -97,6 +100,9 @@ export function SectionsGraph({ sections }: SectionsGraphProps) {
         content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
       }}
       curveType="step"
+      xAxisLabel="Term"
+      yAxisLabel="GPA"
+      yAxisProps={{ domain: [-.5, 4] }}
       series={[
         { name: 'W', color: 'black' },
         { name: 'F', color: 'red.6' },
