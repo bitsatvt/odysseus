@@ -11,6 +11,8 @@ interface SectionsGraphProps {
 type CombinedGrades = {
   _key: number;
   term: string;
+  numberSections: number;
+  avgGPA: number;
   A: number;
   B: number;
   C: number;
@@ -28,15 +30,17 @@ type CombinedProfs = {
   F: number[];
   W: number[];
 }
-
+const adjustSections = (prev: number, n: number, num: number) => {
+  return ((prev * num) + n) / (num + 1)
+}
 export function SectionsGraph({ sections }: SectionsGraphProps) {
   const terms = { "Spring": 0, "Summer I": 1, "Summer II": 2, "Fall": 3, "Winter": 4 }
-  const data = Object.values(sections.map(section => {
-    section.gradeData.push(section.withdrawals)
-    const gradeCount = section.gradeData.map(r => Math.round((r / 100) * section.enrollment))
+  const termData = Object.values(sections.map(section => {
+    const gradeCount = section.gradeData
     return {
       _key: Number(section.year + "" + terms[section.term as keyof typeof terms]),
       term: `${section.term} ${section.year}`,
+      numberSections: 1,
       A: gradeCount[0] + gradeCount[1],
       B: gradeCount[2] + gradeCount[3] + gradeCount[4],
       C: gradeCount[5] + gradeCount[6] + gradeCount[7],
@@ -48,16 +52,28 @@ export function SectionsGraph({ sections }: SectionsGraphProps) {
     if (!acc[curr.term]) {
       acc[curr.term] = { ...curr };
     } else {
-      acc[curr.term].A += curr.A;
-      acc[curr.term].B += curr.B;
-      acc[curr.term].C += curr.C;
-      acc[curr.term].D += curr.D;
-      acc[curr.term].F += curr.F;
+
+      acc[curr.term].A = adjustSections(acc[curr.term].A, curr.A, acc[curr.term].numberSections);
+      acc[curr.term].B = adjustSections(acc[curr.term].B, curr.B, acc[curr.term].numberSections);
+      acc[curr.term].C = adjustSections(acc[curr.term].C, curr.C, acc[curr.term].numberSections);
+      acc[curr.term].D = adjustSections(acc[curr.term].D, curr.D, acc[curr.term].numberSections);
+      acc[curr.term].F = adjustSections(acc[curr.term].F, curr.F, acc[curr.term].numberSections);
+      acc[curr.term].W = adjustSections(acc[curr.term].W, curr.W, acc[curr.term].numberSections);
+      acc[curr.term].numberSections += 1
     }
     return acc;
   }, {} as Record<string, CombinedGrades>)).sort((a, b) => a._key - b._key);
+  termData.forEach((currTerm, index) => {
+    termData[index].A = Math.round(currTerm.A * 10) / 10
+    termData[index].B = Math.round(currTerm.B * 10) / 10
+    termData[index].C = Math.round(currTerm.C * 10) / 10
+    termData[index].D = Math.round(currTerm.D * 10) / 10
+    termData[index].F = Math.round(currTerm.F * 10) / 10
+    termData[index].W = Math.round(currTerm.W * 10) / 10
+  })
+
   return (
-    <AreaChart h={300} data={data} dataKey="term" type="percent" series={[
+    <AreaChart h={300} data={termData} dataKey="term" type="stacked" series={[
       { name: 'W', color: 'black' },
       { name: 'F', color: 'red.6' },
       { name: 'D', color: 'orange.6' },
@@ -70,19 +86,20 @@ export function SectionsGraph({ sections }: SectionsGraphProps) {
 
 export function ProfessorsTable({ sections }: SectionsGraphProps) {
   const combinedProfs = sections.reduce((acc, curr) => {
-    const value = acc[curr.instructorName];
-    if (!value) {
+    let value = acc[curr.instructorName];
+    if (!acc[curr.instructorName]) {
       acc[curr.instructorName] = { numberSections: 0, A: [], B: [], C: [], D: [], F: [], W: [] }
-    } else {
-      const gradeRatios = curr.gradeData;
-      value.numberSections++;
-      value.A.push(gradeRatios[0] + gradeRatios[1])
-      value.B.push(gradeRatios[2] + gradeRatios[3] + gradeRatios[4])
-      value.C.push(gradeRatios[5] + gradeRatios[6] + gradeRatios[7])
-      value.D.push(gradeRatios[8] + gradeRatios[9] + gradeRatios[10])
-      value.F.push(gradeRatios[11])
-      value.W.push(curr.withdrawals)
+      value = acc[curr.instructorName];
     }
+    const gradeRatios = curr.gradeData;
+    value.numberSections++;
+    value.A.push(gradeRatios[0] + gradeRatios[1])
+    value.B.push(gradeRatios[2] + gradeRatios[3] + gradeRatios[4])
+    value.C.push(gradeRatios[5] + gradeRatios[6] + gradeRatios[7])
+    value.D.push(gradeRatios[8] + gradeRatios[9] + gradeRatios[10])
+    value.F.push(gradeRatios[11])
+    value.W.push(gradeRatios[12])
+
     return acc
   }, {} as Record<string, CombinedProfs>)
 

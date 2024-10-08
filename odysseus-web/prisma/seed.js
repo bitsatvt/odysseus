@@ -128,7 +128,6 @@ async function insertSections(sections) {
           title: sectionData.title,
           gpa: sectionData.GPA,
           gradeData: sectionData.Grades_Dist,
-          withdrawals: sectionData.W_rate,
           enrollment: sectionData.Enrollment,
           crn: sectionData.CRN,
           instructor: { connect: { id: sectionData.Instructor } },

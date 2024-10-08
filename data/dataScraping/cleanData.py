@@ -199,9 +199,15 @@ with open('../rawData/Grade-Distribution.csv', newline='') as csvfile:
         rowJson["title"] = row[4]
         rowJson["Instructor"] = row[5]
         rowJson["GPA"] = float(row[6])
-        rowJson["Grades_Dist"] = [float(row[i]) for i in range(7,19)]   
-        rowJson["W_rate"] = int(row[19])
-        rowJson["Enrollment"] = int(row[20])          # Updated index for Enrollment
+        
+        withdrawals = int(row[19])
+        final_enrollment = int(row[20])  
+        rowJson["Enrollment"] = int(row[20]) + withdrawals  # Initial Enrollment
+        
+        adjustGrade = lambda grade: (float(grade)*final_enrollment)/(rowJson["Enrollment"]) # Need to factor in withdrawals
+        rowJson["Grades_Dist"] = [adjustGrade(row[i]) for i in range(7,19)] # Uses inline function
+        rowJson["Grades_Dist"].append((withdrawals*100)/(rowJson["Enrollment"]))
+        
         rowJson["CRN"] = int(row[21])                 # Updated index for CRN
         rowJson["Credits"] = row[22]             # Updated index for Credits
         if rowJson["term"] == "Fall":
