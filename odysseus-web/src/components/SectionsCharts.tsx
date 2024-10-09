@@ -99,10 +99,10 @@ export function SectionsGraph({ sections }: SectionsGraphProps) {
       tooltipProps={{
         content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
       }}
-      curveType="step"
+      curveType="monotone"
       xAxisLabel="Term"
       yAxisLabel="GPA"
-      yAxisProps={{ domain: [-.5, 4] }}
+      yAxisProps={{ domain: [-1, 4], ticks: [0, 1, 2, 3, 4] }}
       series={[
         { name: 'W', color: 'black' },
         { name: 'F', color: 'red.6' },
