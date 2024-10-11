@@ -45,7 +45,6 @@ model Section {
   gpa            Float
   term           String
   title          String
-  withdrawals    Int
   year           Int
   gradeData      Float[]
   course         Course     @relation(fields: [course_id], references: [id])
@@ -54,6 +53,8 @@ model Section {
 
 model Instructor {
   id             String    @id
+  firstName      String
+  lastName       String
   difficulty     Float
   rating         Float
   recommendedPct Float

@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import courses from "../../data/class.json" assert { type: "json" };
-import groups from "../../data/group.json" assert { type: "json" };
-import sections from "../../data/section.json" assert { type: "json" };
-import instructors from "../../data/instructors.json" assert { type: "json" };
+import courses from "../../data/rawData/class.json" assert { type: "json" };
+import groups from "../../data/rawData/group.json" assert { type: "json" };
+import sections from "../../data/rawData/section.json" assert { type: "json" };
+import instructors from "../../data/rawData/instructors.json" assert { type: "json" };
 
 
 const prisma = new PrismaClient();
@@ -82,12 +82,14 @@ async function insertInstructors(instructors) {
     try {
       await prisma.instructor.create({
         data: {
-          id: instructorData.lastName + ", " + instructorData.firstName,
+          id: key,
           difficulty: instructorData.difficulty,
           rating: instructorData.rating,
           recommendedPct: instructorData.recommendedPct,
           numRatings: instructorData.numRatings,
           coursesTaught: instructorData.CoursesTaught,
+          firstName: instructorData.firstName,
+          lastName: instructorData.lastName,
         },
       });
     } catch (error) {
@@ -101,7 +103,7 @@ async function updateInstructorCourseRelations(instructors) {
     const instructorData = instructors[key];
     try {
       await prisma.instructor.update({
-        where: { id: instructorData.lastName + ", " + instructorData.firstName },
+        where: { id: key },
         data: {
           courses: {
             connect: instructorData.Courses.map((id) => ({ id })),
@@ -126,7 +128,6 @@ async function insertSections(sections) {
           title: sectionData.title,
           gpa: sectionData.GPA,
           gradeData: sectionData.Grades_Dist,
-          withdrawals: sectionData.W_rate,
           enrollment: sectionData.Enrollment,
           crn: sectionData.CRN,
           instructor: { connect: { id: sectionData.Instructor } },
@@ -136,7 +137,6 @@ async function insertSections(sections) {
       });
     } catch (error) {
       console.error(`Error inserting/updating class ${sectionData.super_CRN} with instructor ${sectionData.Instructor}:`, error);
-
     }
   }
 }
