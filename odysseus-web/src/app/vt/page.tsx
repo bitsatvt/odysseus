@@ -1,3 +1,6 @@
+"use client"
+import SearchBar from "@/components/SearchBar"
+
 export default function Page() {
-  return <h1>Virginia Tech</h1>
+  return <SearchBar></SearchBar>
 }
