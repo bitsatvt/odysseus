@@ -2,8 +2,10 @@ import { notFound } from "next/navigation";
 import { fetchPrereqTree, fetchPostreqTree } from "@/server/utils/fetchTrees";
 import PrereqTreeRenderer from "@/components/PrereqTreeRenderer";
 import PostreqTreeRenderer from "@/components/PostreqTreeRenderer";
-import { SectionsGraph, ProfessorsTable } from "@/components/SectionsCharts";
+import { SectionsGraph } from "@/components/SectionsCharts";
+import ProfessorsTable from "@/components/ProfessorsTable";
 import prisma from "@/db";
+import { Divider, Title } from "@mantine/core";
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const course = await prisma.course.findUnique({
@@ -18,9 +20,9 @@ export default async function Page({ params }: { params: { slug: string } }) {
     const postreqTree = await fetchPostreqTree(course.groupId!, course.id, 1);
     return (
       <div>
-        <h1>
+        <Title>
           Course: {course.id} {course.title}
-        </h1>
+        </Title>
         <p>Description: {course.description}</p>
         <p>Hours: {course.hours}</p>
         <p>
@@ -31,7 +33,10 @@ export default async function Page({ params }: { params: { slug: string } }) {
           Postreqs:{" "}
           <PostreqTreeRenderer tree={postreqTree} depth={1} />
         </p>
+        <Divider />
         <ProfessorsTable sections={course.sections} />
+        <Divider />
+        <Title order={2} my={20}>Grade Distribution Over Time</Title>
         <SectionsGraph sections={course.sections} />
       </div>
     );

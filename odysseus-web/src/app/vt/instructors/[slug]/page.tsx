@@ -4,31 +4,31 @@ import prisma from "@/db";
 import { getCourseIds } from "../../courses/server/page";
 
 export default async function Page({ params }: { params: { slug: string } }) {
-	console.log(params.slug)
-	const instructor = await prisma.instructor.findUnique({
-		where: {id: decodeURIComponent(params.slug)},
-		include: {
-			courses: {
-				include:{
-					sections: {
-                        where: {instructorName: decodeURIComponent(params.slug)}
+    console.log(params.slug)
+    const instructor = await prisma.instructor.findUnique({
+        where: { id: decodeURIComponent(params.slug) },
+        include: {
+            courses: {
+                include: {
+                    sections: {
+                        where: { instructorName: decodeURIComponent(params.slug) }
                     }
-				}
-			},
-		},
+                }
+            },
+        },
 
-	});
-	if (!instructor) {
-		notFound();
-	}
-	getCourseIds;
-	const formatname = (id: string) => {
-		let [lastName, firstName] = id.split(", ");
+    });
+    if (!instructor) {
+        notFound();
+    }
+    getCourseIds;
+    const formatname = (id: string) => {
+        let [lastName, firstName] = id.split("-");
 
-		firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
-		lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1);
-		return firstName + " " + lastName;
-	}
+        firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+        lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1);
+        return firstName + " " + lastName;
+    }
 
     // const [search, setSearch] = useState('');
 
@@ -41,7 +41,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
     //     course.id.toLowerCase().includes(search.toLowerCase())
     // );
 
-	return (
+    return (
         <div>
             <h1 style={{ textAlign: 'center' }}>{formatname(instructor?.id)}</h1>
             <div style={{ display: "flex", justifyContent: "space-evenly", fontWeight: "bold" }}>
@@ -60,10 +60,10 @@ export default async function Page({ params }: { params: { slug: string } }) {
             </div>
             <hr style={{ border: "2px solid #cf4420", width: "1100px" }} />
             <div style={{ display: "flex", justifyContent: "space-evenly", textAlign: "center", marginBottom: "5px" }}>
-                <div style={{fontWeight: "bolder", fontSize: "24px"}}>Courses</div>
+                <div style={{ fontWeight: "bolder", fontSize: "24px" }}>Courses</div>
                 <div>
                     <div style={{ display: "flex", textAlign: "center" }}>
-                        <input placeholder="Enter a Course Name" style = {{borderRadius: "20px", padding: "5px 15px"}} />
+                        <input placeholder="Enter a Course Name" style={{ borderRadius: "20px", padding: "5px 15px" }} />
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
                         const totalGpa = course.sections.reduce((sum, section) => sum + section.gpa, 0);
                         const averageGpa = course.sections.length > 0 ? (totalGpa / course.sections.length).toFixed(2) : 'N/A';
                         const sectionCount = course.sections.length;
-    
+
                         return (
                             <div key={course.id}>
                                 <div style={{
@@ -132,5 +132,5 @@ export default async function Page({ params }: { params: { slug: string } }) {
             </div>
         </div>
     );
-    
+
 }
