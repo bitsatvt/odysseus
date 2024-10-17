@@ -1,9 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import courses from "../../data/rawData/class.json" assert { type: "json" };
-import groups from "../../data/rawData/group.json" assert { type: "json" };
+import groups from "../../data/rawData/group.json" assert {
+  type: "json",
+};
 import sections from "../../data/rawData/section.json" assert { type: "json" };
-import instructors from "../../data/rawData/instructors.json" assert { type: "json" };
-
+import instructors from "../../data/rawData/instructors.json" assert {
+  type: "json",
+};
 
 const prisma = new PrismaClient();
 
@@ -50,9 +53,9 @@ async function insertClasses(classes) {
       description: classData.description,
       pathways: classData.pathways,
       hours: classData.hours,
-    }
+    };
     if (classData.groupId != -1) {
-      data.group = { connect: { id: classData.groupId } }
+      data.group = { connect: { id: classData.groupId } };
     }
     await prisma.course.create({ data: data });
   }
@@ -71,7 +74,10 @@ async function updateCrosslistRelations(classes) {
         },
       });
     } catch (error) {
-      console.error(`Error inserting/updating class ${course.crosslist}:`, error);
+      console.error(
+        `Error inserting/updating class ${course.crosslist}:`,
+        error,
+      );
     }
   }
 }
@@ -136,7 +142,10 @@ async function insertSections(sections) {
         },
       });
     } catch (error) {
-      console.error(`Error inserting/updating class ${sectionData.super_CRN} with instructor ${sectionData.Instructor}:`, error);
+      console.error(
+        `Error inserting/updating class ${sectionData.super_CRN} with instructor ${sectionData.Instructor}:`,
+        error,
+      );
     }
   }
 }
