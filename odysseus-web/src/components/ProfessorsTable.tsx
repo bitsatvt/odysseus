@@ -202,7 +202,7 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
       <Paper mx={20} withBorder>
         <ScrollArea style= {{
           width: '100%',
-          height: '500px',
+          maxHeight: '500px',
         }}>
         <Table style={{
           backgroundColor: '#FFDFC9',
