@@ -1,5 +1,6 @@
 import React from 'react';
 import SearchBar from './SearchBar';
+import Link from 'next/link';
 
 const Header: React.FC = () => {
     return (
@@ -12,8 +13,10 @@ const Header: React.FC = () => {
 
             {/* Virginia Tech Text */}
             <div style={styles.virginiaTechContainer}>
-                <span style={styles.virginiaText}>Virginia</span>
-                <span style={styles.techText}>Tech</span>
+                <Link href={"/vt"}>
+                    <span style={styles.virginiaText}>Virginia</span>
+                    <span style={styles.techText}>Tech</span>
+                </Link>
             </div>
             {/* Search Bar */}
             <div style={styles.searchBar}>

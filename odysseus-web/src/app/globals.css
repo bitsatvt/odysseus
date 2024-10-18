@@ -1,3 +1,7 @@
+* {
+    text-decoration: none;
+}
+
 @font-face {
     font-family: 'Just Another Hand';
     src: url('/Just_Another_Hand/JustAnotherHand-Regular.ttf') format('truetype');

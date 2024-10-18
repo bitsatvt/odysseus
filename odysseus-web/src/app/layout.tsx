@@ -3,12 +3,16 @@
 import '@mantine/core/styles.css';
 import './globals.css';
 
-import { ColorSchemeScript, MantineProvider } from '@mantine/core';
+import { ColorSchemeScript, MantineProvider, createTheme } from '@mantine/core';
 
 export const metadata = {
   title: 'Odysseus Advisor',
-  description: 'I have followed setup instructions carefully',
+  description: 'description',
 };
+
+const theme = createTheme({
+
+})
 
 export default function RootLayout({
   children,
@@ -20,8 +24,8 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body>
-        <MantineProvider>{children}</MantineProvider>
+      <body >
+        <MantineProvider theme={theme}>{children}</MantineProvider>
       </body>
     </html>
   );

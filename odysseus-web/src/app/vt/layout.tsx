@@ -8,9 +8,15 @@ export default function InnerLayout({
     children: React.ReactNode
 }) {
     return (
-        <section>
+        <section >
             <Header />
-            {children}
+            <main style=
+                {{
+                    margin: "15px",
+                }} >
+
+                {children}
+            </main>
             <Footer />
         </section >
     )
