@@ -16,10 +16,15 @@ export default async function Page({ params }: { params: { slug: string } }) {
   } else {
     const prereqTree = await fetchPrereqTree(course.groupId!, 1);
     const postreqTree = await fetchPostreqTree(course.groupId!, course.id, 1);
+    
+    let cleanedTitle = course.title;
+    if (course.title != null) {
+      cleanedTitle = course.title.replace(/&amp;/g, "&");
+    }
     return (
       <div>
         <h1>
-          Course: {course.id} {course.title}
+          Course: {course.id} {cleanedTitle}
         </h1>
         <p>Description: {course.description}</p>
         <p>Hours: {course.hours}</p>

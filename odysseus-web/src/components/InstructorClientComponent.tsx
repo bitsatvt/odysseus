@@ -7,7 +7,7 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
   const [search, setSearch] = useState('');
 
   const normalizeString = (str: string) => {
-    return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return str.toLowerCase().replace(/&amp;/g, '&').replace(/[^a-z0-9]/g, '');
   };
 
   const formatname = (id: string) => {
@@ -117,7 +117,7 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
                       {course.id}
                     </a>
                   </div>
-                  <div>{course.title}</div>
+                  <div>{course.title.replace(/&amp;/g, '&')}</div>
                   <div>{averageGpa}</div>
                   <div>{sectionCount}</div>
                 </div>

@@ -10,7 +10,7 @@ export default function Page() {
   const [query, setQuery] = useState('');
 
   const normalizeString = (str: string) => {
-    return str.toLowerCase().replace(/[^a-z0-9]/g, ''); // Remove non-alphanumeric characters
+    return str.toLowerCase().replace(/&amp;/g, '&').replace(/[^a-z0-9]/g, ''); // Remove non-alphanumeric characters
   };
 
   const handleItemClick = (id: string) => {
@@ -38,6 +38,7 @@ export default function Page() {
     // Combine results with ID matches prioritized
     return [...idMatches, ...titleMatches];
   }, [courseList, query]);
+
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px', fontFamily: 'Arial, sans-serif' }}>
@@ -71,7 +72,7 @@ export default function Page() {
             }}
             className="search-item">
             <span style={{ minWidth: '120px', fontWeight: 'bold', color: '#333' }}>{item.id}</span>
-            <span style={{ color: '#555' }}>{item.title}</span>
+            <span style={{ color: '#555' }}>{item.title.replace(/&amp;/g, '&')}</span>
           </li>
         ))}
       </ul>

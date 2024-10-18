@@ -162,7 +162,7 @@ export function ProfessorsTable({ sections }: SectionsGraphProps) {
 
   return (
     <Table>
-      <Table.Thead>
+      <Table.Thead style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: '#D3D3D3' }}>
         <Table.Tr>
           <Table.Th>Instructor</Table.Th>
           <Table.Th>Sections Taught (#)</Table.Th>
