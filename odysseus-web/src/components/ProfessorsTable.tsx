@@ -200,11 +200,15 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
       />
 
       <Paper mx={20} withBorder>
+        <ScrollArea style= {{
+          width: '100%',
+          height: '500px',
+        }}>
         <Table style={{
           backgroundColor: '#FFDFC9',
         }}>
           <Table.Thead>
-            <Table.Tr>
+            <Table.Tr style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: '#fae0cc' }}>
               <Th
                 sorted={sortConfig?.key === 'instructor'}
                 reversed={sortConfig?.direction === 'desc'}
@@ -248,6 +252,7 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
 
           <Table.Tbody>{rows}</Table.Tbody>
         </Table>
+        </ScrollArea>
       </Paper >
     </>
   );
