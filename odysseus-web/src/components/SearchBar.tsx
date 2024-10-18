@@ -6,23 +6,10 @@ export default function SearchBar() {
   const [searchType, setSearchType] = useState('course');
 
   return (
-    <Container size={420} px={0} style={{ marginTop: '2rem', position: 'relative', maxWidth: "800px" }}>
-      <IconSearch style={{
-        position: 'absolute',
-        left: '10px',
-        top: '50%',
-        transform: 'translateY(-50%)',
-      }} size={18} />
+    <Container size={420} px={0} style={containerStyle}>
 
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        border: '1px solid red',
-        borderRadius: '50px',
-        padding: '0.5rem 1rem',
-        backgroundColor: '#ede9f4',
-        paddingLeft: '40px'
-      }}>
+      <div style={searchBarStyle}>
+        <IconSearch style={iconStyle} size={18} />
         <SegmentedControl
           value={searchType}
           onChange={setSearchType}
@@ -33,15 +20,36 @@ export default function SearchBar() {
           size="sm"
           radius="xl"
           color="orange"
-          style={{ marginRight: '8px' }}
+          style={{ marginRight: '1%' }}
         />
         <TextInput
           placeholder={`Enter a ${searchType === 'course' ? 'Course' : 'Instructor'} Name`}
           radius="xl"
           size="sm"
-          style={{ flex: 1 }}
+          style={{ flex: 'flex-shrink' }}
         />
       </div>
     </Container>
   );
 }
+
+// Styles
+const containerStyle = {
+  maxWidth: "90%",
+  height: "50%",
+};
+
+const iconStyle = {
+  marginRight: '3%'
+};
+
+const searchBarStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  border: '1% solid red',
+  borderRadius: '2rem',
+  padding: '1% 2%',
+  backgroundColor: '#ede9f4',
+  paddingLeft: '5%',
+  flexShrink: "1",
+};
