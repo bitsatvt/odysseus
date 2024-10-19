@@ -59,7 +59,7 @@ model Instructor {
   rating         Float
   recommendedPct Float
   numRatings     Int
-  coursesTaught  Int
+  sectionsTaught Int
   sections       Section[]
   courses        Course[]  @relation("InstructorCourses")
 }
