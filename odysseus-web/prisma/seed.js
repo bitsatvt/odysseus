@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import courses from "../../data/rawData/class.json" assert { type: "json" };
-import groups from "../../data/rawData/group.json" assert {
+import courses from "../../data/raw-data/class.json" assert { type: "json" };
+import groups from "../../data/raw-data/group.json" assert {
   type: "json",
 };
-import sections from "../../data/rawData/section.json" assert { type: "json" };
-import instructors from "../../data/rawData/instructors.json" assert {
+import sections from "../../data/raw-data/section.json" assert { type: "json" };
+import instructors from "../../data/raw-data/instructors.json" assert {
   type: "json",
 };
 
@@ -93,9 +93,13 @@ async function insertInstructors(instructors) {
           rating: instructorData.rating,
           recommendedPct: instructorData.recommendedPct,
           numRatings: instructorData.numRatings,
-          coursesTaught: instructorData.CoursesTaught,
-          firstName: instructorData.firstName,
-          lastName: instructorData.lastName,
+          sectionsTaught: instructorData.CoursesTaught,
+          firstName: instructorData.firstName.split("-").map((s) =>
+            s.charAt(0).toUpperCase() + s.slice(1)
+          ).join(" "),
+          lastName: instructorData.lastName.split("-").map((s) =>
+            s.charAt(0).toUpperCase() + s.slice(1)
+          ).join(" "),
         },
       });
     } catch (error) {
@@ -166,8 +170,14 @@ async function importData() {
     await insertSections(sections);
     console.log("All sections inserted");
   } catch (error) {
-    console.error("Error importing groups:", error);
+    console.error("Error importing data:", error);
   }
 }
 
 importData();
+
+/*** const capitalizeAndJoin = (name) => name.split("-").map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
+
+  const fullName = `${capitalizeAndJoin(instructorData.firstName)} ${capitalizeAndJoin(instructorData.lastName)}`;
+
+ */
