@@ -53,9 +53,26 @@ export default async function Page({ params }: { params: { slug: string } }) {
         </ScrollArea>
         </div>
         </div>
-        <div>
-        <p>Course Hours: {course.hours}</p>
+
+        <div style={courseDetails}>
+
+        <div style={courseHours}>
+           <p>Course Hours: {course.hours}</p>
         </div>
+
+        <div style={repeatability}>
+           <p>Repeatability: {course.repeatability}</p>
+        </div>
+
+        <div style={taught}>
+           <p>Sections Taught:</p>
+        </div>
+        <div style={gpa}>
+           <p>Average GPA:</p>
+        </div>
+
+        </div>
+
         <Divider />
         <ProfessorsTable sections={course.sections} />
         <Divider />
@@ -67,30 +84,62 @@ export default async function Page({ params }: { params: { slug: string } }) {
 }
 
 const courseContainer: React.CSSProperties = {
-  flex: '0 0 50%',  // Left column takes 50% of the space
   padding: "20px",
-  overflowY: "auto",  // Allows scrolling if content overflows
-  display: "flex",     // Enables flex properties
-  justifyContent: "center", // Aligns content to the left
-  alignItems: "flex-start",     // Aligns items at the top
+  overflowY: "auto",  
+  display: "flex",     
+  justifyContent: "center", 
+  alignItems: "flex-start",    
 };
 
 const leftStyle: React.CSSProperties = {
-  flex: '0 0 50%',  // Left column takes 50% of the space
+  flex: '0 0 50%',  
   padding: "20px",
-  borderRight: "1px solid #ccc",  // Separator between columns
-  overflowY: "auto",  // Allows scrolling if content overflows
-  //display: "flex",     // Enables flex properties
-  justifyContent: "left", // Aligns content to the left
-  //alignItems: "flex-start",     // Aligns items at the top
+  borderRight: "1px solid #ccc",  
+  overflowY: "auto",  
+  justifyContent: "left", 
 };
 const scrollableStyle: React.CSSProperties = {
-  flex: 1,  // Right column takes 50% of the space
-  //borderLeft: "1px solid #ccc",  // Separator between columns
-  display: "flex",  // Flex inside right column to control scrolling
+  flex: 1,  
+  display: "flex",  
   justifyContent: "right",
   alignItems: "center",
   padding: "10px",
-  maxHeight: "100%",  // Take full height of the right column
-  overflowY: "auto",  // Independent scrolling for prerequisites
+  maxHeight: "100%",  
+  overflowY: "auto", 
+};
+
+const courseDetails: React.CSSProperties = {
+  //overflowY: "auto",  
+  display: "flex",  
+  justifyContent: "center", 
+  padding: "20px",
+  borderBottom: "1px solid red",
+};
+
+const courseHours: React.CSSProperties = {
+  flex: '0 0 25%',  
+  //overflowY: "auto",  
+  display: "flex",     
+  justifyContent: "center", 
+};
+
+const repeatability: React.CSSProperties = {
+  flex: 1,  
+  //overflowY: "auto", 
+  display: "flex",   
+  justifyContent: "right",
+};
+
+const taught: React.CSSProperties = {
+  flex: 2,  
+  //overflowY: "auto", 
+  display: "flex",   
+  justifyContent: "right",
+};
+
+const gpa: React.CSSProperties = {
+  flex: 3,  
+  //overflowY: "auto", 
+  display: "flex",   
+  justifyContent: "center",
 };
