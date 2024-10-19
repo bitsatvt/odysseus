@@ -200,59 +200,59 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
       />
 
       <Paper mx={20} withBorder>
-        <ScrollArea style= {{
+        <ScrollArea style={{
           width: '100%',
           height: '500px',
           backgroundColor: '#FFDFC9',
         }}>
-        <Table style={{
-          backgroundColor: '#FFDFC9',
-        }}>
-          <Table.Thead>
-            <Table.Tr style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: '#fae0cc' }}>
-              <Th
-                sorted={sortConfig?.key === 'instructor'}
-                reversed={sortConfig?.direction === 'desc'}
-                onSort={() => requestSort('instructor')}
-              >
-                Instructor
-              </Th>
-              <Th
-                sorted={sortConfig?.key === 'numberSections'}
-                reversed={sortConfig?.direction === 'desc'}
-                onSort={() => requestSort('numberSections')}
-              >
-                Sections Taught (#)
-              </Th>
-              <Th
-                sorted={sortConfig?.key === 'recentTerm'}
-                reversed={sortConfig?.direction === 'desc'}
-                onSort={() => requestSort('recentTerm')}
-              >
-                Most Recent Term
-              </Th>
-              {gradeKeys.map((grade, index) => (
+          <Table style={{
+            backgroundColor: '#FFDFC9',
+          }}>
+            <Table.Thead>
+              <Table.Tr style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: '#fae0cc' }}>
                 <Th
-                  key={grade}
-                  sorted={sortConfig?.key === `grade_${index}`}
+                  sorted={sortConfig?.key === 'instructor'}
                   reversed={sortConfig?.direction === 'desc'}
-                  onSort={() => requestSort(`grade_${index}`)}
+                  onSort={() => requestSort('instructor')}
                 >
-                  {grade} (%)
+                  Instructor
                 </Th>
-              ))}
-              <Th
-                sorted={sortConfig?.key === 'avgGPA'}
-                reversed={sortConfig?.direction === 'desc'}
-                onSort={() => requestSort('avgGPA')}
-              >
-                GPA
-              </Th>
-            </Table.Tr>
-          </Table.Thead>
+                <Th
+                  sorted={sortConfig?.key === 'numberSections'}
+                  reversed={sortConfig?.direction === 'desc'}
+                  onSort={() => requestSort('numberSections')}
+                >
+                  Sections Taught (#)
+                </Th>
+                <Th
+                  sorted={sortConfig?.key === 'recentTerm'}
+                  reversed={sortConfig?.direction === 'desc'}
+                  onSort={() => requestSort('recentTerm')}
+                >
+                  Most Recent Term
+                </Th>
+                {gradeKeys.map((grade, index) => (
+                  <Th
+                    key={grade}
+                    sorted={sortConfig?.key === `grade_${index}`}
+                    reversed={sortConfig?.direction === 'desc'}
+                    onSort={() => requestSort(`grade_${index}`)}
+                  >
+                    {grade} (%)
+                  </Th>
+                ))}
+                <Th
+                  sorted={sortConfig?.key === 'avgGPA'}
+                  reversed={sortConfig?.direction === 'desc'}
+                  onSort={() => requestSort('avgGPA')}
+                >
+                  GPA
+                </Th>
+              </Table.Tr>
+            </Table.Thead>
 
-          <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
+            <Table.Tbody>{rows}</Table.Tbody>
+          </Table>
         </ScrollArea>
       </Paper >
     </>
