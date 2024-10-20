@@ -1,5 +1,5 @@
 import Typesense from "typesense";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, CSSProperties } from 'react';
 import { SegmentedControl, TextInput, Container, Box } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import { Text } from "@mantine/core";
@@ -163,8 +163,8 @@ export default function SearchBar() {
           <IconSearch style={iconStyle} size={18} />
           <SegmentedControl
             value={searchType}
-            onChange={(value: 'courses' | 'instructors') => {
-              setSearchType(value);
+            onChange={(value: string) => {
+              setSearchType(value as "courses" | "instructors");
               setQuery(''); // Clear the query when switching types
             }}
             data={[
@@ -205,7 +205,7 @@ export default function SearchBar() {
                 <Box style={resultItemStyle}>
                   <strong>
                     {searchType === 'courses'
-                      ? (result as Course).title
+                      ? `${(result as Course).id} ${(result as Course).title}`
                       : `${(result as Instructor).firstName} ${(result as Instructor).lastName}`}
                   </strong>
                   {searchType === 'courses' && (result as Course).desc && (
@@ -234,7 +234,7 @@ const iconStyle = {
   marginRight: '3%',
 };
 
-const searchBarStyle = {
+const searchBarStyle: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   border: '1px solid red',
@@ -246,7 +246,7 @@ const searchBarStyle = {
   position: 'relative',
 };
 
-const resultsContainerStyle = {
+const resultsContainerStyle: CSSProperties = {
   marginTop: '0.5rem',
   position: 'absolute',
   background: 'white',

@@ -1,79 +1,28 @@
-import React from 'react';
 import SearchBar from './SearchBar';
 import Link from 'next/link';
+import { Flex, Text, Stack, Box } from '@mantine/core';
+import Image from 'next/image'
 
-const Header: React.FC = () => {
+export default function Header() {
     return (
-        <header style={styles.header}>
-            {/* Logo and Odysseus Text */}
-            <div style={styles.logoContainer}>
-                <img src="/OfficialOdysseusLogo.png" alt="Odysseus Logo" style={styles.logoImage} />
-                <span style={styles.odysseusText}>Odysseus</span>
-            </div>
-
-            {/* Virginia Tech Text */}
-            <div style={styles.virginiaTechContainer}>
+        <header>
+            <Flex direction={{ base: 'column', xs: 'row' }} align={'center'} p={20}>
+                <Stack align="center" gap={0}>
+                    <Image src="/OfficialOdysseusLogo.png" width={80} height={80} alt="Odysseus Logo" />
+                    <Text style={{ fontFamily: "'Just Another Hand', cursive", fontSize: '30px' }}>Odysseus</Text>
+                </Stack>
                 <Link href={"/vt"}>
-                    <span style={styles.virginiaText}>Virginia</span>
-                    <span style={styles.techText}>Tech</span>
+                    <Text fz={32} ml={20}>
+                        <span>Virginia</span> <span>Tech</span>
+                    </Text>
                 </Link>
-            </div>
-            {/* Search Bar */}
-            <div style={styles.searchBar}>
-                <SearchBar />
-            </div>
-        </header>
+                <Box style={{
+                    marginLeft: 'auto'
+                }}>
+                    <SearchBar />
+                </Box>
+            </Flex>
+        </header >
     );
-};
+}
 
-const styles = {
-    searchBar: {
-        width: "75%",
-    },
-    header: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0.5% 2% 0% 2%',
-        backgroundColor: '#fff',
-    },
-    logoContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: "7%",
-        height: "7%",
-        flexShrink: "1",
-        margin: "0% 5% 0% 0%",
-    },
-    logoImage:
-    {
-        width: "90%",
-        height: "90%",
-    },
-    odysseusText: {
-        fontFamily: "'Just Another Hand', cursive",
-        lineHeight: "100%",
-        fontSize: '150%',
-        color: '#000',
-        textShadow: '1% 1% 3% rgba(0, 0, 0, 0.4)',
-    },
-    virginiaTechContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        fontWeight: '550',
-        fontSize: '150%',
-        textShadow: '0% 4% 4% rgba(0, 0, 0, 0.2)', // Slight shadow for effect
-        fontFamily: "Alata",
-        margin: "0% 5% 0% 5%",
-        flexShrink: "1",
-    },
-    virginiaText: {
-        paddingRight: "5%",
-        color: '#eb0000',
-    },
-    techText: {
-        color: '#eb6200',
-    },
-};
-
-export default Header;

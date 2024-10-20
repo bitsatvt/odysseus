@@ -54,9 +54,7 @@ function Th({ children, reversed, sorted, onSort }: ThProps) {
           <Text fw={500} fz="sm">
             {children}
           </Text>
-          <Center>
-            <Icon style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-          </Center>
+          <Icon style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
         </Group>
       </UnstyledButton>
     </Table.Th>
@@ -64,7 +62,12 @@ function Th({ children, reversed, sorted, onSort }: ThProps) {
 }
 
 export default function ProfessorsTable({ sections }: { sections: Section[] }) {
-  const capitalizeAndJoin = (name: string) => name.split("-").map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
+  const capitalizeAndJoin = (name: string) => {
+    const arr = name.split("-");
+    const lastName = arr.shift();
+    arr.push(lastName!);
+    return arr.map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
+  };
   // Combine professor data
   const combinedProfs = sections.reduce((acc, curr) => {
     let value = acc[curr.instructorName];
@@ -105,9 +108,9 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const requestSort = (key: string) => {
-    let direction: 'asc' | 'desc' = 'asc';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
+    let direction: 'asc' | 'desc' = 'desc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'desc') {
+      direction = 'asc';
     }
     setSortConfig({ key, direction });
   };
@@ -144,8 +147,8 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
       let bValue: string | number = '';
 
       if (sortConfig.key === 'instructor') {
-        aValue = a.instructor.toLowerCase();
-        bValue = b.instructor.toLowerCase();
+        aValue = capitalizeAndJoin(b.instructor.toLowerCase());
+        bValue = capitalizeAndJoin(a.instructor.toLowerCase());
       } else if (sortConfig.key === 'numberSections') {
         aValue = a.numberSections;
         bValue = b.numberSections;
@@ -200,17 +203,11 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
         style={{ width: 300 }}
       />
 
-      <Paper mx={20} withBorder>
-        <ScrollArea style={{
-          width: '100%',
-          height: '500px',
-          backgroundColor: '#FFDFC9',
-        }}>
-          <Table style={{
-            backgroundColor: '#FFDFC9',
-          }}>
+      <Paper withBorder radius={'lg'}>
+        <ScrollArea h={500}>
+          <Table stickyHeader>
             <Table.Thead>
-              <Table.Tr style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: '#fae0cc' }}>
+              <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>
                 <Th
                   sorted={sortConfig?.key === 'instructor'}
                   reversed={sortConfig?.direction === 'desc'}
@@ -251,10 +248,9 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
                 </Th>
               </Table.Tr>
             </Table.Thead>
-
             <Table.Tbody>{rows}</Table.Tbody>
           </Table>
-        </ScrollArea>
+        </ScrollArea >
       </Paper >
     </>
   );
