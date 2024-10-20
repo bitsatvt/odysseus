@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: MdP9QmSZqwqqp4xwk36vH9Q4c
+      POSTGRES_DB: odysseus
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  typesense:
+    image: typesense/typesense:28.0.rc12
+    environment:
+      - TYPESENSE_API_KEY=zijgRU2wXKE4gMJqm7Xk
+    ports:
+      - "8108:8108"
+    volumes:
+      - ./data/typesense:/data
+    command: [ "--data-dir", "/data" ]
+
+volumes:
+  postgres-data:
