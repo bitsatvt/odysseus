@@ -64,6 +64,7 @@ function Th({ children, reversed, sorted, onSort }: ThProps) {
 }
 
 export default function ProfessorsTable({ sections }: { sections: Section[] }) {
+  const capitalizeAndJoin = (name: string) => name.split("-").map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
   // Combine professor data
   const combinedProfs = sections.reduce((acc, curr) => {
     let value = acc[curr.instructorName];
@@ -177,7 +178,7 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
     return (
       <Table.Tr key={prof.instructor}>
         <Table.Td>
-          <Link href={`../instructors/${prof.instructor}`}>{prof.instructor}</Link>
+          <Link href={`../instructors/${prof.instructor}`}>{capitalizeAndJoin(prof.instructor)}</Link>
         </Table.Td>
         <Table.Td>{prof.numberSections}</Table.Td>
         <Table.Td>{prof.recentTerm}</Table.Td>
