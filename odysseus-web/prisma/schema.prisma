@@ -11,7 +11,6 @@ model Group {
   id         Int      @id
   hash       String   @unique
   type       Boolean?
-  coreqs     String
   course     Course?
   requires   Group[]  @relation("GroupReqs")
   requiredBy Group[]  @relation("GroupReqs")
@@ -23,6 +22,7 @@ model Course {
   code               String
   level              Int
   title              String?
+  coreqs             String?
   repeatability      String?
   description        String?
   pathways           String?

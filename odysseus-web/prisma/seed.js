@@ -53,6 +53,7 @@ async function insertClasses(classes) {
       description: classData.description,
       pathways: classData.pathways,
       hours: classData.hours,
+      coreqs: classData.coreqs,
     };
     if (classData.groupId != -1) {
       data.group = { connect: { id: classData.groupId } };
