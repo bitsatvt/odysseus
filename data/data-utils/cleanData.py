@@ -1,4 +1,4 @@
-from parsing import Group, Course, simplifyList, addParenthesis, close
+from parsing import Group, Course, simplifyList, addParenthesis, close, correctCoreq
 from bs4 import BeautifulSoup
 import json
 
@@ -57,7 +57,7 @@ def graphingHelper(relationsList: list, groupStorage) -> Group:
     return retNode
 
 
-with open("../rawData/rawClasses.json", "r") as jsonFile:
+with open("../raw-data/rawClasses.json", "r") as jsonFile:
     rawClasses = json.loads(jsonFile.read())
 
 IDtoGroup = dict()
@@ -81,6 +81,7 @@ for ID, rawClass in enumerate(rawClasses):
     rawClass["repeatability"] = BeautifulSoup(
         rawClass["repeatability"], "html.parser"
     ).text
+    rawClass["repeatability"] = rawClass["repeatability"][rawClass["repeatability"].find(":") + 2 :]
 
     rawClass["cross_listed"] = BeautifulSoup(
         rawClass["cross_listed"], "html.parser"
@@ -92,7 +93,14 @@ for ID, rawClass in enumerate(rawClasses):
     rawClass["cross_listed"] = [
         rawClass.replace(" ", "-") for rawClass in rawClass["cross_listed"]
     ]
-
+    rawClass["coreq"] = BeautifulSoup(rawClass["coreq"], "html.parser").text
+    rawClass["coreq"] = rawClass["coreq"][rawClass["coreq"].find(":") + 2 :]
+    rawClass["coreq"] = correctCoreq(rawClass["coreq"],rawClass["code"].split("-")[0])
+    # currGroup.coreqs = rawClass["coreq"]
+    
+    rawClass["description"] = BeautifulSoup(rawClass["description"], "html.parser").text
+    rawClass["title"] = BeautifulSoup(rawClass["title"], "html.parser").text
+    
     currGroup = Group(perm=True)
     currGroup.courseID = rawClass["code"]
     cleanClass = Course(
@@ -105,6 +113,7 @@ for ID, rawClass in enumerate(rawClasses):
         rawClass["description"],
         rawClass["pathway"],
         rawClass["hours_html"],
+        rawClass["coreq"],
     )
     classDict[rawClass["code"]] = cleanClass
     try:
@@ -128,9 +137,6 @@ for ID, rawClass in enumerate(rawClasses):
         print(temp)
         raise Exception
     # print(rawClass['coreq'])
-    rawClass["coreq"] = BeautifulSoup(rawClass["coreq"], "html.parser").text
-    rawClass["coreq"] = rawClass["coreq"][rawClass["coreq"].find(":") + 2 :]
-    currGroup.coreqs = rawClass["coreq"]
     # rawClass['coreq'] = rawClass['coreq'].split()
     # rawClass['coreq'] = simplifyList(rawClass['coreq'])
     # addParenthesis(rawClass['coreq'],1,len(rawClass['coreq']) - 1)
@@ -174,13 +180,13 @@ for course in unlisted:
     course = course.replace(" ", "-")
     currGroup = Group(perm=True)
     currGroup.courseID = course
-    cleanClass = Course(-1, currGroup.groupID, course, "", [], "", "", "", "")
+    cleanClass = Course(-1, currGroup.groupID, course, "", [], "", "", "", "", "")
 
     classDict[course] = cleanClass
 
     currGroup.prereqs = []
     currGroup.preReqType = None
-    currGroup.coreqs = ""
+    # currGroup.coreqs = ""
 
     currGroup.lockPrereqs()
     groupStorage[0][currGroup] = str(currGroup.groupID)
@@ -192,7 +198,7 @@ import json
 from datetime import datetime
 
 current_year = datetime.now().year
-with open("../rawData/Grade-Distribution.csv", newline="") as csvfile:
+with open("../raw-data/Grade-Distribution.csv", newline="") as csvfile:
     spamreader = csv.reader(csvfile, delimiter=",", quotechar='"')
     iter = 0
     for row in spamreader:
@@ -204,12 +210,12 @@ with open("../rawData/Grade-Distribution.csv", newline="") as csvfile:
         if row[2] + "-" + row[3] not in courseDict:
             if int(row[0][: row[0].find("-")]) >= current_year - 5:
                 course = row[2] + "-" + row[3]
-                cleanClass = Course(-1, -1, course, row[4], [], "", "", "", row[22])
+                cleanClass = Course(-1, -1, course, row[4], [], "", "", "", row[22], "")
                 classDict[course] = cleanClass
                 courseDict[course] = str(-1)
 
 csvJson = dict()
-with open("../rawData/Grade-Distribution.csv", newline="") as csvfile:
+with open("../raw-data/Grade-Distribution.csv", newline="") as csvfile:
     spamreader = csv.reader(csvfile, delimiter=",", quotechar='"')
     iter = 0
     for row in spamreader:
@@ -248,6 +254,7 @@ with open("../rawData/Grade-Distribution.csv", newline="") as csvfile:
         elif rowJson["term"] == "Winter":
             termNum = "12"
         elif rowJson["term"] == "Spring":
+            rowJson["year"] += 1
             termNum = "01"
         elif rowJson["term"] == "Summer I":
             termNum = "06"
@@ -260,7 +267,7 @@ with open("../rawData/Grade-Distribution.csv", newline="") as csvfile:
         )
         csvJson[rowJson["super_CRN"]] = rowJson
 
-with open("../rawData/rawSection.json", "w") as file:
+with open("../raw-data/rawSection.json", "w") as file:
     json.dump(csvJson, file, indent=4)
 
 for groupID in groupStorage[1]:
@@ -304,7 +311,7 @@ jsonGroup = dict()
 for obj in groupStorage[1]:
     jsonGroup[obj] = groupStorage[1][obj].to_dict()
 # Write the JSON string to a file
-with open("../rawData/group.json", "w") as file:
+with open("../raw-data/group.json", "w") as file:
     json.dump(jsonGroup, file, indent=4)
 
 jsonCourse = dict()
@@ -315,7 +322,7 @@ for obj in classDict:
         print(obj)
         raise Exception
 # Write the JSON string to a file
-with open("../rawData/class.json", "w") as file:
+with open("../raw-data/class.json", "w") as file:
     json.dump(jsonCourse, file, indent=4)
 # print(groupStorage[1][str(prereqs[0])])
 # print(groupStorage[1][prereqs[1]])

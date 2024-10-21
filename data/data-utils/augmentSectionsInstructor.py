@@ -1,17 +1,17 @@
 import json
 
-with open("../rawData/rawSection.json", "r") as jsonFile:
+with open("../raw-data/rawSection.json", "r") as jsonFile:
     sections = json.loads(jsonFile.read())
     
 instructors = dict()
-with open("../rawData/superCrnToProfessor.txt", "r") as instructorFile:
+with open("../raw-data/superCrnToProfessor.txt", "r") as instructorFile:
     for line in instructorFile.readlines():
         superCrn, instructor = line.split(":")
         instructors[superCrn] = instructor
         
 instructorLib = dict()
 errors = dict()
-with open("../rawData/sectionInstructorErrors.txt", 'w') as file:
+with open("../raw-data/sectionInstructorErrors.txt", 'w') as file:
     for section in sections:
         lastname = sections[section]["Instructor"].strip("\n").replace(" ", "-").lower().replace(".","")
         if section not in instructors:
@@ -108,12 +108,12 @@ for section in errors:
         instructorLib[lastname]["staff"]["recommendedPct"] = -1
         instructorLib[lastname]["staff"]["numRatings"] = 0
     
-with open('../rawData/section.json', 'w') as file:
+with open('../raw-data/section.json', 'w') as file:
     json.dump(sections, file, indent=4)
     
 
         
-with open("../rawData/professors.json", "r") as jsonFile:
+with open("../raw-data/professors.json", "r") as jsonFile:
     professorRatings = json.loads(jsonFile.read())
 success = 0
 
@@ -159,7 +159,7 @@ for lastName in instructorLib:
         flattenedInstruct[f'{lastName}-{firstName}']['lastName'] = lastName
         flattenedInstruct[f'{lastName}-{firstName}']['firstName'] = firstName
 
-with open('../rawData/instructors.json', 'w') as file:
+with open('../raw-data/instructors.json', 'w') as file:
     json.dump(flattenedInstruct, file, indent=4)
 
         

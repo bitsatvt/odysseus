@@ -70,8 +70,8 @@ def create_schemas():
             {"name": "lastName", "type": "string"},
         ],
     }
-    client.collections["courses"].delete()
-    client.collections["instructors"].delete()
+    # client.collections["courses"].delete()
+    # client.collections["instructors"].delete()
 
     client.collections.create(course_schema)
     client.collections.create(instructor_schema)

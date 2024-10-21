@@ -4,7 +4,7 @@ import matplotlib.ticker as ticker
 from bs4 import BeautifulSoup
 from parsing import simplifyList, addParenthesis, close
 
-with open("../rawData/rawClasses.json", "r") as jsonFile:
+with open("../raw-data/rawClasses.json", "r") as jsonFile:
     rawClasses = json.loads(jsonFile.read())
 fucked = {}
 lengthTracker = {}
