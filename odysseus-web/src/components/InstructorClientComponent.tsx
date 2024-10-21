@@ -1,8 +1,12 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import {
+  ScrollArea,
+  Table,
+  Paper,
+} from '@mantine/core';
 
-// Client Component for handling UI and search
 export default function InstructorClientComponent({ instructor }: { instructor: any }) {
   const [search, setSearch] = useState('');
 
@@ -25,7 +29,7 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
         lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1);
         return firstName + " " + middleName + " " + lastName;
     }
-}
+  }
 
   const filteredCourses = useMemo(() => {
     if (!search) return instructor.courses;
@@ -69,65 +73,41 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
           </div>
         </div>
       </div>
-      <div
-        style={{
-          backgroundColor: '#fae0cc',
-          width: '1050px',
-          height: '500px',
-          borderRadius: '20px',
-          border: '6px solid #cf4420',
-          margin: 'auto',
-          overflowY: 'auto',
-          overflowX: 'hidden',
-        }}>
-        <div style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: '#fae0cc' }}>
-          <div style={{ position: 'sticky', top: '0' }}>
-            <div
-              style={{
-                fontWeight: 'bolder',
-                fontSize: '20px',
-                display: 'grid',
-                gridTemplateColumns: '200px 400px 200px 100px',
-                padding: '10px',
-              }}>
-              <div style={{ width: '200px' }}>ID</div>
-              <div>Title</div>
-              <div>GPA</div>
-              <div>#Sections</div>
-            </div>
-            <hr style={{ border: '1px solid #630031', margin: '0' }} />
-          </div>
-        </div>
-        <div style={{ paddingTop: '10px' }}>
-          {filteredCourses.map((course: any) => {
-            const totalGpa = course.sections.reduce((sum: number, section: any) => sum + section.gpa, 0);
-            const averageGpa = course.sections.length > 0 ? (totalGpa / course.sections.length).toFixed(2) : 'N/A';
-            const sectionCount = course.sections.length;
+      <div style={{ textAlign: 'center' }}>
+        <Paper withBorder radius={'lg'} style={{ width: '1050px', borderRadius: '1px', border: '3px solid #cf4420', margin: '0 auto' }}>
+          <ScrollArea h={500}>
+            <Table stickyHeader>
+              <thead style={{ position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1 }}>
+                <tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px',}}>
+                  <th style={{ width: '10%', textAlign: 'center' }}>ID</th>
+                  <th style={{ width: '40%', textAlign: 'center' }}>Title</th>
+                  <th style={{ width: '20%', textAlign: 'center' }}>GPA</th>
+                  <th style={{ width: '30%', textAlign: 'center' }}>Sections Taught</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCourses.map((course: any) => {
+                  const totalGpa = course.sections.reduce((sum: number, section: any) => sum + section.gpa, 0);
+                  const averageGpa = course.sections.length > 0 ? (totalGpa / course.sections.length).toFixed(2) : 'N/A';
+                  const sectionCount = course.sections.length;
 
-            return (
-              <div key={course.id}>
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '200px 400px 200px 100px',
-                    padding: '10px',
-                  }}>
-                  <div>
-                    <a href={`/vt/courses/${course.id}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>
-                      {course.id}
-                    </a>
-                  </div>
-                  <div>{course.title.replace(/&amp;/g, '&')}</div>
-                  <div>{averageGpa}</div>
-                  <div>{sectionCount}</div>
-                </div>
-                <div>
-                  <hr style={{ border: '1px solid #630031', margin: '0' }} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                  return (
+                    <tr key={course.id} style={{ padding: '10px', borderBottom: '1px solid #630031' }}>
+                      <td style={{ textAlign: 'center', padding: '10px', }}>
+                        <a href={`/vt/courses/${course.id}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>
+                          {course.id}
+                        </a>
+                      </td>
+                      <td style={{ textAlign: 'center', padding: '10px', }}>{course.title.replace(/&amp;/g, '&')}</td>
+                      <td style={{ textAlign: 'center', padding: '10px', }}>{averageGpa}</td>
+                      <td style={{ textAlign: 'center', padding: '10px', }}>{sectionCount}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          </ScrollArea>
+        </Paper>
       </div>
     </div>
   );
