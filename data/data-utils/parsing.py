@@ -72,7 +72,7 @@ class Group:
             "id": self.groupID,
             "type": self.preReqType,
             "requires": self.prereqs,
-            "coreqs": self.coreqs,
+            # "coreqs": self.coreqs,
             "requiredBy": self.postreqs,
             "courseID": self.courseID,
             "hash": self.hash,
@@ -91,6 +91,7 @@ class Course:
         description,
         pathways,
         creditHours,
+        coreqs,
     ):
         self.courseID = courseID
         self.groupID = groupID
@@ -101,6 +102,7 @@ class Course:
         self.description = description
         self.pathways = pathways
         self.creditHours = creditHours
+        self.coreqs = coreqs
 
     def __str__(self):
         return (
@@ -112,6 +114,7 @@ class Course:
             f"Description: {self.description}\n"
             f"Pathways: {self.pathways}\n"
             f"Credit Hours: {self.creditHours}"
+            f"Co-reqs: {self.coreqs}"
         )
 
     def to_dict(self):
@@ -129,8 +132,40 @@ class Course:
             "hours": self.creditHours,
             "crosslist": self.crossList,
             "groupId": self.groupID,
+            "coreqs": self.coreqs,
         }
 
+
+
+def correctCoreq(coreq, subject):
+    preprocessed = coreq.split()
+    newCoreqString = ""
+    hasSubject = False
+    for token in preprocessed:
+        endParen =""
+        while token and not token[0].isalnum():
+            newCoreqString += token[0]
+            token = token[1:]
+        while token and not token[-1].isalnum():
+            endParen += token[-1]
+            token = token[:-1]
+        if token:
+            if (len(token) == 4 or len(token) == 5 ) and token[:4].isnumeric():
+                if not hasSubject:
+                    newCoreqString += subject + "-"
+                else:
+                    newCoreqString = newCoreqString[:-1] + "-"
+            hasSubject = False
+            if token.isalpha() and token.isupper() and len(token) <= 4:
+                hasSubject = True
+            newCoreqString += token
+            newCoreqString += endParen
+        else:
+            newCoreqString += endParen
+        newCoreqString += " "
+    if(newCoreqString):
+        newCoreqString = newCoreqString[:-1]
+    return newCoreqString
 
 def close(relationsList):
     paren = 0
