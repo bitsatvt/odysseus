@@ -35,88 +35,85 @@ export default async function Page({ params }: { params: { slug: string } }) {
           <Box style={{ flex: 1 }}>
             <Text style={{ hyphens: 'auto' }}><strong>Description:</strong> {course.description}</Text>
             <Space h="xs" />
-            <Text><strong>Pathways:</strong> {course.pathways}</Text>
+            <Text><strong>Pathways:</strong> {course.pathways ? course.pathways : "N/A"}</Text>
           </Box>
           <Box style={{ flex: 1, minWidth: 0 }}>
-          <Text>
-            <strong>Crosslist: </strong> 
-            {(() => {
-                if (course.crosslist.length > 0) 
-                  {
+            <Text>
+              <strong>Crosslist: </strong>
+              {(() => {
+                if (course.crosslist.length > 0) {
                   return course.crosslist.map((item, index) => (
                     <span key={item.id}>
-                       <Link href={`./${String(item.id)}`}>
-                         {String(item.id)}{index < course.crosslist.length - 1 && ', '}
-                       </Link> 
+                      <Link href={`./${String(item.id)}`}>
+                        {String(item.id)}{index < course.crosslist.length - 1 && ', '}
+                      </Link>
                     </span>
                   ));
-                } else { 
-                  return 'N/A'; 
+                } else {
+                  return 'N/A';
                 }
               })()}
-              <Space h="xs" />
-          </Text>
-          {/* Just to add an extra space cuz i like it */}
-
-
-          <ScrollArea style={{ whiteSpace: 'nowrap' }} offsetScrollbars>
+            </Text>
+            <Space h="xs" />
             <Text>
-            <strong> Prereqs: </strong> <PrereqTreeRenderer tree={prereqTree} depth={1} includeParens={true} />
-             <Space h="xs" />
-                <strong> Postreqs: </strong> <PostreqTreeRenderer tree={postreqTree} depth={1} />
+              <strong>Corequisites: </strong> {course.coreqs ? course.coreqs : "N/A"}
+            </Text>
+            <Space h="xs" />
+
+
+            <ScrollArea style={{ whiteSpace: 'nowrap' }} offsetScrollbars>
+              <Text>
+                <strong> Prerequisites: </strong> <PrereqTreeRenderer tree={prereqTree} depth={1} includeParens={true} />
+              </Text>
+              <Space h="xs" />
+              <Text>
+                <strong> Required By: </strong> <PostreqTreeRenderer tree={postreqTree} depth={1} />
               </Text>
             </ScrollArea>
           </Box>
         </Flex>
-        
-        <Space h="xl" />
 
-        {/* Course Details Section */}
+        <Space h="xl" />
 
 
         <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
-              <Text style={{flex: 1, margin: '0 10px', textAlign: 'center'}}>
-              <strong>Course Hours:</strong> {course.hours}
-              </Text>
-         
-              <Text style={{flex: 1, margin: '0 10px', textAlign: 'center'}}>
-                {(() => {
-                  if (course.repeatability === "") {
-                    return 'Repeatability: N/A';  // Ensure to return the value
-                  } else {
-                    return String(course.repeatability);
-                  }
-                })()}
-              </Text>
+          <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
+            <strong>Course Hours:</strong> {course.hours}
+          </Text>
 
-           <Text style={{flex: 1, margin: '0 10px', textAlign: 'center'}}>
-           <strong> Sections Taught: </strong> {course.sections.length}
-           </Text>
+          <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
+            <strong>Repeatability: </strong> {course.repeatability ? course.repeatability : "N/A"}
+          </Text>
+
+          <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
+            <strong> Sections Taught: </strong> {course.sections.length}
+          </Text>
 
 
 
-           <Text style={{flex: 1, margin: '0 10px', textAlign: 'center'}}>
-           <strong> Average GPA: </strong>  {(() => {
-                if (course.sections != null && course.sections.length > 0) {
-                  const totalGPA = course.sections.reduce((sum, item) => {
-                    
-                    return sum + (item.gpa || 0); // Parse GPA and add to the sum
-                  }, 0);
-                  
-                  return ((totalGPA / course.sections.length).toFixed(2)); // Return the total GPA rounded to 2 decimal places
-                } else { 
-                  return 'N/A'; 
-                }
-              })()}
-              </Text>
-          </Flex>
+          <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
+            <strong> Average GPA: </strong>  {(() => {
+              if (course.sections != null && course.sections.length > 0) {
+                const totalGPA = course.sections.reduce((sum, item) => {
 
-       
+                  return sum + (item.gpa || 0); // Parse GPA and add to the sum
+                }, 0);
+
+                return ((totalGPA / course.sections.length).toFixed(2)); // Return the total GPA rounded to 2 decimal places
+              } else {
+                return 'N/A';
+              }
+            })()}
+          </Text>
+        </Flex>
+
+        <Space h="xs" />
         <Divider />
+        <Space h="xs" />
         <ProfessorsTable sections={course.sections} />
         <Title order={2} my={20}>Grade Distribution Over Time</Title>
         <SectionsGraph sections={course.sections} />
-      </div>
+      </div >
     );
   }
 }
