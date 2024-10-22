@@ -17,7 +17,10 @@ export default function Page() {
         <Text style={{ fontFamily: "'Mynerve', cursive", fontSize: '50px' }} className="mb-4" ta='center'>
           Explore VT
         </Text>
-        <SearchBar />
+        <Box w={'100%'}>
+
+          <SearchBar />
+        </Box>
       </Stack>
       <Footer />
     </Flex >

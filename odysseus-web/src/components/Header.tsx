@@ -16,9 +16,8 @@ export default function Header() {
                         <span>Virginia</span> <span>Tech</span>
                     </Text>
                 </Link>
-                <Box ml="auto">
-                    <SearchBar />
-                </Box>
+                <Box size={"xs"} hiddenFrom='xs'><SearchBar /></Box>
+                <Box size={'lg'} visibleFrom='xs' ml={'auto'}><SearchBar width={500} /></Box>
             </Flex>
         </header >
     );

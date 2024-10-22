@@ -53,7 +53,7 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
     <Box>
       <Title style={{ textAlign: 'center' }}>{capitalizeAndJoin(instructor?.id)}</Title>
       <Flex justify={'center'} gap={20} mt={10}>
-        <Text><strong>Difficulty:</strong>{instructor.difficulty == -1 ? "N/A" : instructor.difficulty + "/10"}</Text>
+        <Text><strong>Difficulty: </strong>{instructor.difficulty == -1 ? "N/A" : instructor.difficulty + "/10"}</Text>
         <Text><strong>Rating: </strong>{instructor.rating == -1 ? "N/A" : instructor.rating + "/10"}</Text>
         <Text><strong>Would Recommend: </strong>{instructor.recommendedPct == -1 ? "N/A" : instructor.recommendedPct + "%"}</Text>
         <Text><strong>Sections Taught: </strong>{instructor.sectionsTaught}</Text>
@@ -76,8 +76,8 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
               <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px', }}>
                 <Table.Th ta={'center'}>ID</Table.Th>
                 <Table.Th ta={'center'}>Title</Table.Th>
-                <Table.Th >GPA</Table.Th>
-                <Table.Th>Sections Taught</Table.Th>
+                <Table.Th ta={'center'}>GPA</Table.Th>
+                <Table.Th ta={'center'}>Sections Taught</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>

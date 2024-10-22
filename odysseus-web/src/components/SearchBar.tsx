@@ -18,11 +18,9 @@ interface Instructor {
   lastName: string;
 }
 
-
-
 type Result = Course | Instructor;
 
-export default function SearchBar() {
+export default function SearchBar({ width }: Record<string, number>) {
 
   const [searchType, setSearchType] = useState<'courses' | 'instructors'>('courses');
   const [query, setQuery] = useState('');
@@ -156,7 +154,7 @@ export default function SearchBar() {
   }, [pathname]);
 
   return (
-    <Container px={0} style={containerStyle}>
+    <Container px={0} w={width}>
       < div
         ref={containerRef}
         style={{ position: 'relative' }}
@@ -226,13 +224,6 @@ export default function SearchBar() {
     </Container >
   );
 }
-
-// Styles
-const containerStyle: CSSProperties = {
-  padding: '1rem',
-  width: '100%',
-  maxWidth: '600px',
-};
 
 const iconStyle = {
   marginRight: '3%',

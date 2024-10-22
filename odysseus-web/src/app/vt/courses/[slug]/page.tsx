@@ -82,38 +82,34 @@ export default async function Page({ params }: { params: { slug: string } }) {
         <Space h="xl" />
 
 
-        <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
-          <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
+        <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text>
             <strong>Course Hours: </strong>
             {course.hours === null ? 'N/A' : course.hours}
           </Text>
 
-          <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
+          <Text>
             <strong>Repeatability: </strong>
             {course.repeatability ? course.repeatability : "N/A"}
           </Text>
 
-          <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
+          <Text>
             <strong>Sections Taught: </strong>
             {course.sections.length === null ? 'N/A' : course.sections.length}
           </Text>
 
+          <strong> Average GPA: </strong>  {(() => {
+            if (course.sections != null && course.sections.length > 0) {
+              const totalGPA = course.sections.reduce((sum, item) => {
 
+                return sum + (item.gpa || 0); // Parse GPA and add to the sum
+              }, 0);
 
-          <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
-            <strong> Average GPA: </strong>  {(() => {
-              if (course.sections != null && course.sections.length > 0) {
-                const totalGPA = course.sections.reduce((sum, item) => {
-
-                  return sum + (item.gpa || 0); // Parse GPA and add to the sum
-                }, 0);
-
-                return ((totalGPA / course.sections.length).toFixed(2)); // Return the total GPA rounded to 2 decimal places
-              } else {
-                return 'N/A';
-              }
-            })()}
-          </Text>
+              return ((totalGPA / course.sections.length).toFixed(2)); // Return the total GPA rounded to 2 decimal places
+            } else {
+              return 'N/A';
+            }
+          })()}
         </Flex>
 
         <Space h="xs" />
