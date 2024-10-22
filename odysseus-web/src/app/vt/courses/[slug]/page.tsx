@@ -78,15 +78,18 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
         <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
           <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
-            <strong>Course Hours:</strong> {course.hours}
+          <strong>Course Hours: </strong> 
+          {course.hours === null || Number(course.hours) === -1 ? 'N/A' : course.hours}
           </Text>
 
           <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
-            <strong>Repeatability: </strong> {course.repeatability ? course.repeatability : "N/A"}
+          <strong>Repeatability: </strong>
+          {course.repeatability === null || Number(course.repeatability) === -1 ? 'N/A' : course.sections.length}
           </Text>
 
           <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
-            <strong> Sections Taught: </strong> {course.sections.length}
+          <strong>Sections Taught: </strong> 
+          {course.sections.length === null || Number(course.sections.length) === -1 ? 'N/A' : course.sections.length}
           </Text>
 
 
