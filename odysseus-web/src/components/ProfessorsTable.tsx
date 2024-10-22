@@ -26,6 +26,7 @@ type GradeKeys = 'A' | 'B' | 'C' | 'D' | 'F' | 'W';
 
 type CombinedProfs = {
   numberSections: number;
+  enrollment: number;
   A: number[];
   B: number[];
   C: number[];
@@ -74,6 +75,7 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
     if (!value) {
       acc[curr.instructorName] = {
         numberSections: 0,
+        enrollment: 0,
         A: [],
         B: [],
         C: [],
@@ -88,6 +90,7 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
     const gradeRatios = curr.gradeData;
     value.numberSections++;
     value.gpaSum += curr.gpa;
+    value.enrollment += curr.enrollment
     value.A.push(gradeRatios[0] + gradeRatios[1]);
     value.B.push(gradeRatios[2] + gradeRatios[3] + gradeRatios[4]);
     value.C.push(gradeRatios[5] + gradeRatios[6] + gradeRatios[7]);
@@ -133,6 +136,7 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
 
       return {
         instructor,
+        enrollment: v.enrollment,
         numberSections: v.numberSections,
         recentTerm: v.recentTerm,
         avgGrades,
@@ -152,6 +156,9 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
       } else if (sortConfig.key === 'numberSections') {
         aValue = a.numberSections;
         bValue = b.numberSections;
+      } else if (sortConfig.key === 'enrollment') {
+        aValue = a.enrollment;
+        bValue = b.enrollment;
       } else if (sortConfig.key === 'recentTerm') {
         aValue = a.recentTerm;
         bValue = b.recentTerm;
@@ -183,12 +190,13 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
         <Table.Td>
           <Link href={`../instructors/${prof.instructor}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>{capitalizeAndJoin(prof.instructor)}</Link>
         </Table.Td>
-        <Table.Td>{prof.numberSections}</Table.Td>
         <Table.Td>{prof.recentTerm}</Table.Td>
         {gradeKeys.map((grade) => (
           <Table.Td key={grade}>{prof.avgGrades[grade].toFixed(1)}%</Table.Td>
         ))}
         <Table.Td>{formattedGPA}</Table.Td>
+        <Table.Td>{prof.numberSections}</Table.Td>
+        <Table.Td>{prof.enrollment}</Table.Td>
       </Table.Tr>
     )
   });
@@ -227,13 +235,6 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
                   Instructor
                 </Th>
                 <Th
-                  sorted={sortConfig?.key === 'numberSections'}
-                  reversed={sortConfig?.direction === 'desc'}
-                  onSort={() => requestSort('numberSections')}
-                >
-                  Sections Taught (#)
-                </Th>
-                <Th
                   sorted={sortConfig?.key === 'recentTerm'}
                   reversed={sortConfig?.direction === 'desc'}
                   onSort={() => requestSort('recentTerm')}
@@ -256,6 +257,20 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
                   onSort={() => requestSort('avgGPA')}
                 >
                   GPA
+                </Th>
+                <Th
+                  sorted={sortConfig?.key === 'numberSections'}
+                  reversed={sortConfig?.direction === 'desc'}
+                  onSort={() => requestSort('numberSections')}
+                >
+                  Sections Taught (#)
+                </Th>
+                <Th
+                  sorted={sortConfig?.key === 'enrollment'}
+                  reversed={sortConfig?.direction === 'desc'}
+                  onSort={() => requestSort('enrollment')}
+                >
+                  Total Enrollment (#)
                 </Th>
               </Table.Tr>
             </Table.Thead>
