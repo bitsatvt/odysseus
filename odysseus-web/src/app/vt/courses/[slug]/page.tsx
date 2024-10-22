@@ -64,7 +64,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
             </ScrollArea>
           </Box>
         </Flex>
-        <CourseClientComponent course={course} sections={course.sections} />
+        <CourseClientComponent course={course} />
       </div>
     );
   }

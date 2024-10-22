@@ -5,7 +5,7 @@ import { Divider, Flex, Title, Box, Button, Text, Space } from "@mantine/core";
 import React, { useState, useMemo } from 'react';
 import { Course, Section } from '@prisma/client';
 
-export default function CourseClientComponent(course) {
+export default function CourseClientComponent({ course }: { course: Course & Record<string, any> }) {
     const sections = course.sections
     const [filteredSections, setFilteredSections] = useState(course.sections)
     const filterNYears = (years: number, sections: Section[]) => {
@@ -38,7 +38,7 @@ export default function CourseClientComponent(course) {
                 <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
                     <strong> Average GPA: </strong>  {(() => {
                         if (filteredSections != null && filteredSections.length > 0) {
-                            const totalGPA = filteredSections.reduce((sum, item) => {
+                            const totalGPA = filteredSections.reduce((sum: number, item: Section) => {
 
                                 return sum + (item.gpa || 0); // Parse GPA and add to the sum
                             }, 0);
