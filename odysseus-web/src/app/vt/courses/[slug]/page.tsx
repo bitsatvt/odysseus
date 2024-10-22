@@ -1,14 +1,12 @@
 import { notFound } from "next/navigation";
+import prisma from "@/db";
+import CourseClientComponent from "@/components/CourseClientComponent";
 import { fetchPrereqTree, fetchPostreqTree } from "@/server/utils/fetchTrees";
 import PrereqTreeRenderer from "@/components/PrereqTreeRenderer";
 import PostreqTreeRenderer from "@/components/PostreqTreeRenderer";
-import { SectionsGraph } from "@/components/SectionsCharts";
-import ProfessorsTable from "@/components/ProfessorsTable";
-import prisma from "@/db";
-import { Divider, Flex, Title, Box, ScrollArea, Text, Space } from "@mantine/core";
+import { Flex, Title, Box, ScrollArea, Text, Space } from "@mantine/core";
 import Link from 'next/link';
-import { Section } from "@prisma/client";
-
+import { Course, Section } from '@prisma/client';
 export default async function Page({ params }: { params: { slug: string } }) {
   const course = await prisma.course.findUnique({
     where: { id: params.slug },
@@ -18,20 +16,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
   if (!course) {
     notFound();
   } else {
-    const filterNYears = (years: number, sections: Section[]) => {
-      const earliestAllowed = 2023 - years;
-      return sections.filter((section) => parseInt(section.id.substring(0, 4)) > earliestAllowed)
-    }
     const prereqTree = await fetchPrereqTree(course.groupId!, 1);
     const postreqTree = await fetchPostreqTree(course.groupId!, course.id, 1);
-    const last3Years = filterNYears(3, course.sections)
-    const last5Years = filterNYears(5, course.sections)
-    const last10Years = filterNYears(10, course.sections)
-    console.log(course.sections.length)
-    console.log(last3Years.length)
-    console.log(last5Years.length)
-    console.log(last10Years.length)
-
     return (
       <div>
         <Title mb={10}>
@@ -78,51 +64,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
             </ScrollArea>
           </Box>
         </Flex>
-
-        <Space h="xl" />
-
-
-        <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
-          <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
-            <strong>Course Hours: </strong>
-            {course.hours === null ? 'N/A' : course.hours}
-          </Text>
-
-          <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
-            <strong>Repeatability: </strong>
-            {course.repeatability ? course.repeatability : "N/A"}
-          </Text>
-
-          <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
-            <strong>Sections Taught: </strong>
-            {course.sections.length === null ? 'N/A' : course.sections.length}
-          </Text>
-
-
-
-          <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
-            <strong> Average GPA: </strong>  {(() => {
-              if (course.sections != null && course.sections.length > 0) {
-                const totalGPA = course.sections.reduce((sum, item) => {
-
-                  return sum + (item.gpa || 0); // Parse GPA and add to the sum
-                }, 0);
-
-                return ((totalGPA / course.sections.length).toFixed(2)); // Return the total GPA rounded to 2 decimal places
-              } else {
-                return 'N/A';
-              }
-            })()}
-          </Text>
-        </Flex>
-
-        <Space h="xs" />
-        <Divider />
-        <Space h="xs" />
-        <ProfessorsTable sections={course.sections} />
-        <Title order={2} my={20}>Grade Distribution Over Time</Title>
-        <SectionsGraph sections={course.sections} />
-      </div >
+        <CourseClientComponent course={course} sections={course.sections} />
+      </div>
     );
   }
 }
