@@ -12,7 +12,8 @@ def convert_class_to_jsonl():
                     json.dumps(
                         {
                             "id": item["id"],
-                            "subjectCode": item["subject"] + "*" + item["code"],
+                            "subjectCode": item["subject"] + "-" + item["code"],
+                            "code": item["code"],
                             "title": item["title"],
                             "desc": item["description"],
                         }
@@ -58,6 +59,7 @@ def create_schemas():
         "fields": [
             {"name": "id", "type": "string"},
             {"name": "subjectCode", "type": "string"},
+            {"name": "code", "type": "string"},
             {"name": "title", "type": "string"},
             {"name": "desc", "type": "string"},
         ],
@@ -88,7 +90,11 @@ def import_documents():
 def test_search():
     print(
         client.collections["courses"].documents.search(
-            {"q": "cs3114", "query_by": "subjectCode,title,desc"}
+            {
+                "q": "2505",
+                "query_by": "code,subjectCode,title,desc",
+                "num_typos": "0,1,2,2",
+            }
         )
     )
 

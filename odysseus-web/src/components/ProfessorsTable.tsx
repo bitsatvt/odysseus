@@ -200,11 +200,11 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
         value={searchQuery}
         onChange={(event) => setSearchQuery(event.currentTarget.value)}
         mb="md"
-        style={{ width: 300 }}
+        w={300}
       />
 
       <Paper withBorder radius={'lg'}>
-        <ScrollArea h={500}>
+        <ScrollArea mah={500}>
           <Table stickyHeader>
             <Table.Thead>
               <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>

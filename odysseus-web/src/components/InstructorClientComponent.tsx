@@ -9,32 +9,26 @@ import {
   Title,
   Text,
   Flex,
+  TextInput,
+  Divider,
+  Space,
 } from '@mantine/core';
 import Link from 'next/link';
+import { Instructor } from '@prisma/client';
 
-export default function InstructorClientComponent({ instructor }: { instructor: any }) {
+export default function InstructorClientComponent({ instructor }: { instructor: Instructor & Record<string, any> }) {
   const [search, setSearch] = useState('');
 
   const normalizeString = (str: string) => {
     return str.toLowerCase().replace(/&amp;/g, '&').replace(/[^a-z0-9]/g, '');
   };
 
-  const formatname = (id: string) => {
-    let nameParts = id.split("-");
-    if (nameParts.length == 2) {
-      let [firstName, lastName] = nameParts;
-      firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
-      lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1);
-      return firstName + " " + lastName;
-    }
-    else if (nameParts.length == 3) {
-      let [firstName, lastName, middleName] = nameParts;
-      firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
-      middleName = middleName.charAt(0).toUpperCase() + middleName.slice(1);
-      lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1);
-      return firstName + " " + middleName + " " + lastName;
-    }
-  }
+  const capitalizeAndJoin = (name: string) => {
+    const arr = name.split("-");
+    const lastName = arr.shift();
+    arr.push(lastName!);
+    return arr.map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
+  };
 
   const filteredCourses = useMemo(() => {
     if (!search) return instructor.courses;
@@ -57,34 +51,31 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
 
   return (
     <Box>
-      <Title style={{ textAlign: 'center' }}>{formatname(instructor?.id)}</Title>
-      <Flex justify={'center'}>
+      <Title style={{ textAlign: 'center' }}>{capitalizeAndJoin(instructor?.id)}</Title>
+      <Flex justify={'center'} gap={20} mt={10}>
         <Text><strong>Difficulty:</strong>{instructor.difficulty == -1 ? "N/A" : instructor.difficulty + "/10"}</Text>
         <Text><strong>Rating: </strong>{instructor.rating == -1 ? "N/A" : instructor.rating + "/10"}</Text>
         <Text><strong>Would Recommend: </strong>{instructor.recommendedPct == -1 ? "N/A" : instructor.recommendedPct + "%"}</Text>
-        <Text><strong>Courses Taught: </strong>{instructor.coursesTaught}</Text>
+        <Text><strong>Sections Taught: </strong>{instructor.sectionsTaught}</Text>
       </Flex>
-      <hr style={{ border: '2px solid #cf4420' }} />
-      <div style={{ display: 'flex', justifyContent: 'space-evenly', textAlign: 'center', marginBottom: '5px' }}>
-        <div style={{ fontWeight: 'bolder', fontSize: '24px' }}>Courses</div>
-        <div>
-          <div style={{ display: 'flex', textAlign: 'center' }}>
-            <input
-              placeholder="Enter a Title or ID"
-              style={{ borderRadius: '20px', padding: '5px 15px' }}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
+      <Space h="xs" />
+      <Divider />
+      <Space h="xs" />
+      <TextInput
+        placeholder="Search for a course"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        w={300}
+        mb="md"
+
+      />
       <Paper withBorder radius={'lg'}>
-        <ScrollArea h={500}>
-          <Table stickyHeader>
+        <ScrollArea h={400}>
+          <Table stickyHeader ta={'center'}>
             <Table.Thead >
               <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px', }}>
-                <Table.Th>ID</Table.Th>
-                <Table.Th>Title</Table.Th>
+                <Table.Th ta={'center'}>ID</Table.Th>
+                <Table.Th ta={'center'}>Title</Table.Th>
                 <Table.Th >GPA</Table.Th>
                 <Table.Th>Sections Taught</Table.Th>
               </Table.Tr>

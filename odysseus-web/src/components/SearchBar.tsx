@@ -23,16 +23,7 @@ interface Instructor {
 type Result = Course | Instructor;
 
 export default function SearchBar() {
-  const client = new Typesense.Client({
-    nodes: [
-      {
-        host: "localhost",
-        port: 8108,
-        protocol: "http",
-      },
-    ],
-    apiKey: "zijgRU2wXKE4gMJqm7Xk", // don't use in production, create read-only API key instead
-  });
+
   const [searchType, setSearchType] = useState<'courses' | 'instructors'>('courses');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Result[]>([]);
@@ -46,49 +37,64 @@ export default function SearchBar() {
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
 
-  const handleSearch = async (searchQuery: string, currentSearchType: 'courses' | 'instructors') => {
-    if (!searchQuery.trim()) {
-      setResults([]); // Clear results if input is empty
-      return;
-    }
-    const collection = searchType;
-    try {
-      const searchParameters = {
-        q: searchQuery,
-        query_by:
-          currentSearchType === 'courses'
-            ? 'subjectCode,title,desc'
-            : 'firstName,lastName',
-        per_page: 10,
-      };
-
-      const searchResults = await client
-        .collections(collection)
-        .documents()
-        .search(searchParameters);
-
-      // Check if searchType hasn't changed during the async operation
-      if (currentSearchType !== searchType) {
-        return; // Discard the results if searchType has changed
-      }
-
-      if (searchResults.hits) {
-        const mappedResults = searchResults.hits.map((hit) => hit.document as Result);
-        setResults(mappedResults);
-        setIsResultsVisible(true); // Show results
-      } else {
-        setResults([]);
-        setIsResultsVisible(false);
-      }
-    } catch (err) {
-      console.error(err);
-      setResults([]);
-      setIsResultsVisible(false);
-    }
-  };
 
   // Debounced search effect
   useEffect(() => {
+    const client = new Typesense.Client({
+      nodes: [
+        {
+          host: "localhost",
+          port: 8108,
+          protocol: "http",
+        },
+      ],
+      apiKey: "zijgRU2wXKE4gMJqm7Xk", // don't use in production, create read-only API key instead
+    });
+
+    const handleSearch = async (searchQuery: string, currentSearchType: 'courses' | 'instructors') => {
+      if (!searchQuery.trim()) {
+        setResults([]); // Clear results if input is empty
+        return;
+      }
+      const collection = searchType;
+      try {
+        const searchParameters = {
+          q: searchQuery,
+          query_by:
+            currentSearchType === 'courses'
+              ? 'code,subjectCode,title,desc'
+              : 'firstName,lastName',
+          per_page: 30,
+          num_typos:
+            currentSearchType === 'courses' ? "0,1,2,2" : '2,2'
+        };
+
+        const searchResults = await client
+          .collections(collection)
+          .documents()
+          .search(searchParameters);
+
+        // Check if searchType hasn't changed during the async operation
+        if (currentSearchType !== searchType) {
+          return; // Discard the results if searchType has changed
+        }
+
+        if (searchResults.hits) {
+          const mappedResults = searchResults.hits.map((hit) => hit.document as Result);
+          setResults(mappedResults);
+          setIsResultsVisible(true); // Show results
+        } else {
+          setResults([]);
+          setIsResultsVisible(false);
+        }
+      } catch (err) {
+        console.error(err);
+        setResults([]);
+        setIsResultsVisible(false);
+      }
+    };
+
+
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }

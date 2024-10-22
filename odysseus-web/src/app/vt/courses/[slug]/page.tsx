@@ -7,6 +7,7 @@ import ProfessorsTable from "@/components/ProfessorsTable";
 import prisma from "@/db";
 import { Divider, Flex, Title, Box, ScrollArea, Text, Space } from "@mantine/core";
 import Link from 'next/link';
+import { Section } from "@prisma/client";
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const course = await prisma.course.findUnique({
@@ -17,7 +18,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
   if (!course) {
     notFound();
   } else {
-    const filterNYears = (years: number, sections) => {
+    const filterNYears = (years: number, sections: Section[]) => {
       const earliestAllowed = 2023 - years;
       return sections.filter((section) => parseInt(section.id.substring(0, 4)) > earliestAllowed)
     }
@@ -89,7 +90,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
           <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
             <strong>Repeatability: </strong>
-            {course.repeatability === null ? 'N/A' : course.sections.length}
+            {course.repeatability ? course.repeatability : "N/A"}
           </Text>
 
           <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>

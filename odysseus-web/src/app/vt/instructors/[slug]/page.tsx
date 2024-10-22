@@ -17,11 +17,11 @@ export default async function Page({ params }: { params: { slug: string } }) {
             },
         },
 
-	});
-	if (!instructor) {
-		notFound();
-	}
-	return (
+    });
+    if (!instructor) {
+        notFound();
+    }
+    return (
         <InstructorClientComponent instructor={instructor} />
     );
 
