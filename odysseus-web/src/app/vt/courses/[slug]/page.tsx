@@ -8,7 +8,6 @@ import prisma from "@/db";
 import { Divider, Flex, Title, Box, ScrollArea, Text, Space } from "@mantine/core";
 import Link from 'next/link';
 
-
 export default async function Page({ params }: { params: { slug: string } }) {
   const course = await prisma.course.findUnique({
     where: { id: params.slug },
@@ -18,18 +17,24 @@ export default async function Page({ params }: { params: { slug: string } }) {
   if (!course) {
     notFound();
   } else {
+    const filterNYears = (years: number, sections) => {
+      const earliestAllowed = 2023 - years;
+      return sections.filter((section) => parseInt(section.id.substring(0, 4)) > earliestAllowed)
+    }
     const prereqTree = await fetchPrereqTree(course.groupId!, 1);
     const postreqTree = await fetchPostreqTree(course.groupId!, course.id, 1);
-
-    let cleanedTitle = course.title;
-    if (course.title != null) {
-      cleanedTitle = course.title.replace(/&amp;/g, "&");
-    }
+    const last3Years = filterNYears(3, course.sections)
+    const last5Years = filterNYears(5, course.sections)
+    const last10Years = filterNYears(10, course.sections)
+    console.log(course.sections.length)
+    console.log(last3Years.length)
+    console.log(last5Years.length)
+    console.log(last10Years.length)
 
     return (
       <div>
         <Title>
-          Course: {course.id} {cleanedTitle}
+          Course: {course.id} {course.title}
         </Title>
         <Flex direction={{ base: 'column', sm: 'row' }} gap={50}>
           <Box style={{ flex: 1 }}>
@@ -78,18 +83,18 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
         <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
           <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
-          <strong>Course Hours: </strong> 
-          {course.hours === null || Number(course.hours) === -1 ? 'N/A' : course.hours}
+            <strong>Course Hours: </strong>
+            {course.hours === null ? 'N/A' : course.hours}
           </Text>
 
           <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
-          <strong>Repeatability: </strong>
-          {course.repeatability === null || Number(course.repeatability) === -1 ? 'N/A' : course.sections.length}
+            <strong>Repeatability: </strong>
+            {course.repeatability === null ? 'N/A' : course.sections.length}
           </Text>
 
           <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
-          <strong>Sections Taught: </strong> 
-          {course.sections.length === null || Number(course.sections.length) === -1 ? 'N/A' : course.sections.length}
+            <strong>Sections Taught: </strong>
+            {course.sections.length === null ? 'N/A' : course.sections.length}
           </Text>
 
 
