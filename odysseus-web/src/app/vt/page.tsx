@@ -14,12 +14,10 @@ export default function Page() {
             <Text style={{ fontFamily: "'Just Another Hand', cursive", fontSize: '30px' }}>Odysseus</Text>
           </Stack>
         </Flex>
-        <Box style={{ width: '100%' }} align={'center'} >
-          <Text style={{ fontFamily: "'Mynerve', cursive", fontSize: '50px' }} className="mb-4" ta='center'>
-            Explore VT
-          </Text>
-          <SearchBar />
-        </Box>
+        <Text style={{ fontFamily: "'Mynerve', cursive", fontSize: '50px' }} className="mb-4" ta='center'>
+          Explore VT
+        </Text>
+        <SearchBar />
       </Stack>
       <Footer />
     </Flex >

@@ -181,11 +181,11 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
     return (
       <Table.Tr key={prof.instructor}>
         <Table.Td>
-          <Link href={`../instructors/${prof.instructor}`}>{capitalizeAndJoin(prof.instructor)}</Link>
+          <Link href={`../instructors/${prof.instructor}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>{capitalizeAndJoin(prof.instructor)}</Link>
         </Table.Td>
         <Table.Td>{prof.numberSections}</Table.Td>
         <Table.Td>{prof.recentTerm}</Table.Td>
-        {gradeKeys.map((grade, index) => (
+        {gradeKeys.map((grade) => (
           <Table.Td key={grade}>{prof.avgGrades[grade].toFixed(1)}%</Table.Td>
         ))}
         <Table.Td>{formattedGPA}</Table.Td>

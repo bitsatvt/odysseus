@@ -6,7 +6,7 @@ import Image from 'next/image'
 export default function Header() {
     return (
         <header>
-            <Flex direction={{ base: 'column', xs: 'row' }} align={'center'} p="1%">
+            <Flex direction={{ base: 'column', xs: 'row' }} align={'center'} p={'1%'}>
                 <Stack align="center" gap={0}>
                     <Image src="/OfficialOdysseusLogo.png" width={80} height={80} alt="Odysseus Logo" />
                     <Text style={{ fontFamily: "'Just Another Hand', cursive", fontSize: '30px' }}>Odysseus</Text>
@@ -16,7 +16,7 @@ export default function Header() {
                         <span>Virginia</span> <span>Tech</span>
                     </Text>
                 </Link>
-                <Box ml="auto" width="200px">
+                <Box ml="auto">
                     <SearchBar />
                 </Box>
             </Flex>

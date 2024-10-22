@@ -150,14 +150,10 @@ export default function SearchBar() {
   }, [pathname]);
 
   return (
-    <Container size="100%" px={0} style={containerStyle}>
-      <div
+    <Container px={0} style={containerStyle}>
+      < div
         ref={containerRef}
-        style={{
-          position: 'relative',
-          width: '100%',
-          maxWidth: '800px', // Set a max-width for the search bar if desired
-        }}
+        style={{ position: 'relative' }}
       >
         <div style={searchBarStyle}>
           <IconSearch style={iconStyle} size={18} />
@@ -194,40 +190,42 @@ export default function SearchBar() {
         </div>
 
         {/* Results Section */}
-        {isResultsVisible && results.length > 0 && (
-          <div style={resultsContainerStyle}>
-            {results.map((result, index) => (
-              <Link
-                key={index}
-                href={`/vt/${searchType}/${result.id}`}
-                onClick={() => setIsResultsVisible(false)}
-              >
-                <Box style={resultItemStyle}>
-                  <strong>
-                    {searchType === 'courses'
-                      ? `${(result as Course).id} ${(result as Course).title}`
-                      : `${(result as Instructor).firstName} ${(result as Instructor).lastName}`}
-                  </strong>
-                  {searchType === 'courses' && (result as Course).desc && (
-                    <Text truncate style={{ maxWidth: '100%' }}>
-                      {(result as Course).desc}
-                    </Text>
-                  )}
-                </Box>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    </Container>
+        {
+          isResultsVisible && results.length > 0 && (
+            <div style={resultsContainerStyle}>
+              {results.map((result, index) => (
+                <Link
+                  key={index}
+                  href={`/vt/${searchType}/${result.id}`}
+                  onClick={() => setIsResultsVisible(false)}
+                >
+                  <Box style={resultItemStyle}>
+                    <strong>
+                      {searchType === 'courses'
+                        ? `${(result as Course).id} ${(result as Course).title}`
+                        : `${(result as Instructor).firstName} ${(result as Instructor).lastName}`}
+                    </strong>
+                    {searchType === 'courses' && (result as Course).desc && (
+                      <Text truncate style={{ maxWidth: '100%' }}>
+                        {(result as Course).desc}
+                      </Text>
+                    )}
+                  </Box>
+                </Link>
+              ))}
+            </div>
+          )
+        }
+      </div >
+    </Container >
   );
 }
 
 // Styles
-const containerStyle = {
-  maxWidth: '100%',
+const containerStyle: CSSProperties = {
   padding: '1rem',
-  height: 'auto',
+  width: '100%',
+  maxWidth: '600px',
 };
 
 const iconStyle = {
@@ -242,7 +240,6 @@ const searchBarStyle: CSSProperties = {
   padding: '1% 2%',
   backgroundColor: '#ede9f4',
   flexShrink: 1,
-  width: '100%',
   position: 'relative',
 };
 

@@ -33,7 +33,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
     return (
       <div>
-        <Title>
+        <Title mb={10}>
           Course: {course.id} {course.title}
         </Title>
         <Flex direction={{ base: 'column', sm: 'row' }} gap={50}>
