@@ -203,9 +203,20 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
         w={300}
       />
 
-      <Paper withBorder radius={'lg'}>
-        <ScrollArea mah={500}>
-          <Table stickyHeader>
+      <Paper withBorder radius="lg" style={{ overflow: 'hidden' }}>
+        <ScrollArea.Autosize
+          mah={500}
+          type="scroll"
+          scrollbarSize={8}
+          offsetScrollbars
+        >
+          <Table
+            stickyHeader
+            horizontalSpacing="sm"
+            verticalSpacing="xs"
+            miw={800}
+            style={{ tableLayout: 'fixed' }}
+          >
             <Table.Thead>
               <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>
                 <Th
@@ -250,7 +261,7 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
             </Table.Thead>
             <Table.Tbody>{rows}</Table.Tbody>
           </Table>
-        </ScrollArea >
+        </ScrollArea.Autosize >
       </Paper >
     </>
   );

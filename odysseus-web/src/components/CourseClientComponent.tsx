@@ -1,17 +1,21 @@
 'use client';
 import { SectionsGraph } from "@/components/SectionsCharts";
 import ProfessorsTable from "@/components/ProfessorsTable";
-import { Divider, Flex, Title, Box, Button, Text, Space } from "@mantine/core";
+import { Divider, Flex, Title, SegmentedControl, Button, Text, Space } from "@mantine/core";
 import React, { useState, useMemo } from 'react';
 import { Course, Section } from '@prisma/client';
 
 export default function CourseClientComponent({ course }: { course: Course & Record<string, any> }) {
     const sections = course.sections
     const [filteredSections, setFilteredSections] = useState(course.sections)
-    const filterNYears = (years: number, sections: Section[]) => {
-        const earliestAllowed = 2023 - years;
+    const [nYears, setNYears] = useState("30")
+    const filterNYears = (years: string, sections: Section[]) => {
+        setNYears(years)
+        const years_num = parseInt(years)
+        const earliestAllowed = 2023 - years_num;
         setFilteredSections(sections.filter((section) => parseInt(section.id.substring(0, 4)) > earliestAllowed))
     }
+
     function gpaToLetterGrade(gpa: number) {
         if (gpa >= 3.7) {
             return 'A';
@@ -39,13 +43,26 @@ export default function CourseClientComponent({ course }: { course: Course & Rec
     }
     return (
         <>
-
-            <Flex style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Button variant="light" onClick={() => filterNYears(3, sections)}>Last 3 Years</Button>
-                <Button variant="light" onClick={() => filterNYears(5, sections)}>Last 5 Years</Button>
-                <Button variant="light" onClick={() => filterNYears(10, sections)}>Last 10 Years</Button>
-                <Button variant="light" onClick={() => filterNYears(30, sections)}>All Years</Button>
-            </Flex>
+            <SegmentedControl
+                value={nYears}
+                onChange={(value: string) => filterNYears(value as "3" | "5" | "10" | "30", sections)}
+                data={[
+                    { label: 'Last 3 Years', value: '3' },
+                    { label: 'Last 5 Years', value: '5' },
+                    { label: 'Last 10 Years', value: '10' },
+                    { label: 'All Years', value: '30' },
+                ]}
+                size="sm"
+                radius="xl"
+                color="#f05400"
+                style={{ marginRight: '1%' }}
+            />
+            {/* <Flex style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Button variant="light" onClick={() => filterNYears("3", sections)}>Last 3 Years</Button>
+                <Button variant="light" onClick={() => filterNYears("5", sections)}>Last 5 Years</Button>
+                <Button variant="light" onClick={() => filterNYears("10", sections)}>Last 10 Years</Button>
+                <Button variant="light" onClick={() => filterNYears("30", sections)}>All Years</Button>
+            </Flex> */}
             <Space h="sm" />
             <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
 

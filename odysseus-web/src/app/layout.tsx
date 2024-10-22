@@ -9,9 +9,9 @@ import { ColorSchemeScript, MantineProvider, createTheme } from '@mantine/core';
 export const metadata = {
   title: 'Odysseus Advisor',
   description: 'description',
-  icons: {
-    icon: 'favicon.ico',
-  }
+  // icons: {
+  //   icon: 'favicon.ico',
+  // }
 };
 
 const theme = createTheme({

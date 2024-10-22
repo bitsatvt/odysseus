@@ -1,6 +1,6 @@
 import Typesense from "typesense";
 import { useState, useEffect, useRef, CSSProperties } from 'react';
-import { SegmentedControl, TextInput, Container, Box } from '@mantine/core';
+import { SegmentedControl, TextInput, Container, Box, ScrollArea } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import { Text } from "@mantine/core";
 import Link from "next/link";
@@ -173,7 +173,7 @@ export default function SearchBar({ width }: Record<string, number>) {
             ]}
             size="sm"
             radius="xl"
-            color="orange"
+            color="#f05400"
             style={{ marginRight: '1%' }}
           />
           <TextInput
@@ -196,7 +196,7 @@ export default function SearchBar({ width }: Record<string, number>) {
         {/* Results Section */}
         {
           isResultsVisible && results.length > 0 && (
-            <div style={resultsContainerStyle}>
+            <ScrollArea.Autosize mah={300} type="scroll" style={resultsContainerStyle}>
               {results.map((result, index) => (
                 <Link
                   key={index}
@@ -217,7 +217,7 @@ export default function SearchBar({ width }: Record<string, number>) {
                   </Box>
                 </Link>
               ))}
-            </div>
+            </ScrollArea.Autosize>
           )
         }
       </div >

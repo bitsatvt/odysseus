@@ -7,13 +7,15 @@ export default function Header() {
     return (
         <header>
             <Flex direction={{ base: 'column', xs: 'row' }} align={'center'} p={'1%'}>
-                <Stack align="center" gap={0}>
-                    <Image src="/OfficialOdysseusLogo.png" width={80} height={80} alt="Odysseus Logo" />
-                    <Text style={{ fontFamily: "'Just Another Hand', cursive", fontSize: '30px' }}>Odysseus</Text>
-                </Stack>
-                <Link href={"/vt"}>
-                    <Text fz={32} ml={20}>
-                        <span>Virginia</span> <span>Tech</span>
+                <Link href="/vt">
+                    <Stack align="center" gap={0}>
+                        <Image src="/OfficialOdysseusLogo.png" width={80} height={80} alt="Odysseus Logo" />
+                        <Text style={{ fontFamily: "'Just Another Hand', cursive", fontSize: '30px' }} c="black">Odysseus</Text>
+                    </Stack>
+                </Link>
+                <Link href="/vt">
+                    <Text style={{ fontFamily: 'Alata' }} fz={32} ml={20} c="black" fw={550}>
+                        <span>Virginia Tech</span>
                     </Text>
                 </Link>
                 <Box size={"xs"} hiddenFrom='xs'><SearchBar /></Box>

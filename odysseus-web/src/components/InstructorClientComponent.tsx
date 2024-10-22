@@ -69,9 +69,20 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
         mb="md"
 
       />
-      <Paper withBorder radius={'lg'}>
-        <ScrollArea h={400}>
-          <Table stickyHeader ta={'center'}>
+      <Paper withBorder radius="lg" style={{ overflow: 'hidden' }}>
+        <ScrollArea.Autosize
+          mah={500}
+          type="scroll"
+          scrollbarSize={8}
+          offsetScrollbars
+        >
+          <Table
+            stickyHeader
+            horizontalSpacing="sm"
+            verticalSpacing="xs"
+            miw={800}
+            style={{ tableLayout: 'fixed' }}
+          >
             <Table.Thead >
               <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px', }}>
                 <Table.Th ta={'center'}>ID</Table.Th>
@@ -101,7 +112,7 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
               })}
             </Table.Tbody>
           </Table>
-        </ScrollArea>
+        </ScrollArea.Autosize>
       </Paper>
     </Box >
   );

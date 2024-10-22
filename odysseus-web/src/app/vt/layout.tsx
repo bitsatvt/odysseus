@@ -2,7 +2,7 @@
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import { usePathname } from 'next/navigation'
-
+import { Space } from '@mantine/core';
 export default function InnerLayout({
     children, // will be a page or nested layout
 }: {
@@ -22,6 +22,8 @@ export default function InnerLayout({
             <main style={{ margin: "15px" }}>
                 {children}
             </main>
+            <Space h="xl" />
+            <Space h="xl" />
             <Footer />
         </section>
     )

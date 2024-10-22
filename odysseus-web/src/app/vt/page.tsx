@@ -1,7 +1,7 @@
 "use client"
 import SearchBar from "@/components/SearchBar"
 import Footer from "@/components/Footer"
-import { Flex, Text, Stack, Box, Center } from '@mantine/core';
+import { Flex, Text, Stack, Box, Space } from '@mantine/core';
 import Image from 'next/image'
 
 export default function Page() {
