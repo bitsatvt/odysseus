@@ -4,7 +4,7 @@ import CourseClientComponent from "@/components/CourseClientComponent";
 import { fetchPrereqTree, fetchPostreqTree } from "@/server/utils/fetchTrees";
 import PrereqTreeRenderer from "@/components/PrereqTreeRenderer";
 import PostreqTreeRenderer from "@/components/PostreqTreeRenderer";
-import { Flex, Title, Box, ScrollArea, Text, Space } from "@mantine/core";
+import { Flex, Title, Box, ScrollArea, Text, Space, Divider } from "@mantine/core";
 import Link from 'next/link';
 import { Course, Section } from '@prisma/client';
 export default async function Page({ params }: { params: { slug: string } }) {
@@ -28,8 +28,26 @@ export default async function Page({ params }: { params: { slug: string } }) {
             <Text style={{ hyphens: 'auto' }}><strong>Description:</strong> {course.description}</Text>
             <Space h="xs" />
             <Text><strong>Pathways:</strong> {course.pathways ? course.pathways : "N/A"}</Text>
+            <Space h="xs" />
+            <Text>
+              <strong>Course Hours: </strong>
+              {course.hours === null ? 'N/A' : course.hours}
+            </Text>
           </Box>
           <Box style={{ flex: 1, minWidth: 0 }}>
+            <ScrollArea style={{ whiteSpace: 'nowrap' }} offsetScrollbars>
+              <Text>
+                <strong> Prerequisites: </strong> <PrereqTreeRenderer tree={prereqTree} depth={1} includeParens={true} />
+              </Text>
+              <Space h="xs" />
+              <Text>
+                <strong> Required By: </strong> <PostreqTreeRenderer tree={postreqTree} depth={1} />
+              </Text>
+            </ScrollArea>
+            <Text>
+              <strong>Corequisites: </strong> {course.coreqs ? course.coreqs : "N/A"}
+            </Text>
+            <Space h="xs" />
             <Text>
               <strong>Crosslist: </strong>
               {(() => {
@@ -48,22 +66,15 @@ export default async function Page({ params }: { params: { slug: string } }) {
             </Text>
             <Space h="xs" />
             <Text>
-              <strong>Corequisites: </strong> {course.coreqs ? course.coreqs : "N/A"}
+              <strong>Repeatability: </strong>
+              {course.repeatability ? course.repeatability : "N/A"}
             </Text>
-            <Space h="xs" />
 
-
-            <ScrollArea style={{ whiteSpace: 'nowrap' }} offsetScrollbars>
-              <Text>
-                <strong> Prerequisites: </strong> <PrereqTreeRenderer tree={prereqTree} depth={1} includeParens={true} />
-              </Text>
-              <Space h="xs" />
-              <Text>
-                <strong> Required By: </strong> <PostreqTreeRenderer tree={postreqTree} depth={1} />
-              </Text>
-            </ScrollArea>
           </Box>
         </Flex>
+        <Space h="xs" />
+        <Divider />
+        <Space h="xs" />
         <CourseClientComponent course={course} />
       </div>
     );

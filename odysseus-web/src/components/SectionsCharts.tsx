@@ -24,7 +24,6 @@ type CombinedGrades = {
 
 function ChartTooltip({ label, payload }: ChartTooltipProps) {
   if (!payload) return null;
-  console.log(payload)
   const reversedPayload = [...payload].reverse();
   return (
     <Paper px="md" py="sm" withBorder shadow="md" radius="md">

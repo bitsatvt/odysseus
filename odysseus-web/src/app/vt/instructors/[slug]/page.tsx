@@ -4,7 +4,6 @@ import prisma from "@/db";
 import InstructorClientComponent from "@/components/InstructorClientComponent"; // Client Component
 
 export default async function Page({ params }: { params: { slug: string } }) {
-    console.log(params.slug)
     const instructor = await prisma.instructor.findUnique({
         where: { id: decodeURIComponent(params.slug) },
         include: {

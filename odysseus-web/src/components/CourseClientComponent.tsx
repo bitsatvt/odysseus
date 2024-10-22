@@ -12,6 +12,31 @@ export default function CourseClientComponent({ course }: { course: Course & Rec
         const earliestAllowed = 2023 - years;
         setFilteredSections(sections.filter((section) => parseInt(section.id.substring(0, 4)) > earliestAllowed))
     }
+    function gpaToLetterGrade(gpa: number) {
+        if (gpa >= 3.7) {
+            return 'A';
+        } else if (gpa >= 3.3) {
+            return 'A-';
+        } else if (gpa >= 3.0) {
+            return 'B+';
+        } else if (gpa >= 2.7) {
+            return 'B';
+        } else if (gpa >= 2.3) {
+            return 'B-';
+        } else if (gpa >= 2.0) {
+            return 'C+';
+        } else if (gpa >= 1.7) {
+            return 'C';
+        } else if (gpa >= 1.3) {
+            return 'C-';
+        } else if (gpa >= 1.0) {
+            return 'D+';
+        } else if (gpa >= 0.7) {
+            return 'D';
+        } else {
+            return 'F';
+        }
+    }
     return (
         <>
 
@@ -23,31 +48,53 @@ export default function CourseClientComponent({ course }: { course: Course & Rec
             </Flex>
             <Space h="sm" />
             <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
-                <Text>
-                    <strong>Course Hours: </strong>
-                    {course.hours === null ? 'N/A' : course.hours}
-                </Text>
-                <Text>
-                    <strong>Repeatability: </strong>
-                    {course.repeatability ? course.repeatability : "N/A"}
-                </Text>
+
                 <Text>
                     <strong>Sections Taught: </strong>
                     {course.sections.length === null ? 'N/A' : course.sections.length}
                 </Text>
-                <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
+                <Text >
                     <strong> Average GPA: </strong>  {(() => {
                         if (filteredSections != null && filteredSections.length > 0) {
                             const totalGPA = filteredSections.reduce((sum: number, item: Section) => {
 
                                 return sum + (item.gpa || 0); // Parse GPA and add to the sum
                             }, 0);
-
-                            return ((totalGPA / filteredSections.length).toFixed(2)); // Return the total GPA rounded to 2 decimal places
+                            const avgGPA = ((totalGPA / filteredSections.length).toFixed(2))
+                            const letterGrade = gpaToLetterGrade(parseFloat(avgGPA))
+                            return `${avgGPA} (${letterGrade})`; // Return the total GPA rounded to 2 decimal places
                         } else {
                             return 'N/A';
                         }
                     })()}
+                </Text>
+                <Text >
+                    <strong> Strict A Rate (No A-) : </strong>  {(() => {
+                        if (filteredSections != null && filteredSections.length > 0) {
+                            const totalAs = filteredSections.reduce((sum: number, item: Section) => {
+
+                                return sum + (item.gradeData[0] || 0); // Parse W and add to the sum
+                            }, 0);
+                            const avgA = ((totalAs / filteredSections.length).toFixed(2))
+                            return avgA; // Return the total GPA rounded to 2 decimal places
+                        } else {
+                            return 'N/A';
+                        }
+                    })()}%
+                </Text>
+                <Text >
+                    <strong> Average Withdrawal Rate: </strong>  {(() => {
+                        if (filteredSections != null && filteredSections.length > 0) {
+                            const totalWithdrawals = filteredSections.reduce((sum: number, item: Section) => {
+
+                                return sum + (item.gradeData[12] || 0); // Parse W and add to the sum
+                            }, 0);
+                            const avgWithdrawals = ((totalWithdrawals / filteredSections.length).toFixed(2))
+                            return avgWithdrawals; // Return the total GPA rounded to 2 decimal places
+                        } else {
+                            return 'N/A';
+                        }
+                    })()}%
                 </Text>
             </Flex>
 

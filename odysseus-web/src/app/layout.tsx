@@ -2,6 +2,7 @@
 // All packages except `@mantine/hooks` require styles imports
 import '@mantine/core/styles.css';
 import './globals.css';
+import Head from 'next/head';
 
 import { ColorSchemeScript, MantineProvider, createTheme } from '@mantine/core';
 
@@ -9,7 +10,7 @@ export const metadata = {
   title: 'Odysseus Advisor',
   description: 'description',
   icons: {
-    icon: '/favicon.ico',
+    icon: 'favicon.ico',
   }
 };
 
@@ -24,9 +25,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
+      <Head>
         <ColorSchemeScript />
-      </head>
+      </Head>
       <body >
         <MantineProvider theme={theme}>{children}</MantineProvider>
       </body>
