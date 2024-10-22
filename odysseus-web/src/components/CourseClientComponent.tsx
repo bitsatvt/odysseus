@@ -23,23 +23,18 @@ export default function CourseClientComponent(course) {
             </Flex>
             <Space h="sm" />
             <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
-                <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
+                <Text>
                     <strong>Course Hours: </strong>
-                    {course.hours ? 'N/A' : course.hours}
+                    {course.hours === null ? 'N/A' : course.hours}
                 </Text>
-
-                <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
+                <Text>
                     <strong>Repeatability: </strong>
-                    {course.repeatability ? 'N/A' : course.repeatability}
+                    {course.repeatability ? course.repeatability : "N/A"}
                 </Text>
-
-                <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
+                <Text>
                     <strong>Sections Taught: </strong>
-                    {filteredSections.length === null ? 'N/A' : filteredSections.length}
+                    {course.sections.length === null ? 'N/A' : course.sections.length}
                 </Text>
-
-
-
                 <Text style={{ flex: 1, margin: '0 10px', textAlign: 'center' }}>
                     <strong> Average GPA: </strong>  {(() => {
                         if (filteredSections != null && filteredSections.length > 0) {
