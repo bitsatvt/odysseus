@@ -17,9 +17,9 @@ export default function InnerLayout({
     }
 
     return (
-        <section >
+        <section style={{ display: 'flex', flexDirection: 'column', height: '100vh' }} >
             <Header />
-            <main style={{ margin: "15px" }}>
+            <main style={{ margin: "15px", flex: 1 }}>
                 {children}
             </main>
             <Space h="xl" />

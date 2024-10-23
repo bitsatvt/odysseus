@@ -16,9 +16,6 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        position: 'fixed',
-        left: "0",
-        bottom: "0"
     }
 };
 

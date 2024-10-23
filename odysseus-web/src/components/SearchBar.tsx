@@ -41,12 +41,12 @@ export default function SearchBar({ width }: Record<string, number>) {
     const client = new Typesense.Client({
       nodes: [
         {
-          host: "localhost",
-          port: 8108,
+          host: process.env["NEXT_PUBLIC_TYPESENSE_HOST"]!,
+          port: +process.env["NEXT_PUBLIC_TYPESENSE_PORT"]!,
           protocol: "http",
         },
       ],
-      apiKey: "zijgRU2wXKE4gMJqm7Xk", // don't use in production, create read-only API key instead
+      apiKey: process.env["NEXT_PUBLIC_TYPESENSE_API_KEY"]!
     });
 
     const handleSearch = async (searchQuery: string, currentSearchType: 'courses' | 'instructors') => {

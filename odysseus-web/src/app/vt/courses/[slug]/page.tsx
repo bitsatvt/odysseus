@@ -6,7 +6,7 @@ import PrereqTreeRenderer from "@/components/PrereqTreeRenderer";
 import PostreqTreeRenderer from "@/components/PostreqTreeRenderer";
 import { Flex, Title, Box, ScrollArea, Text, Space, Divider } from "@mantine/core";
 import Link from 'next/link';
-import { Course, Section } from '@prisma/client';
+
 export default async function Page({ params }: { params: { slug: string } }) {
   const course = await prisma.course.findUnique({
     where: { id: params.slug },
@@ -79,4 +79,14 @@ export default async function Page({ params }: { params: { slug: string } }) {
       </div>
     );
   }
+}
+
+
+export async function generateStaticParams() {
+  const courses = await prisma.course.findMany({
+    select: {
+      id: true
+    }
+  });
+  return courses.map((c) => ({ slug: c.id }))
 }

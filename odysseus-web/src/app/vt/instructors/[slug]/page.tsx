@@ -25,3 +25,12 @@ export default async function Page({ params }: { params: { slug: string } }) {
     );
 
 }
+
+export async function generateStaticParams() {
+    const courses = await prisma.instructor.findMany({
+        select: {
+            id: true
+        }
+    });
+    return courses.map((c) => ({ slug: c.id }))
+}
