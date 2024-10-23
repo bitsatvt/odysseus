@@ -51,8 +51,9 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
 
   return (
     <Box>
-      <Title style={{ textAlign: 'center' }}>{capitalizeAndJoin(instructor?.id)}</Title>
-      <Flex justify={'center'} gap={20} mt={10}>
+      <Title ta="center">{capitalizeAndJoin(instructor?.id)}</Title>
+      <Space h="lg"/>
+      <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }} gap={50}>
         <Text><strong>Difficulty: </strong>{instructor.difficulty == -1 ? "N/A" : instructor.difficulty + "/10"}</Text>
         <Text><strong>Rating: </strong>{instructor.rating == -1 ? "N/A" : instructor.rating + "/10"}</Text>
         <Text><strong>Would Recommend: </strong>{instructor.recommendedPct == -1 ? "N/A" : instructor.recommendedPct + "%"}</Text>

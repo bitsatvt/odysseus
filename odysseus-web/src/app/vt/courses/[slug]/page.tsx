@@ -21,7 +21,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
     return (
       <div>
         <Title mb={10}>
-          Course: {course.id} {course.title}
+          {course.id}: {course.title}
         </Title>
         <Flex direction={{ base: 'column', sm: 'row' }} gap={50}>
           <Box style={{ flex: 1 }}>
