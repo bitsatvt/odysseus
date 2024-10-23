@@ -68,7 +68,7 @@ export default function CourseClientComponent({ course }: { course: Course & Rec
 
                 <Text>
                     <strong>Sections Taught: </strong>
-                    {course.sections.length === null ? 'N/A' : course.sections.length}
+                    {filteredSections === null ? 'N/A' : filteredSections.length}
                 </Text>
                 <Text >
                     <strong> Average GPA: </strong>  {(() => {

@@ -92,25 +92,27 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {filteredCourses.map((course: any) => {
-                const totalGpa = course.sections.reduce((sum: number, section: any) => sum + section.gpa, 0);
-                const averageGpa = course.sections.length > 0 ? (totalGpa / course.sections.length).toFixed(2) : 'N/A';
-                const sectionCount = course.sections.length;
+            {filteredCourses.map((course: any) => {
+              const totalGpa = course.sections.reduce((sum: number, section: any) => sum + section.gpa, 0);
+              const averageGpa = course.sections.length > 0 ? (totalGpa / course.sections.length).toFixed(2) : 'N/A';
+              const sectionCount = course.sections.length;
 
-                return (
-                  <Table.Tr key={course.id}>
-                    <Table.Td>
-                      <Link href={`/vt/courses/${course.id}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>
-                        {course.id}
-                      </Link>
-                    </Table.Td>
-                    <Table.Td >{course.title.replace(/&amp;/g, '&')}</Table.Td>
-                    <Table.Td>{averageGpa}</Table.Td>
-                    <Table.Td>{sectionCount}</Table.Td>
-                  </Table.Tr>
-                );
-              })}
-            </Table.Tbody>
+              return (
+                <Table.Tr key={course.id}>
+                  <Table.Td style={{ textAlign: 'center' }}>
+                    <Link href={`/vt/courses/${course.id}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>
+                      {course.id}
+                    </Link>
+                  </Table.Td>
+                  <Table.Td style={{ textAlign: 'center' }}>
+                    {course.title ? course.title.replace(/&amp;/g, '&') : 'Not Available'}
+                  </Table.Td>
+                  <Table.Td style={{ textAlign: 'center' }}>{averageGpa}</Table.Td>
+                  <Table.Td style={{ textAlign: 'center' }}>{sectionCount}</Table.Td>
+                </Table.Tr>
+              );
+            })}
+          </Table.Tbody>
           </Table>
         </ScrollArea.Autosize>
       </Paper>

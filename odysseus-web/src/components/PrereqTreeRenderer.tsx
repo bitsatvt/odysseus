@@ -18,6 +18,10 @@ export default function PrereqTreeRenderer({
   depth,
   includeParens,
 }: PrereqTreeRendererProps) {
+  if(depth == 1 && tree.children.length == 0)
+  {
+    return <></>
+  }
   if (tree.courseId) {
     if (depth > 0 && tree.children.length > 0) {
       const childElements = tree.children.map((child, index) => (
@@ -30,13 +34,7 @@ export default function PrereqTreeRenderer({
           />
         </span>
       ));
-      return includeParens ? (
-        <>
-          ({childElements})
-        </>
-      ) : (
-        <>{childElements}</>
-      );
+      return <>{childElements}</>;
     } else {
       return (
         <Link href={`./${String(tree.courseId)}`}>
