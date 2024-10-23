@@ -1,7 +1,6 @@
 import SearchBar from './SearchBar';
 import Link from 'next/link';
 import { Flex, Text, Stack, Box } from '@mantine/core';
-import Image from 'next/image'
 
 export default function Header() {
     return (
@@ -9,7 +8,7 @@ export default function Header() {
             <Flex direction={{ base: 'column', xs: 'row' }} align={'center'} p={'1%'}>
                 <Link href="/vt">
                     <Stack align="center" gap={0}>
-                        <Image src="/OfficialOdysseusLogo.png" width={80} height={80} alt="Odysseus Logo" />
+                        <img src="/OfficialOdysseusLogo.png" width={80} height={80} alt="Odysseus Logo" />
                         <Text style={{ fontFamily: "'Just Another Hand', cursive", fontSize: '30px' }} c="black">Odysseus</Text>
                     </Stack>
                 </Link>

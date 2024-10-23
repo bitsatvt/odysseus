@@ -2,7 +2,6 @@
 import SearchBar from "@/components/SearchBar"
 import Footer from "@/components/Footer"
 import { Flex, Text, Stack, Box, Space } from '@mantine/core';
-import Image from 'next/image'
 
 export default function Page() {
   return (
@@ -10,7 +9,7 @@ export default function Page() {
       <Stack style={{ width: '100%' }}>
         <Flex direction={{ base: 'column', xs: 'row' }} style={{ width: '100%' }} align={'left'} className="mb-2" >
           <Stack align="center" gap={0} p="1%">
-            <Image src="/OfficialOdysseusLogo.png" width={80} height={80} alt="Odysseus Logo" />
+            <img src="/OfficialOdysseusLogo.png" width={80} height={80} alt="Odysseus Logo" />
             <Text style={{ fontFamily: "'Just Another Hand', cursive", fontSize: '30px' }}>Odysseus</Text>
           </Stack>
         </Flex>
