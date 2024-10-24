@@ -52,7 +52,7 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
   return (
     <Box>
       <Title ta="center">{capitalizeAndJoin(instructor?.id)}</Title>
-      <Space h="lg"/>
+      <Space h="lg" />
       <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }} gap={50}>
         <Text><strong>Difficulty: </strong>{instructor.difficulty == -1 ? "N/A" : instructor.difficulty + "/10"}</Text>
         <Text><strong>Rating: </strong>{instructor.rating == -1 ? "N/A" : instructor.rating + "/10"}</Text>
@@ -71,11 +71,8 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
 
       />
       <Paper withBorder radius="lg" style={{ overflow: 'hidden' }}>
-        <ScrollArea.Autosize
-          mah={500}
-          type="scroll"
-          scrollbarSize={8}
-          offsetScrollbars
+        <ScrollArea
+          h={500}
         >
           <Table
             stickyHeader
@@ -93,29 +90,29 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-            {filteredCourses.map((course: any) => {
-              const totalGpa = course.sections.reduce((sum: number, section: any) => sum + section.gpa, 0);
-              const averageGpa = course.sections.length > 0 ? (totalGpa / course.sections.length).toFixed(2) : 'N/A';
-              const sectionCount = course.sections.length;
+              {filteredCourses.map((course: any) => {
+                const totalGpa = course.sections.reduce((sum: number, section: any) => sum + section.gpa, 0);
+                const averageGpa = course.sections.length > 0 ? (totalGpa / course.sections.length).toFixed(2) : 'N/A';
+                const sectionCount = course.sections.length;
 
-              return (
-                <Table.Tr key={course.id}>
-                  <Table.Td style={{ textAlign: 'center' }}>
-                    <Link href={`/vt/courses/${course.id}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>
-                      {course.id}
-                    </Link>
-                  </Table.Td>
-                  <Table.Td style={{ textAlign: 'center' }}>
-                    {course.title ? course.title.replace(/&amp;/g, '&') : 'Not Available'}
-                  </Table.Td>
-                  <Table.Td style={{ textAlign: 'center' }}>{averageGpa}</Table.Td>
-                  <Table.Td style={{ textAlign: 'center' }}>{sectionCount}</Table.Td>
-                </Table.Tr>
-              );
-            })}
-          </Table.Tbody>
+                return (
+                  <Table.Tr key={course.id}>
+                    <Table.Td style={{ textAlign: 'center' }}>
+                      <Link href={`/vt/courses/${course.id}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>
+                        {course.id}
+                      </Link>
+                    </Table.Td>
+                    <Table.Td style={{ textAlign: 'center' }}>
+                      {course.title ? course.title.replace(/&amp;/g, '&') : 'Not Available'}
+                    </Table.Td>
+                    <Table.Td style={{ textAlign: 'center' }}>{averageGpa}</Table.Td>
+                    <Table.Td style={{ textAlign: 'center' }}>{sectionCount}</Table.Td>
+                  </Table.Tr>
+                );
+              })}
+            </Table.Tbody>
           </Table>
-        </ScrollArea.Autosize>
+        </ScrollArea>
       </Paper>
     </Box >
   );
