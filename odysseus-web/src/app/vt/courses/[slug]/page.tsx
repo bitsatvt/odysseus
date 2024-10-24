@@ -23,7 +23,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         <Title mb={10}>
           {course.id}: {course.title}
         </Title>
-        <Flex direction={{ base: 'column', sm: 'row' }} gap={50}>
+        <Flex direction={{ base: 'column', sm: 'row' }}>
           <Box style={{ flex: 1 }}>
             <Text style={{ hyphens: 'auto' }}><strong>Description:</strong> {course.description}</Text>
             <Space h="xs" />
@@ -34,6 +34,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
               {course.hours === null ? 'N/A' : course.hours}
             </Text>
           </Box>
+          <Space h="xs" />
           <Box style={{ flex: 1, minWidth: 0 }}>
             <ScrollArea style={{ whiteSpace: 'nowrap' }} offsetScrollbars>
               <Text>

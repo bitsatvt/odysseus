@@ -55,16 +55,9 @@ export default function CourseClientComponent({ course }: { course: Course & Rec
                 size="sm"
                 radius="xl"
                 color="#f05400"
-                style={{ marginRight: '1%' }}
             />
-            {/* <Flex style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Button variant="light" onClick={() => filterNYears("3", sections)}>Last 3 Years</Button>
-                <Button variant="light" onClick={() => filterNYears("5", sections)}>Last 5 Years</Button>
-                <Button variant="light" onClick={() => filterNYears("10", sections)}>Last 10 Years</Button>
-                <Button variant="light" onClick={() => filterNYears("30", sections)}>All Years</Button>
-            </Flex> */}
             <Space h="sm" />
-            <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
+            <Flex style={{ justifyContent: 'space-between' }} direction={{ base: 'column', sm: 'row' }}>
 
                 <Text>
                     <strong>Sections Taught: </strong>
