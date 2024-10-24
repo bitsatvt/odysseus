@@ -50,7 +50,7 @@ function Th({ children, reversed, sorted, onSort }: ThProps) {
   const Icon = sorted ? (reversed ? IconChevronUp : IconChevronDown) : IconSelector;
   return (
     <Table.Th>
-      <UnstyledButton onClick={onSort} style={{ width: '100%' }}>
+      <UnstyledButton onClick={onSort}>
         <Group>
           <Text fw={500} fz="sm">
             {children}
@@ -206,58 +206,56 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
         w={300}
       />
 
-      <Paper withBorder radius="lg" style={{ overflow: 'hidden' }} >
-        <ScrollArea h={500}>
-          <Table
-            stickyHeader
-            horizontalSpacing="sm"
-            verticalSpacing="xs"
-          >
-            <Table.Thead>
-              <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>
+      <Paper withBorder radius="lg" style={{ overflow: 'auto', maxHeight: '500px' }} >
+        <Table
+          stickyHeader
+          horizontalSpacing="sm"
+          verticalSpacing="xs"
+        >
+          <Table.Thead w={'100%'}>
+            <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>
+              <Th
+                sorted={sortConfig?.key === 'instructor'}
+                reversed={sortConfig?.direction === 'desc'}
+                onSort={() => requestSort('instructor')}
+              >
+                Instructor
+              </Th>
+              <Th
+                sorted={sortConfig?.key === 'recentTerm'}
+                reversed={sortConfig?.direction === 'desc'}
+                onSort={() => requestSort('recentTerm')}
+              >
+                Most Recent Term
+              </Th>
+              {gradeKeys.map((grade, index) => (
                 <Th
-                  sorted={sortConfig?.key === 'instructor'}
+                  key={grade}
+                  sorted={sortConfig?.key === `grade_${index}`}
                   reversed={sortConfig?.direction === 'desc'}
-                  onSort={() => requestSort('instructor')}
+                  onSort={() => requestSort(`grade_${index}`)}
                 >
-                  Instructor
+                  {grade} (%)
                 </Th>
-                <Th
-                  sorted={sortConfig?.key === 'recentTerm'}
-                  reversed={sortConfig?.direction === 'desc'}
-                  onSort={() => requestSort('recentTerm')}
-                >
-                  Most Recent Term
-                </Th>
-                {gradeKeys.map((grade, index) => (
-                  <Th
-                    key={grade}
-                    sorted={sortConfig?.key === `grade_${index}`}
-                    reversed={sortConfig?.direction === 'desc'}
-                    onSort={() => requestSort(`grade_${index}`)}
-                  >
-                    {grade} (%)
-                  </Th>
-                ))}
-                <Th
-                  sorted={sortConfig?.key === 'avgGPA'}
-                  reversed={sortConfig?.direction === 'desc'}
-                  onSort={() => requestSort('avgGPA')}
-                >
-                  GPA
-                </Th>
-                <Th
-                  sorted={sortConfig?.key === 'numberSections'}
-                  reversed={sortConfig?.direction === 'desc'}
-                  onSort={() => requestSort('numberSections')}
-                >
-                  # Sections
-                </Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>{rows}</Table.Tbody>
-          </Table>
-        </ScrollArea>
+              ))}
+              <Th
+                sorted={sortConfig?.key === 'avgGPA'}
+                reversed={sortConfig?.direction === 'desc'}
+                onSort={() => requestSort('avgGPA')}
+              >
+                GPA
+              </Th>
+              <Th
+                sorted={sortConfig?.key === 'numberSections'}
+                reversed={sortConfig?.direction === 'desc'}
+                onSort={() => requestSort('numberSections')}
+              >
+                # Sections
+              </Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>{rows}</Table.Tbody>
+        </Table>
       </Paper >
     </>
   );

@@ -57,7 +57,7 @@ export default function CourseClientComponent({ course }: { course: Course & Rec
                 color="#f05400"
             />
             <Space h="sm" />
-            <Flex style={{ justifyContent: 'space-between' }} direction={{ base: 'column', sm: 'row' }}>
+            <Flex style={{ justifyContent: 'space-between' }} direction={{ base: 'column', sm: 'row' }} gap={10} py={5}>
 
                 <Text>
                     <strong>Sections Taught: </strong>
