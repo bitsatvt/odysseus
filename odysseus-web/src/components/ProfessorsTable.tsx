@@ -136,6 +136,7 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
 
       return {
         instructor,
+        numberSections: v.numberSections,
         recentTerm: v.recentTerm,
         avgGrades,
         avgGPA,
@@ -151,6 +152,9 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
       if (sortConfig.key === 'instructor') {
         aValue = capitalizeAndJoin(b.instructor.toLowerCase());
         bValue = capitalizeAndJoin(a.instructor.toLowerCase());
+      } else if (sortConfig.key === 'numberSections') {
+        aValue = a.numberSections;
+        bValue = b.numberSections;
       } else if (sortConfig.key === 'recentTerm') {
         aValue = a.recentTerm;
         bValue = b.recentTerm;
@@ -187,6 +191,7 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
           <Table.Td key={grade}>{prof.avgGrades[grade].toFixed(1)}%</Table.Td>
         ))}
         <Table.Td>{formattedGPA}</Table.Td>
+        <Table.Td>{prof.numberSections}</Table.Td>
       </Table.Tr>
     )
   });
