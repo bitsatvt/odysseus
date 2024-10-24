@@ -4,19 +4,16 @@ import '@mantine/core/styles.css';
 import './globals.css';
 import Head from 'next/head';
 
-import { ColorSchemeScript, MantineProvider, createTheme } from '@mantine/core';
+import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 
 export const metadata = {
   title: 'Odysseus Advisor',
-  description: 'description',
+  description: 'Find detailed course and professor information.',
   // icons: {
   //   icon: 'favicon.ico',
   // }
 };
 
-const theme = createTheme({
-
-})
 
 export default function RootLayout({
   children,
@@ -29,7 +26,7 @@ export default function RootLayout({
         <ColorSchemeScript />
       </Head>
       <body >
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider>{children}</MantineProvider>
       </body>
     </html>
   );

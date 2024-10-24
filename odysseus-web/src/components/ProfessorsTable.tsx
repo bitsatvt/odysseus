@@ -136,8 +136,6 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
 
       return {
         instructor,
-        enrollment: v.enrollment,
-        numberSections: v.numberSections,
         recentTerm: v.recentTerm,
         avgGrades,
         avgGPA,
@@ -153,12 +151,6 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
       if (sortConfig.key === 'instructor') {
         aValue = capitalizeAndJoin(b.instructor.toLowerCase());
         bValue = capitalizeAndJoin(a.instructor.toLowerCase());
-      } else if (sortConfig.key === 'numberSections') {
-        aValue = a.numberSections;
-        bValue = b.numberSections;
-      } else if (sortConfig.key === 'enrollment') {
-        aValue = a.enrollment;
-        bValue = b.enrollment;
       } else if (sortConfig.key === 'recentTerm') {
         aValue = a.recentTerm;
         bValue = b.recentTerm;
@@ -195,8 +187,6 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
           <Table.Td key={grade}>{prof.avgGrades[grade].toFixed(1)}%</Table.Td>
         ))}
         <Table.Td>{formattedGPA}</Table.Td>
-        <Table.Td>{prof.numberSections}</Table.Td>
-        <Table.Td>{prof.enrollment}</Table.Td>
       </Table.Tr>
     )
   });
@@ -211,19 +201,12 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
         w={300}
       />
 
-      <Paper withBorder radius="lg" style={{ overflow: 'hidden' }}>
-        <ScrollArea.Autosize
-          mah={500}
-          type="scroll"
-          scrollbarSize={8}
-          offsetScrollbars
-        >
+      <Paper withBorder radius="lg" style={{ overflow: 'hidden' }} >
+        <ScrollArea h={500}>
           <Table
             stickyHeader
             horizontalSpacing="sm"
             verticalSpacing="xs"
-            miw={800}
-            style={{ tableLayout: 'fixed' }}
           >
             <Table.Thead>
               <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>
@@ -258,25 +241,11 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
                 >
                   GPA
                 </Th>
-                <Th
-                  sorted={sortConfig?.key === 'numberSections'}
-                  reversed={sortConfig?.direction === 'desc'}
-                  onSort={() => requestSort('numberSections')}
-                >
-                  Sections Taught (#)
-                </Th>
-                <Th
-                  sorted={sortConfig?.key === 'enrollment'}
-                  reversed={sortConfig?.direction === 'desc'}
-                  onSort={() => requestSort('enrollment')}
-                >
-                  Total Enrollment (#)
-                </Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>{rows}</Table.Tbody>
           </Table>
-        </ScrollArea.Autosize >
+        </ScrollArea>
       </Paper >
     </>
   );

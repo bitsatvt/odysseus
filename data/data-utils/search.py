@@ -8,6 +8,8 @@ def convert_class_to_jsonl():
         with open("../search/classes.jsonl", "w") as out:
             for item in data:
                 item = data[item]
+                if item["title"] == "":
+                    continue
                 out.write(
                     json.dumps(
                         {
@@ -43,12 +45,12 @@ client = typesense.Client(
     {
         "nodes": [
             {
-                "host": "localhost",
-                "port": 8108,
-                "protocol": "http",
+                "host": "",
+                "port": 8081,
+                "protocol": "",
             },
         ],
-        "api_key": "zijgRU2wXKE4gMJqm7Xk",
+        "api_key": "",
     }
 )
 
@@ -73,8 +75,8 @@ def create_schemas():
             {"name": "lastName", "type": "string"},
         ],
     }
-    client.collections["courses"].delete()
-    client.collections["instructors"].delete()
+    # client.collections["courses"].delete()
+    # client.collections["instructors"].delete()
 
     client.collections.create(course_schema)
     client.collections.create(instructor_schema)
@@ -103,8 +105,21 @@ def capitalize_and_join(name):
     return " ".join(s.capitalize() for s in name.split("-"))
 
 
+def create_search_only_api_key():
+    print(
+        client.keys.create(
+            {
+                "description": "Search-only key.",
+                "actions": ["documents:search"],
+                "collections": ["instructors", "courses"],
+            }
+        )
+    )
+
+
 convert_class_to_jsonl()
 convert_prof_to_jsonl()
 create_schemas()
 import_documents()
-test_search()
+# test_search()
+# create_search_only_api_key()

@@ -50,7 +50,7 @@ export default function CourseClientComponent({ course }: { course: Course & Rec
                     { label: 'Last 3 Years', value: '3' },
                     { label: 'Last 5 Years', value: '5' },
                     { label: 'Last 10 Years', value: '10' },
-                    { label: 'All Years', value: '30' },
+                    { label: 'All', value: '30' },
                 ]}
                 size="sm"
                 radius="xl"
