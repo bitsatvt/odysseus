@@ -212,7 +212,7 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
           horizontalSpacing="sm"
           verticalSpacing="xs"
         >
-          <Table.Thead>
+          <Table.Thead w={'100%'}>
             <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>
               <Th
                 sorted={sortConfig?.key === 'instructor'}
@@ -244,6 +244,13 @@ export default function ProfessorsTable({ sections }: { sections: Section[] }) {
                 onSort={() => requestSort('avgGPA')}
               >
                 GPA
+              </Th>
+              <Th
+                sorted={sortConfig?.key === 'numberSections'}
+                reversed={sortConfig?.direction === 'desc'}
+                onSort={() => requestSort('numberSections')}
+              >
+                # Sections
               </Th>
             </Table.Tr>
           </Table.Thead>

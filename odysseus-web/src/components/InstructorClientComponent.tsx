@@ -53,7 +53,7 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
     <Box>
       <Title ta="center">{capitalizeAndJoin(instructor?.id)}</Title>
       <Space h="lg" />
-      <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }} gap={50}>
+      <Flex style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} gap={10} px={15}>
         <Text><strong>Difficulty: </strong>{instructor.difficulty == -1 ? "N/A" : instructor.difficulty + "/10"}</Text>
         <Text><strong>Rating: </strong>{instructor.rating == -1 ? "N/A" : instructor.rating + "/10"}</Text>
         <Text><strong>Would Recommend: </strong>{instructor.recommendedPct == -1 ? "N/A" : instructor.recommendedPct + "%"}</Text>
@@ -70,49 +70,43 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
         mb="md"
 
       />
-      <Paper withBorder radius="lg" style={{ overflow: 'hidden' }}>
-        <ScrollArea
-          h={500}
+      <Paper withBorder radius="lg" style={{ overflow: 'auto', maxHeight: '500px' }}>
+        <Table
+          stickyHeader
+          horizontalSpacing="sm"
+          verticalSpacing="xs"
         >
-          <Table
-            stickyHeader
-            horizontalSpacing="sm"
-            verticalSpacing="xs"
-            miw={800}
-            style={{ tableLayout: 'fixed' }}
-          >
-            <Table.Thead >
-              <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px', }}>
-                <Table.Th ta={'center'}>ID</Table.Th>
-                <Table.Th ta={'center'}>Title</Table.Th>
-                <Table.Th ta={'center'}>GPA</Table.Th>
-                <Table.Th ta={'center'}>Sections Taught</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {filteredCourses.map((course: any) => {
-                const totalGpa = course.sections.reduce((sum: number, section: any) => sum + section.gpa, 0);
-                const averageGpa = course.sections.length > 0 ? (totalGpa / course.sections.length).toFixed(2) : 'N/A';
-                const sectionCount = course.sections.length;
+          <Table.Thead >
+            <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px', }}>
+              <Table.Th ta={'center'}>ID</Table.Th>
+              <Table.Th ta={'center'}>Title</Table.Th>
+              <Table.Th ta={'center'}>GPA</Table.Th>
+              <Table.Th ta={'center'}>Sections Taught</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {filteredCourses.map((course: any) => {
+              const totalGpa = course.sections.reduce((sum: number, section: any) => sum + section.gpa, 0);
+              const averageGpa = course.sections.length > 0 ? (totalGpa / course.sections.length).toFixed(2) : 'N/A';
+              const sectionCount = course.sections.length;
 
-                return (
-                  <Table.Tr key={course.id}>
-                    <Table.Td style={{ textAlign: 'center' }}>
-                      <Link href={`/vt/courses/${course.id}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>
-                        {course.id}
-                      </Link>
-                    </Table.Td>
-                    <Table.Td style={{ textAlign: 'center' }}>
-                      {course.title ? course.title.replace(/&amp;/g, '&') : 'Not Available'}
-                    </Table.Td>
-                    <Table.Td style={{ textAlign: 'center' }}>{averageGpa}</Table.Td>
-                    <Table.Td style={{ textAlign: 'center' }}>{sectionCount}</Table.Td>
-                  </Table.Tr>
-                );
-              })}
-            </Table.Tbody>
-          </Table>
-        </ScrollArea>
+              return (
+                <Table.Tr key={course.id}>
+                  <Table.Td style={{ textAlign: 'center' }}>
+                    <Link href={`/vt/courses/${course.id}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>
+                      {course.id}
+                    </Link>
+                  </Table.Td>
+                  <Table.Td style={{ textAlign: 'center' }}>
+                    {course.title ? course.title.replace(/&amp;/g, '&') : 'Not Available'}
+                  </Table.Td>
+                  <Table.Td style={{ textAlign: 'center' }}>{averageGpa}</Table.Td>
+                  <Table.Td style={{ textAlign: 'center' }}>{sectionCount}</Table.Td>
+                </Table.Tr>
+              );
+            })}
+          </Table.Tbody>
+        </Table>
       </Paper>
     </Box >
   );
