@@ -43,7 +43,7 @@ export default function SearchBar({ width }: Record<string, number>) {
         {
           host: process.env["NEXT_PUBLIC_TYPESENSE_HOST"]!,
           port: +process.env["NEXT_PUBLIC_TYPESENSE_PORT"]!,
-          protocol: "http",
+          protocol: "https",
         },
       ],
       apiKey: process.env["NEXT_PUBLIC_TYPESENSE_API_KEY"]!
