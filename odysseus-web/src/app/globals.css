@@ -3,13 +3,6 @@
 }
 
 @font-face {
-    font-family: 'Just Another Hand';
-    src: url('/Just_Another_Hand/JustAnotherHand-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
     font-family: 'Alata';
     src: url('/Alata/Alata-Regular.ttf') format('truetype');
     font-weight: normal;

@@ -35,7 +35,7 @@ export default function PostreqTreeRenderer({
     }
   } else {
     if (tree.children.length === 0) {
-      return null;
+      return <>N/A</>;
     }
     const childElements = tree.children.map((child, index) => (
       <span key={index}>

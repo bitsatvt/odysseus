@@ -62,7 +62,7 @@ export default function SearchBar({ width }: Record<string, number>) {
             currentSearchType === 'courses'
               ? 'code,subjectCode,title,desc'
               : 'firstName,lastName',
-          per_page: 30,
+          per_page: 50,
           num_typos:
             currentSearchType === 'courses' ? "0,1,2,2" : '2,2'
         };
@@ -165,7 +165,6 @@ export default function SearchBar({ width }: Record<string, number>) {
             value={searchType}
             onChange={(value: string) => {
               setSearchType(value as "courses" | "instructors");
-              setQuery(''); // Clear the query when switching types
             }}
             data={[
               { label: 'Course', value: 'courses' },
