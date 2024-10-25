@@ -2,20 +2,6 @@
     text-decoration: none;
 }
 
-@font-face {
-    font-family: 'Alata';
-    src: url('/Alata/Alata-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Mynerve';
-    src: url('/Mynerve/Mynerve-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
 html {
     height: 100%;
 }

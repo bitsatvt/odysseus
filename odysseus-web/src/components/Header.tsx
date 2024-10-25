@@ -12,7 +12,7 @@ export default function Header() {
                     </Stack>
                 </Link>
                 <Link href="/vt">
-                    <Text style={{ fontFamily: 'Alata' }} fz={32} ml={20} c="black" fw={550}>
+                    <Text style={{ fontFamily: 'Cambria' }} fz={36} ml={20} c="black" fw={600}>
                         <span>Virginia Tech</span>
                     </Text>
                 </Link>
