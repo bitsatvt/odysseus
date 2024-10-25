@@ -77,9 +77,21 @@ for section in errors:
     if lastname in instructorLib:
         possibleFirstNames = instructorLib[lastname]
         filteredFirstNames = []
+
         for currFirstName in possibleFirstNames:
-            if errors[section]["CourseID"] in possibleFirstNames[currFirstName]["Courses"]:
-                filteredFirstNames.append(currFirstName)
+            for course in possibleFirstNames[currFirstName]["Courses"]:
+                if errors[section]["CourseID"] in possibleFirstNames[currFirstName]["Courses"]:
+                    filteredFirstNames.append(currFirstName)
+
+        if not filteredFirstNames:       
+            for currFirstName in possibleFirstNames:
+                courseSubject = set()
+                for subject in possibleFirstNames[currFirstName]["Courses"]:
+                    courseSubject.add(subject[0:subject.index('-')])
+
+                if errors[section]["CourseID"][0:errors[section]["CourseID"].index('-')] in courseSubject:
+                    filteredFirstNames.append(currFirstName)
+
         if not filteredFirstNames:        
             for currFirstName in possibleFirstNames:
                     filteredFirstNames.append(currFirstName)
