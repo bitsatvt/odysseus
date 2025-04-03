@@ -8,12 +8,11 @@ export default function Header() {
             <Flex direction={{ base: 'column', xs: 'row' }} align={'center'} p={'1%'}>
                 <Link href="/vt">
                     <Stack align="center" gap={0}>
-                        <img src="/OfficialOdysseusLogo.png" width={80} height={80} alt="Odysseus Logo" />
-                        <Text style={{ fontFamily: "'Just Another Hand', cursive", fontSize: '30px' }} c="black">Odysseus</Text>
+                        <img src="/OfficialOdysseusLogo.svg" width={80} height={130} alt="Odysseus Logo" />
                     </Stack>
                 </Link>
                 <Link href="/vt">
-                    <Text style={{ fontFamily: 'Alata' }} fz={32} ml={20} c="black" fw={550}>
+                    <Text style={{ fontFamily: 'Cambria' }} fz={36} ml={20} c="black" fw={600}>
                         <span>Virginia Tech</span>
                     </Text>
                 </Link>

@@ -18,9 +18,8 @@ export default function PrereqTreeRenderer({
   depth,
   includeParens,
 }: PrereqTreeRendererProps) {
-  if(depth == 1 && tree.children.length == 0)
-  {
-    return <></>
+  if (depth == 1 && tree.children.length == 0) {
+    return <>N/A</>;
   }
   if (tree.courseId) {
     if (depth > 0 && tree.children.length > 0) {
