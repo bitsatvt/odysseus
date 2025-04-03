@@ -51,7 +51,7 @@ client = typesense.Client(
                 "protocol": "",
             },
         ],
-        "api_key": os.environ("TYPESENSE_API_KEY"),
+        "api_key": os.environ["TYPESENSE_API_KEY"],
     }
 )
 
