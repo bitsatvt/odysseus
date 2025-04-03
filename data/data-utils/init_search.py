@@ -1,5 +1,6 @@
 import typesense
 import json
+import os
 
 
 def convert_class_to_jsonl():
@@ -50,12 +51,12 @@ client = typesense.Client(
                 "protocol": "",
             },
         ],
-        "api_key": "",
+        "api_key": os.environ("TYPESENSE_API_KEY"),
     }
 )
 
 
-def create_schemas():
+def create_schemas(delete=False):
     course_schema = {
         "name": "courses",
         "fields": [
@@ -75,8 +76,9 @@ def create_schemas():
             {"name": "lastName", "type": "string"},
         ],
     }
-    # client.collections["courses"].delete()
-    # client.collections["instructors"].delete()
+    if delete:
+        client.collections["courses"].delete()
+        client.collections["instructors"].delete()
 
     client.collections.create(course_schema)
     client.collections.create(instructor_schema)
@@ -109,6 +111,7 @@ def create_search_only_api_key():
     print(
         client.keys.create(
             {
+                "value": "fNhLCywq0zJwTLHRkgprXmF1hvGsqek7",  # from .env.production
                 "description": "Search-only key.",
                 "actions": ["documents:search"],
                 "collections": ["instructors", "courses"],
@@ -117,9 +120,9 @@ def create_search_only_api_key():
     )
 
 
-convert_class_to_jsonl()
-convert_prof_to_jsonl()
+# convert_class_to_jsonl()
+# convert_prof_to_jsonl()
 create_schemas()
 import_documents()
-# test_search()
+test_search()
 # create_search_only_api_key()
