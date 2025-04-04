@@ -12,7 +12,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   typesense:
-    image: typesense/typesense:28.0.rc12
+    image: typesense/typesense:28.0
     environment:
       - TYPESENSE_API_KEY=zijgRU2wXKE4gMJqm7Xk
     ports:
