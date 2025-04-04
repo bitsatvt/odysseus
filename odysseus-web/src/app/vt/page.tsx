@@ -18,10 +18,9 @@ export default function Page() {
           <SearchBar />
         </Box>
         <Box w="37%" pt="lg">
-        <Alert icon={<IconAlertCircle size={32} />} title="The website is under development and may experience occasional issues." color="yellow" radius="md" />
+          <Alert icon={<IconAlertCircle size={32} />} title="The website is under development and may experience occasional issues." color="yellow" radius="md" />
         </Box>
       </Stack>
-
 
       <Footer />
     </Flex>

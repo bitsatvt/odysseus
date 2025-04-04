@@ -1,22 +1,35 @@
 import React from 'react';
+import { IconBrandGithub, IconBrandDiscordFilled } from '@tabler/icons-react';
+import { ActionIcon, Flex, Group } from '@mantine/core';
+import Link from 'next/link';
 
-const BrownBox: React.FC = () => {
+export default function Footer() {
     return (
-        <div style={styles.brownBox}>
-            {/* You can add content here if needed */}
-        </div>
+        <footer style={{ width: '100%' }}>
+            <Flex px={10}
+                w="100%"
+                h={60}
+                bg="#971515"
+                justify="space-between"
+                c="gray"
+                align="center"
+            >
+                <Group>
+                    © {new Date().getFullYear()} Odysseus Developers
+                </Group>
+                <Group gap="xs" wrap="nowrap">
+                    <Link href="https://discord.gg/vRjUxzrkEc">
+                        <ActionIcon size="md" variant="default" radius="xl">
+                            <IconBrandDiscordFilled size={18} stroke={1.5} />
+                        </ActionIcon>
+                    </Link>
+                    <Link href="https://github.com/Odysseus-Academic">
+                        <ActionIcon size="md" variant="default" radius="xl">
+                            <IconBrandGithub size={18} stroke={1.5} />
+                        </ActionIcon>
+                    </Link>
+                </Group >
+            </Flex>
+        </footer>
     );
 };
-
-const styles = {
-    brownBox: {
-        backgroundColor: '#971515', // Brown color
-        width: '100%',
-        height: '48px', // Adjust the height as needed
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
-};
-
-export default BrownBox;
