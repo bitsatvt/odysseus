@@ -2,7 +2,7 @@
 import { Section } from "@prisma/client";
 import { AreaChart, ChartTooltipProps, getFilteredChartTooltipPayload } from "@mantine/charts";
 import '@mantine/charts/styles.css';
-import { Paper, Text } from '@mantine/core';
+import { Paper, Text, Stack, Space } from '@mantine/core';
 
 interface SectionsGraphProps {
   sections: Section[]
@@ -28,12 +28,11 @@ function ChartTooltip({ label, payload }: ChartTooltipProps) {
   return (
     <Paper px="md" py="sm" withBorder shadow="md" radius="md">
       <Text fw={500} mb={5}>
-        {label}
+        <b> {reversedPayload[0] && reversedPayload[0].name && reversedPayload[0].name === "W" ? "Withdrawal Rate" : label} </b>
       </Text>
       {getFilteredChartTooltipPayload(reversedPayload).map((item: any) => (
         <Text key={item.name} c={item.color} fz="sm">
-          {item.name}: {item.name === "F" ? (Math.round((item.value + item.payload.W) / item.payload.avgGPA * 1000) / 10) :
-            item.name === "W" ? (-Math.round(item.value / item.payload.avgGPA * 1000) / 10) : (Math.round(item.value / item.payload.avgGPA * 1000) / 10)}%
+          {item.name} :  { item.name === "W" ? (Math.round(item.value * 10) / 10) : (Math.round(item.value / item.payload.avgGPA * 1000) / 10)}% 
         </Text>
       ))}
     </Paper>
@@ -79,27 +78,43 @@ export function SectionsGraph({ sections }: SectionsGraphProps) {
     termData[index].B = (currTerm.B * 10) / 10 * termData[index].avgGPA / 100
     termData[index].C = (currTerm.C * 10) / 10 * termData[index].avgGPA / 100
     termData[index].D = (currTerm.D * 10) / 10 * termData[index].avgGPA / 100
-    termData[index].W = -(currTerm.W * 10) / 10 * termData[index].avgGPA / 100
-    termData[index].F = (currTerm.F * 10) / 10 * termData[index].avgGPA / 100 - termData[index].W
+    termData[index].F = (currTerm.F * 10) / 10 * termData[index].avgGPA / 100
+    termData[index].W = (currTerm.W * 10) / 10
 
   })
 
   return (
+    <Stack>
     <AreaChart h={300} data={termData} dataKey="term" type="stacked"
       tooltipProps={{
         content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
       }}
       curveType="monotone"
-      xAxisLabel="Term"
+      // xAxisLabel="Term"
+      withXAxis={false}
       yAxisLabel="GPA"
-      yAxisProps={{ domain: [-1, 4], ticks: [0, 1, 2, 3, 4] }}
+      yAxisProps={{ domain: [0, 4], ticks: [0, 1, 2, 3, 4] }}
       series={[
-        { name: 'W', color: 'black' },
         { name: 'F', color: 'red.6' },
         { name: 'D', color: 'orange.6' },
         { name: 'C', color: 'yellow.6' },
         { name: 'B', color: 'green.6' },
         { name: 'A', color: 'cyan.6' },
-      ]} />
+      ]} 
+      areaChartProps={{ syncId: 'outcomes' }}/>
+      <Space />
+      <AreaChart h={125} data={termData} dataKey="term" type="stacked"
+      tooltipProps={{
+        content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
+      }}
+      curveType="monotone"
+      xAxisLabel="Term"
+      yAxisLabel="% W"
+      yAxisProps={{ domain: [0, 50], ticks: [0, 50] }}
+      series={[
+        { name: 'W', color: 'black' },
+      ]} 
+      areaChartProps={{ syncId: 'outcomes' }}/>
+      </Stack>
   )
 }
