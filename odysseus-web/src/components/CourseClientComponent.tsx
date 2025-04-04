@@ -8,7 +8,7 @@ import { Course, Section } from '@prisma/client';
 export default function CourseClientComponent({ course }: { course: Course & Record<string, any> }) {
     const sections = course.sections
     const [filteredSections, setFilteredSections] = useState(course.sections)
-    const [nYears, setNYears] = useState("30")
+    const [nYears, setNYears] = useState("5")
     const filterNYears = (years: string, sections: Section[]) => {
         setNYears(years)
         const years_num = parseInt(years)
@@ -17,25 +17,25 @@ export default function CourseClientComponent({ course }: { course: Course & Rec
     }
 
     function gpaToLetterGrade(gpa: number) {
-        if (gpa >= 3.7) {
+        if (gpa >= 3.85) {
             return 'A';
-        } else if (gpa >= 3.3) {
+        } else if (gpa >= 3.5) {
             return 'A-';
-        } else if (gpa >= 3.0) {
+        } else if (gpa >= 3.15) {
             return 'B+';
-        } else if (gpa >= 2.7) {
+        } else if (gpa >= 2.85) {
             return 'B';
-        } else if (gpa >= 2.3) {
+        } else if (gpa >= 2.5) {
             return 'B-';
-        } else if (gpa >= 2.0) {
+        } else if (gpa >= 2.15) {
             return 'C+';
-        } else if (gpa >= 1.7) {
+        } else if (gpa >= 1.85) {
             return 'C';
-        } else if (gpa >= 1.3) {
+        } else if (gpa >= 1.5) {
             return 'C-';
-        } else if (gpa >= 1.0) {
+        } else if (gpa >= 1.15) {
             return 'D+';
-        } else if (gpa >= 0.7) {
+        } else if (gpa >= 0.85) {
             return 'D';
         } else {
             return 'F';
