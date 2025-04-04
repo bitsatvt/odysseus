@@ -46,9 +46,9 @@ client = typesense.Client(
     {
         "nodes": [
             {
-                "host": "",
-                "port": 8081,
-                "protocol": "",
+                "host": "localhost",
+                "port": 8108,
+                "protocol": "http",
             },
         ],
         "api_key": os.environ["TYPESENSE_API_KEY"],
