@@ -208,12 +208,12 @@ export function SectionsGraph({ sections }: SectionsGraphProps) {
             Add stroke and strokeWidth.
             Assign all to the 'right' Y-Axis (0-100 range). */}
         {/* Bar components with Toned-Down Colors, 75% Opacity, and Opaque Stroke */}
-        <Bar yAxisId="right" dataKey="W" name="W" stackId="grades" fill="#343a40" stroke="#343a40" strokeWidth={1.5} fillOpacity={0.45} /> {/* Gray */}
-        <Bar yAxisId="right" dataKey="F" name="F" stackId="grades" fill="#e03131" stroke="#e03131" strokeWidth={1.5} fillOpacity={0.45} /> {/* Red (Toned Down) */}
-        <Bar yAxisId="right" dataKey="D" name="D" stackId="grades" fill="#e8590c" stroke="#e8590c" strokeWidth={1.5} fillOpacity={0.45} /> {/* Orange (Toned Down) */}
-        <Bar yAxisId="right" dataKey="C" name="C" stackId="grades" fill="#f08c00" stroke="#f08c00" strokeWidth={1.5} fillOpacity={0.45} /> {/* Yellow/Amber (Toned Down) */}
-        <Bar yAxisId="right" dataKey="B" name="B" stackId="grades" fill="#37b24d" stroke="#37b24d" strokeWidth={1.5} fillOpacity={0.45} /> {/* Green (Toned Down) */}
-        <Bar yAxisId="right" dataKey="A" name="A" stackId="grades" fill="#339af0" stroke="#339af0" strokeWidth={1.5} fillOpacity={0.45} /> {/* Blue (Toned Down) */}
+        <Bar yAxisId="right" dataKey="W" name="W" stackId="grades" fill="#343a40" stroke="#343a40" strokeWidth={1.5} fillOpacity={0.5} /> {/* Gray */}
+        <Bar yAxisId="right" dataKey="F" name="F" stackId="grades" fill="#e03131" stroke="#e03131" strokeWidth={1.5} fillOpacity={0.5} /> {/* Red (Toned Down) */}
+        <Bar yAxisId="right" dataKey="D" name="D" stackId="grades" fill="#e8590c" stroke="#e8590c" strokeWidth={1.5} fillOpacity={0.5} /> {/* Orange (Toned Down) */}
+        <Bar yAxisId="right" dataKey="C" name="C" stackId="grades" fill="#f08c00" stroke="#f08c00" strokeWidth={1.5} fillOpacity={0.5} /> {/* Yellow/Amber (Toned Down) */}
+        <Bar yAxisId="right" dataKey="B" name="B" stackId="grades" fill="#37b24d" stroke="#37b24d" strokeWidth={1.5} fillOpacity={0.5} /> {/* Green (Toned Down) */}
+        <Bar yAxisId="right" dataKey="A" name="A" stackId="grades" fill="#339af0" stroke="#339af0" strokeWidth={1.5} fillOpacity={0.5} /> {/* Blue (Toned Down) */}
         {/* Line component for average GPA.
             Assign to the 'left' Y-Axis (0-4 range). */}
         <Line
