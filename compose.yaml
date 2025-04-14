@@ -1,15 +1,25 @@
 version: '3.8'
 
 services:
-  postgres:
+  prisma-db:
     image: postgres:latest
     environment:
       POSTGRES_PASSWORD: MdP9QmSZqwqqp4xwk36vH9Q4c
-      POSTGRES_DB: odysseus
+      POSTGRES_DB: odysseus-prisma
     ports:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+
+  go-api-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: MwcxArb4P4qS6yUyk05ME
+      POSTGRES_DB: odysseus-go-api
+    ports:
+      - "9109:9109"
+    volumes:
+      - postgres-ratings:/var/lib/postgresql/data
 
   typesense:
     image: typesense/typesense:28.0
@@ -22,4 +32,5 @@ services:
     command: [ "--data-dir", "/data" ]
 
 volumes:
+  postgres-ratings:
   postgres-data:

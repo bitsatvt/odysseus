@@ -73,14 +73,16 @@ export function SectionsGraph({ sections }: SectionsGraphProps) {
     return acc;
   }, {} as Record<string, CombinedGrades>)).sort((a, b) => a._key - b._key);
   termData.forEach((currTerm, index) => {
+    termData[index].W = currTerm.W
     termData[index].avgGPA = Math.round(currTerm.avgGPA * 100) / 100
-    termData[index].A = (currTerm.A * 10) / 10 * termData[index].avgGPA / 100
-    termData[index].B = (currTerm.B * 10) / 10 * termData[index].avgGPA / 100
-    termData[index].C = (currTerm.C * 10) / 10 * termData[index].avgGPA / 100
-    termData[index].D = (currTerm.D * 10) / 10 * termData[index].avgGPA / 100
-    termData[index].F = (currTerm.F * 10) / 10 * termData[index].avgGPA / 100
-    termData[index].W = (currTerm.W * 10) / 10
+    termData[index].A = currTerm.A * termData[index].avgGPA / ( 1 - termData[index].W / 100) / 100 
+    termData[index].B = currTerm.B  * termData[index].avgGPA / ( 1 - termData[index].W / 100) / 100 
+    termData[index].C = currTerm.C  * termData[index].avgGPA / ( 1 - termData[index].W / 100) / 100 
+    termData[index].D = currTerm.D  * termData[index].avgGPA / ( 1 - termData[index].W / 100) / 100 
+    termData[index].F = currTerm.F  * termData[index].avgGPA / ( 1 - termData[index].W / 100) / 100 
 
+    // Make sure to add to 100
+    termData[index].B = termData[index].avgGPA * (termData[index].B / termData[index].avgGPA + ((100-((Math.round(termData[index].A / termData[index].avgGPA * 1000) / 10) + (Math.round(termData[index].B / termData[index].avgGPA * 1000) / 10) + (Math.round(termData[index].C / termData[index].avgGPA * 1000) / 10) + (Math.round(termData[index].D / termData[index].avgGPA * 1000) / 10) + (Math.round(termData[index].F / termData[index].avgGPA * 1000)/10)))/100))
   })
 
   return (
