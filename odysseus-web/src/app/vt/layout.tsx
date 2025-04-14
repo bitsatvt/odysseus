@@ -1,5 +1,6 @@
 "use client"
 import Header from "@/components/Header"
+import Footer from "@/components/Footer"
 import { usePathname } from 'next/navigation'
 import { Space } from '@mantine/core';
 export default function InnerLayout({
@@ -21,8 +22,7 @@ export default function InnerLayout({
             <main style={{ margin: "15px", flex: 1 }}>
                 {children}
             </main>
-            <Space h="xl" bg="#971515" />
-            <Space h="md" bg="#971515" />
+            <Footer />
         </section>
     )
 }

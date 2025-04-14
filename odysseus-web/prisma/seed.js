@@ -1,12 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import courses from "../../data/raw-data/class.json" assert { type: "json" };
-import groups from "../../data/raw-data/group.json" assert {
-  type: "json",
-};
-import sections from "../../data/raw-data/section.json" assert { type: "json" };
-import instructors from "../../data/raw-data/instructors.json" assert {
-  type: "json",
-};
+import courses from "../../data/raw-data/class.json" with { type: "json" };
+import groups from "../../data/raw-data/group.json" with { type: "json" };
+import sections from "../../data/raw-data/section.json" with { type: "json" };
+import instructors from "../../data/raw-data/instructors.json" with { type: "json" };
 
 const prisma = new PrismaClient();
 
