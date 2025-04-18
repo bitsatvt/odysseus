@@ -42,7 +42,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
               </Text>
               <Space h="xs" />
               <Text>
-                <strong> Required By: </strong> <PostreqTreeRenderer tree={postreqTree} depth={1} />
+                <strong> Required By: </strong> <PostreqTreeRenderer tree={postreqTree} />
               </Text>
             </ScrollArea>
             <Text>
