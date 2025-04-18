@@ -14,9 +14,7 @@ def convert_class_to_jsonl():
                 out.write(
                     json.dumps(
                         {
-                            "id": item["id"],
-                            "subjectCode": item["subject"] + "-" + item["code"],
-                            "code": item["code"],
+                            "code": item["id"],
                             "title": item["title"],
                             "desc": item["description"],
                         }
@@ -51,7 +49,7 @@ client = typesense.Client(
                 "protocol": "http",
             },
         ],
-        "api_key": os.environ["TYPESENSE_API_KEY"],
+        "api_key": "zijgRU2wXKE4gMJqm7Xk",
     }
 )
 
@@ -60,9 +58,11 @@ def create_schemas(delete=False):
     course_schema = {
         "name": "courses",
         "fields": [
-            {"name": "id", "type": "string"},
-            {"name": "subjectCode", "type": "string"},
-            {"name": "code", "type": "string"},
+            {
+                "name": "code",
+                "type": "string",
+                "token_separators": ["-"],
+            },
             {"name": "title", "type": "string"},
             {"name": "desc", "type": "string"},
         ],
@@ -95,9 +95,9 @@ def test_search():
     print(
         client.collections["courses"].documents.search(
             {
-                "q": "2505",
-                "query_by": "code,subjectCode,title,desc",
-                "num_typos": "0,1,2,2",
+                "q": "CS 3114",
+                "query_by": "code,title,desc",
+                "num_typos": "0,2,2",
             }
         )
     )
@@ -120,9 +120,9 @@ def create_search_only_api_key():
     )
 
 
-# convert_class_to_jsonl()
-# convert_prof_to_jsonl()
-create_schemas()
+convert_class_to_jsonl()
+convert_prof_to_jsonl()
+create_schemas(True)
 import_documents()
 test_search()
 # create_search_only_api_key()
