@@ -7,7 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 interface Course {
-  id: string;
+  code: string;
   title: string;
   desc?: string;
 }
@@ -60,11 +60,11 @@ export default function SearchBar({ width }: Record<string, number>) {
           q: searchQuery,
           query_by:
             currentSearchType === 'courses'
-              ? 'code,subjectCode,title,desc'
+              ? 'code,title,desc'
               : 'firstName,lastName',
           per_page: 50,
           num_typos:
-            currentSearchType === 'courses' ? "0,1,2,2" : '2,2'
+            currentSearchType === 'courses' ? "0,1,2" : '2,2'
         };
 
         const searchResults = await client
@@ -199,13 +199,13 @@ export default function SearchBar({ width }: Record<string, number>) {
               {results.map((result, index) => (
                 <Link
                   key={index}
-                  href={`/vt/${searchType}/${result.id}`}
+                  href={`/vt/${searchType}/${searchType === 'courses' ? (result as Course).code : (result as Instructor).id}`}
                   onClick={() => setIsResultsVisible(false)}
                 >
                   <Box style={resultItemStyle}>
                     <strong>
                       {searchType === 'courses'
-                        ? `${(result as Course).id} ${(result as Course).title}`
+                        ? `${(result as Course).code} ${(result as Course).title}`
                         : `${(result as Instructor).firstName} ${(result as Instructor).lastName}`}
                     </strong>
                     {searchType === 'courses' && (result as Course).desc && (

@@ -7,7 +7,7 @@ import { Course, Section } from '@prisma/client';
 
 export default function CourseClientComponent({ course }: { course: Course & Record<string, any> }) {
     const sections = course.sections
-    const [filteredSections, setFilteredSections] = useState(sections.filter((section: Section) => parseInt(section.id.substring(0, 4)) > 2023-5))
+    const [filteredSections, setFilteredSections] = useState(sections.filter((section: Section) => parseInt(section.id.substring(0, 4)) > 2023 - 5))
     const [nYears, setNYears] = useState("5")
     const filterNYears = (years: string, sections: Section[]) => {
         setNYears(years)
@@ -72,7 +72,7 @@ export default function CourseClientComponent({ course }: { course: Course & Rec
                             }, 0);
                             const avgGPA = ((totalGPA / filteredSections.length).toFixed(2))
                             const letterGrade = gpaToLetterGrade(parseFloat(avgGPA))
-                            return `${avgGPA} (~${letterGrade})`; // Return the total GPA rounded to 2 decimal places
+                            return `${avgGPA} ≈ ${letterGrade}`; // Return the total GPA rounded to 2 decimal places
                         } else {
                             return 'N/A';
                         }
