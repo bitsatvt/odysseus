@@ -2,12 +2,25 @@ import asyncio
 import aiohttp
 import os
 import json
-
+import signal
+import sys
 # Create a global list to store the class data
 inProgess = True
+newClasses = []
 
-async def fetch(session, i, rawClasses, newClasses):
+def handle_sigint(signum, frame):
     global inProgess
+    global newClasses
+    print("\nCtrl+C detected! Pausing for now...")
+    inProgess = False
+    with open("../raw-data/pausedClasses.json", "w") as f:
+        json.dump(newClasses, f, indent=4)
+    raise KeyboardInterrupt
+
+
+async def fetch(session, i, rawClasses):
+    global inProgess
+    global newClasses
     try:
         async with session.post(
             url="https://catalog.vt.edu/course-search/api/?page=fose&route=details",
@@ -43,32 +56,45 @@ async def fetch(session, i, rawClasses, newClasses):
 
 
 async def main():
+    global inProgess
+    global newClasses
     rawClasses = []
+    currIndex = 1
     if os.path.exists("../raw-data/rawClasses.json"):
         with open("../raw-data/rawClasses.json", "r") as jsonFile:
             rawClasses = json.loads(jsonFile.read())
 
-    newClasses = []
+    if os.path.exists("../raw-data/pausedClasses.json"):
+        with open("../raw-data/pausedClasses.json", "r") as jsonFile:
+            newClasses = json.loads(jsonFile.read())
+            print("---------Resuming Progress---------")
+            maxKey = max([int(item['key']) for item in newClasses], default=0)
+            newClasses = [item for item in newClasses if int(item['key']) < (maxKey - 100 // 10)]
+            currIndex = max(1, (maxKey - 100 // 10))
+            print(currIndex)
+        os.remove("../raw-data/pausedClasses.json")
+   
     async with aiohttp.ClientSession() as session:
         step = 10
-        i = 1
         while (inProgess):
             await asyncio.gather(
-                *[fetch(session, i + j, rawClasses, newClasses) for j in range(step)]
+                *[fetch(session, currIndex + j, rawClasses) for j in range(step)]
             )
-            i += 10
-            if (i-1) % 100 == 0: 
-                print(f"----------{i-1} requests sent.----------")
+            currIndex += 10
+            if (currIndex-1) % 100 == 0: 
+                print(f"----------{currIndex-1} requests sent----------")
             await asyncio.sleep(1)
 
-    nextKey = max(newClasses, key='key')
+    nextKey = max([int(item['key']) for item in newClasses]) + 1
     for entry in rawClasses:
-        entry["key"] = -nextKey
-        entry["allInGroup"]['key'] = -nextKey
+        entry["key"] = str(-nextKey)
+        entry["allInGroup"][0]['key'] =  str(-nextKey)
+        nextKey += 1
         newClasses.append(entry)
     
     with open("../raw-data/rawClasses.json", "w") as f:
         json.dump(newClasses, f, indent=4)
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, handle_sigint)
     asyncio.run(main())
