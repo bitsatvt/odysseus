@@ -225,6 +225,22 @@ with open("../raw-data/Grade-Distribution.csv", newline="") as csvfile:
 
 with open("../raw-data/section.json", "r") as jsonFile:
     currSections = json.loads(jsonFile.read())
+
+    for section in currSections:
+        if currSections[section]["course_id"] not in courseDict:
+            course = currSections[section]["course_id"] 
+            currGroup = Group(perm=True)
+            currGroup.courseID = course
+            cleanClass = Course(-1, currGroup.groupID, course, currSections[section]["title"], [], "", "", "", currSections[section]["Credits"], "")
+            classDict[course] = cleanClass
+
+            currGroup.prereqs = []
+            currGroup.preReqType = None
+
+            currGroup.lockPrereqs()
+            groupStorage[0][currGroup] = str(currGroup.groupID)
+            groupStorage[1][str(currGroup.groupID)] = currGroup
+            courseDict[course] = str(currGroup.groupID)
     
 csvJson = dict()
 with open("../raw-data/Grade-Distribution.csv", newline="") as csvfile:

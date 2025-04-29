@@ -10,14 +10,21 @@ async function createGroups() {
   // null group
   for (const key in groups) {
     const group = groups[key];
-    await prisma.group.create({
-      data: {
-        id: group.id,
-        type: group.type ? true : false,
-        coreqs: group.coreqs,
-        hash: group.hash,
-      },
-    });
+    try {
+      await prisma.group.create({
+        data: {
+          id: group.id,
+          type: group.type ? true : false,
+          coreqs: group.coreqs,
+          hash: group.hash,
+        },
+      });
+    } catch (error) {
+      console.error(
+        `Error inserting group ${group.hash}:`,
+        error,
+      );
+    }
   }
 }
 
@@ -118,7 +125,7 @@ async function updateInstructorCourseRelations(instructors) {
         },
       });
     } catch (error) {
-      console.error(`Error updating instructor ${instructorData.id}:`, error);
+      console.error(`Error updating instructor ${instructorData.id} with Courses: ${instructorData.Courses}`, error);
     }
   }
 }
