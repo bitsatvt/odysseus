@@ -223,6 +223,9 @@ with open("../raw-data/Grade-Distribution.csv", newline="") as csvfile:
                 groupStorage[1][str(currGroup.groupID)] = currGroup
                 courseDict[course] = str(currGroup.groupID)
 
+with open("../raw-data/section.json", "r") as jsonFile:
+    currSections = json.loads(jsonFile.read())
+    
 csvJson = dict()
 with open("../raw-data/Grade-Distribution.csv", newline="") as csvfile:
     spamreader = csv.reader(csvfile, delimiter=",", quotechar='"')
@@ -274,9 +277,13 @@ with open("../raw-data/Grade-Distribution.csv", newline="") as csvfile:
         rowJson["super_CRN"] = (
             str(rowJson["year"]) + ";" + termNum + ";" + str(rowJson["CRN"])
         )
-        csvJson[rowJson["super_CRN"]] = rowJson
+        if rowJson["super_CRN"] in currSections:
+            print("Duplicate section error, please only run this with new data")
+            continue
+        else:
+            csvJson[rowJson["super_CRN"]] = rowJson
 
-with open("../raw-data/rawSection.json", "w") as file:
+with open("../raw-data/newSection.json", "w") as file:
     json.dump(csvJson, file, indent=4)
 
 for groupID in groupStorage[1]:
