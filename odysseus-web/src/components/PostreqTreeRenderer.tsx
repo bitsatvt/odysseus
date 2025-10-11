@@ -24,7 +24,7 @@ export default function PostreqTreeRenderer({
 
   return [...postReqs].map((postReq, index) => {
     return (
-      <Link href={`./${postReq}`}>
+      <Link key={index} href={`./${postReq}`}>
         {index == 0 ? '' : ','} {postReq}
       </Link>
     )

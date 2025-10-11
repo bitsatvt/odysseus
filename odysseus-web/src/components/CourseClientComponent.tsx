@@ -72,7 +72,7 @@ export default function CourseClientComponent({ course }: { course: Course & Rec
                             }, 0);
                             const avgGPA = ((totalGPA / filteredSections.length).toFixed(2))
                             const letterGrade = gpaToLetterGrade(parseFloat(avgGPA))
-                            return `${avgGPA} ≈ ${letterGrade}`; // Return the total GPA rounded to 2 decimal places
+                            return `${avgGPA} (rounds to ${letterGrade})`; // Return the total GPA rounded to 2 decimal places
                         } else {
                             return 'N/A';
                         }

@@ -1,7 +1,7 @@
 "use client"
 import SearchBar from "@/components/SearchBar"
 import Footer from "@/components/Footer"
-import { Flex, Text, Stack, Box, Alert } from '@mantine/core';
+import { Flex, Text, Stack, Box, Alert, Container } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 
 export default function Page() {
@@ -17,9 +17,14 @@ export default function Page() {
         <Box w={'100%'}>
           <SearchBar />
         </Box>
-        <Box w="37%" pt="lg">
-          <Alert icon={<IconAlertCircle size={32} />} title="The website is under development and may experience occasional issues." color="yellow" radius="md" />
-        </Box>
+        <Container size="sm" pt="lg">
+          <Alert
+            icon={<IconAlertCircle size={32} />}
+            title="The website is under development and may experience occasional issues."
+            color="yellow"
+            radius="md"
+          />
+        </Container>
       </Stack>
 
       <Footer />

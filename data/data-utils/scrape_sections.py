@@ -1,11 +1,9 @@
 import json
-import asyncio
-import aiohttp
+import requests
 from bs4 import BeautifulSoup
 
 sections = {}
-scrapeCounter = 0
-with open("../raw-data/rawSection.json") as f:
+with open("../raw-data/newSection.json") as f:
     sections = json.load(f)
 
 
@@ -16,19 +14,18 @@ def crn_term_map(super_crn):
     return crn_parts
 
 
-async def fetch(session, super_crn, file):
-    global scrapeCounter
+def fetch(session, super_crn, file, cookie):
     try:
         request_vars = crn_term_map(super_crn)
-        async with session.get(
+        with session.get(
             url=f"https://apps.es.vt.edu/ssb/HZSKVTSC.P_ProcComments?CRN={request_vars[2]}&TERM={request_vars[1]}&YEAR={request_vars[0]}",
+            cookies = cookie
         ) as res:
-            if res.status != 200:
+            if res.status_code != 200:
                 file.write(f"{super_crn}:{res.status}\n")
                 print(f"An error occurred for section {super_crn}: {res.status}")
-                scrapeCounter += 1
                 return
-            html = await res.text()
+            html = res.text
             soup = BeautifulSoup(html, "html.parser")
             instructor_label = soup.find("td", class_="mplabel", string="Instructor")
             instructor_name_cell = instructor_label.find_next("tr").find(
@@ -36,32 +33,25 @@ async def fetch(session, super_crn, file):
             )
             instructor = instructor_name_cell.text.strip()
             file.write(f"{super_crn}:{instructor}\n")
-            scrapeCounter += 1
-            # print("Instructor:", instructor)
-
+            return res.cookies.get_dict()['SESSID']
+        
     except Exception as e:
         print(f"An error occurred for section {super_crn}: {e}")
         file.write(f"{super_crn}:null\n")
-        scrapeCounter += 1
 
 
-async def main():
+def main():
+    yourCookie = input("Go to the class timetable and click a class, and then copy your SESSID cookie here: ")
     with open("../raw-data/superCrnToProfessor.txt", "w") as f:
-        async with aiohttp.ClientSession() as session:
-            for i, section in enumerate(sections):
-                asyncio.create_task(fetch(session, sections[section]["super_CRN"], f))
-                await asyncio.sleep(0.01)
+        cookie =  {"SESSID": yourCookie}
+        with requests.Session() as session:
+            for i, section in enumerate(sections, 1):
+                cookie["SESSID"] = fetch(session, sections[section]["super_CRN"], f, cookie)
                 if i % 100 == 0:
-                    print(f"sent {i} requests, scraped {scrapeCounter} sections")
-                if i % 5000 == 0:
-                    while scrapeCounter < i - i / 5:
-                        print(f"sent {i} requests, scraped {scrapeCounter} sections")
-                        await asyncio.sleep(1)
-            while scrapeCounter < i:
-                print(f"sent {i} requests, scraped {scrapeCounter} sections")
-                await asyncio.sleep(1)
-            print(f"sent {i} requests, scraped {scrapeCounter} sections")
+                    print(f"Scraped {i} sections")
+                    f.flush()
+
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
