@@ -1,11 +1,12 @@
+import os
 import typesense
 import json
 
 
 def convert_class_to_jsonl():
-    with open("./class.json", "r") as input:
+    with open("./raw-data/class.json", "r") as input:
         data = json.loads(input.read())
-        with open("./classes.jsonl", "w") as out:
+        with open("./search/classes.jsonl", "w") as out:
             for item in data:
                 item = data[item]
                 if item["title"] == "":
@@ -23,9 +24,9 @@ def convert_class_to_jsonl():
 
 
 def convert_prof_to_jsonl():
-    with open("../raw-data/instructors.json", "r") as input:
+    with open("./raw-data/instructors.json", "r") as input:
         data = json.loads(input.read())
-        with open("./instructors.jsonl", "w") as out:
+        with open("./search/instructors.jsonl", "w") as out:
             for k, v in dict.items(data):
                 out.write(
                     json.dumps(
@@ -43,12 +44,12 @@ client = typesense.Client(
     {
         "nodes": [
             {
-                "host": "localhost",
+                "host": "typesense",
                 "port": 8108,
                 "protocol": "http",
             },
         ],
-        "api_key": "zijgRU2wXKE4gMJqm7Xk",
+        "api_key": "xyz",
     }
 )
 
@@ -84,9 +85,9 @@ def create_schemas(delete=False):
 
 
 def import_documents():
-    with open("./classes.jsonl", "r") as f:
+    with open("./search/classes.jsonl", "r") as f:
         client.collections["courses"].documents.import_(f.read())
-    with open("./instructors.jsonl", "r") as f:
+    with open("./search/instructors.jsonl", "r") as f:
         client.collections["instructors"].documents.import_(f.read())
 
 
@@ -110,7 +111,7 @@ def create_search_only_api_key():
     print(
         client.keys.create(
             {
-                "value": "fNhLCywq0zJwTLHRkgprXmF1hvGsqek7",  # from .env.production
+                "value": "1234",
                 "description": "Search-only key.",
                 "actions": ["documents:search"],
                 "collections": ["instructors", "courses"],
@@ -119,9 +120,9 @@ def create_search_only_api_key():
     )
 
 
-convert_class_to_jsonl()
-convert_prof_to_jsonl()
+# convert_class_to_jsonl()
+# convert_prof_to_jsonl()
 create_schemas(True)
 import_documents()
-test_search()
+# test_search()
 # create_search_only_api_key()
