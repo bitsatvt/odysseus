@@ -80,8 +80,13 @@ def create_schemas(delete=False):
         client.collections["courses"].delete()
         client.collections["instructors"].delete()
 
-    client.collections.create(course_schema)
-    client.collections.create(instructor_schema)
+    try:
+        client.collections.create(course_schema)
+        client.collections.create(instructor_schema)
+    except typesense.exceptions.ObjectAlreadyExists as e:
+        print(
+            e, "You can delete existing collections using create_schemas(delete=True)"
+        )
 
 
 def import_documents():
@@ -122,7 +127,7 @@ def create_search_only_api_key():
 
 # convert_class_to_jsonl()
 # convert_prof_to_jsonl()
-create_schemas(True)
+create_schemas()
 import_documents()
 # test_search()
 # create_search_only_api_key()
