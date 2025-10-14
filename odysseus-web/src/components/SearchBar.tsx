@@ -199,7 +199,7 @@ export default function SearchBar({ width }: Record<string, number>) {
               {results.map((result, index) => (
                 <Link
                   key={index}
-                  href={`/vt/${searchType}/${searchType === 'courses' ? (result as Course).code : (result as Instructor).id}`}
+                  href={`/${searchType}/${searchType === 'courses' ? (result as Course).code : (result as Instructor).id}`}
                   onClick={() => setIsResultsVisible(false)}
                 >
                   <Box style={resultItemStyle}>
