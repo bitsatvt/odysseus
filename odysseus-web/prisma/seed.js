@@ -66,8 +66,14 @@ async function insertClasses(classes) {
 }
 
 async function updateCrosslistRelations(classes) {
-  for (const key in classes) {
+  const set = new Set(Object.keys(classes));
+
+  outer: for (const key in classes) {
     const course = classes[key];
+    if (course.crosslist.length === 0) continue;
+    for (const crosslistName of course.crosslist) {
+      if (!set.has(crosslistName)) continue outer;
+    }
     try {
       await prisma.course.update({
         where: { id: course.id },
