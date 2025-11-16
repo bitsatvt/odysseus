@@ -23,7 +23,7 @@ export default function Footer() {
                             <IconBrandDiscordFilled size={18} stroke={1.5} />
                         </ActionIcon>
                     </Link>
-                    <Link href="https://github.com/Odysseus-Academic">
+                    <Link href="https://github.com/bitsatvt/odysseus">
                         <ActionIcon size="md" variant="default" radius="xl">
                             <IconBrandGithub size={18} stroke={1.5} />
                         </ActionIcon>
