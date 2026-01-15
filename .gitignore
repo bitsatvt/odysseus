@@ -4,9 +4,12 @@ __pycache__/
 *.pyd
 .venv*
 
-
 #typesense
-data/typesense/*
+data/typesense/
 
 # Local Netlify folder
 .netlify
+
+.env*
+
+web/prisma/generated

@@ -2,7 +2,10 @@ services:
   prisma-db:
     image: postgres:17.6
     environment:
-      POSTGRES_PASSWORD: MdP9QmSZqwqqp4xwk36vH9Q4c
+      # In production: set POSTGRES_PASSWORD env var
+      # In development: defaults to trust (no password needed)
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
+      POSTGRES_HOST_AUTH_METHOD: ${POSTGRES_HOST_AUTH_METHOD:-trust}
       POSTGRES_DB: odysseus-prisma
     ports:
       - "5432:5432"
@@ -16,18 +19,8 @@ services:
     volumes:
       - ./data/typesense:/data
     command: 
-      ["--data-dir", "/data", "--api-key", "${TYPESENSE_API_KEY:-xyz}"]
+      ["--data-dir", "/data", "--api-key", "${TYPESENSE_API_KEY:-default}"]
 
-
-  init-search:
-    profiles: ["init"]
-    build:
-      context: ./data/search
-    depends_on:
-      - typesense
-    volumes:
-      - ./data/raw-data:/app/raw-data
-      - ./data/search:/app/search
       
 volumes:
   postgres-data:

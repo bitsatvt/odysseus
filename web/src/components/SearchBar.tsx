@@ -46,7 +46,7 @@ export default function SearchBar({ width }: Record<string, number>) {
           protocol: process.env.NODE_ENV == 'production' ? 'https' : 'http',
         },
       ],
-      apiKey: process.env.NEXT_PUBLIC_TYPESENSE_API_KEY || 'xyz',
+      apiKey: "search-only",
     });
 
     const handleSearch = async (searchQuery: string, currentSearchType: 'courses' | 'instructors') => {
@@ -62,7 +62,7 @@ export default function SearchBar({ width }: Record<string, number>) {
             currentSearchType === 'courses'
               ? 'code,title,desc'
               : 'firstName,lastName',
-          per_page: 50,
+          per_page: 20,
           num_typos:
             currentSearchType === 'courses' ? "0,1,2" : '2,2'
         };

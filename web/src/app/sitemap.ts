@@ -16,11 +16,11 @@ const instructors = await prisma.instructor.findMany({
 export default function sitemap(): MetadataRoute.Sitemap {
   // Generate paths for courses and instructors
   const coursePaths = courses.map((c) => ({
-    url: `https://odyadvisor.com/vt/courses/${c.id}`,
+    url: `https://odyadvisor.com/courses/${c.id}`,
   }));
 
   const instructorPaths = instructors.map((i) => ({
-    url: `https://odyadvisor.com/vt/instructors/${i.id}`,
+    url: `https://odyadvisor.com/instructors/${i.id}`,
   }));
 
   return [...instructorPaths, ...coursePaths];

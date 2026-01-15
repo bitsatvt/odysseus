@@ -1,6 +1,5 @@
 "use client"
 import SearchBar from "@/components/SearchBar"
-import Footer from "@/components/Footer"
 import { Flex, Text, Stack, Box, Alert, Container } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 
@@ -26,8 +25,6 @@ export default function Page() {
           />
         </Container>
       </Stack>
-
-      <Footer />
     </Flex>
   );
 }

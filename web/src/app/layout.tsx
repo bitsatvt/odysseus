@@ -5,6 +5,7 @@ import './globals.css';
 import Head from 'next/head';
 
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
+import InnerLayout from '@/layout';
 
 export const metadata = {
   title: 'Odysseus Advisor',
@@ -25,8 +26,10 @@ export default function RootLayout({
       <Head>
         <ColorSchemeScript />
       </Head>
-      <body >
-        <MantineProvider>{children}</MantineProvider>
+      <body>
+        <MantineProvider>
+          <InnerLayout>{children}</InnerLayout>
+        </MantineProvider>
       </body>
     </html>
   );

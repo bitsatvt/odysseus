@@ -93,7 +93,7 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
               return (
                 <Table.Tr key={course.id}>
                   <Table.Td style={{ textAlign: 'center' }}>
-                    <Link href={`/vt/courses/${course.id}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>
+                    <Link href={`/courses/${course.id}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>
                       {course.id}
                     </Link>
                   </Table.Td>
