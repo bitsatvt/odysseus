@@ -21,6 +21,7 @@
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@tabler/icons-react": "^3.19.0",
+    "better-auth": "^1.4.13",
     "next": "^14.2.15",
     "react": "^18",
     "react-dom": "^18",
