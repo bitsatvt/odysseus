@@ -1,13 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../src/db"
 import courses from "../../data/raw-data/class.json" with { type: "json" };
 import groups from "../../data/raw-data/group.json" with { type: "json" };
 import sections from "../../data/raw-data/section.json" with { type: "json" };
 import instructors from "../../data/raw-data/instructors.json" with { type: "json" };
 
-const prisma = new PrismaClient();
-
 async function createGroups() {
-  // null group
   for (const key in groups) {
     const group = groups[key];
     try {

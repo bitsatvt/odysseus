@@ -41,7 +41,8 @@ After installing the tools, type these commands in your shell:
    working while this loads):
 
    ```
-   npx prisma migrate reset
+   npx prisma generate
+   npx prisma db seed
    ```
 
 6. Start the development server
