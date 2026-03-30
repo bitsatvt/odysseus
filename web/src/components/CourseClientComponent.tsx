@@ -3,7 +3,7 @@ import { SectionsGraph } from "@/components/SectionsCharts";
 import ProfessorsTable from "@/components/ProfessorsTable";
 import { Divider, Flex, Title, SegmentedControl, Button, Text, Space } from "@mantine/core";
 import React, { useState, useMemo } from 'react';
-import { Course, Section } from '@prisma/client';
+import { Course, Section } from "../../prisma/generated/prisma/client";
 
 export default function CourseClientComponent({ course }: { course: Course & Record<string, any> }) {
     const sections = course.sections

@@ -7,9 +7,10 @@ import PostreqTreeRenderer from "@/components/PostreqTreeRenderer";
 import { Flex, Title, Box, ScrollArea, Text, Space, Divider } from "@mantine/core";
 import Link from 'next/link';
 
-export default async function Page({ params }: { params: { slug: string } }) {
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const course = await prisma.course.findUnique({
-    where: { id: params.slug },
+    where: { id: slug },
     include: { group: true, sections: true, crosslist: true },
   });
 

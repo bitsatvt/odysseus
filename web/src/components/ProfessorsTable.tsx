@@ -13,7 +13,7 @@ import {
   Box,
   Paper,
 } from '@mantine/core';
-import { Section } from '@prisma/client';
+import { Section } from '../../prisma/generated/prisma/client';
 import Link from 'next/link';
 import {
   IconChevronUp,

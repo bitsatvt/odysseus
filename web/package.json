@@ -14,16 +14,16 @@
     "init-search": "node scripts/init-search.js"
   },
   "dependencies": {
-    "@mantine/charts": "^7.13.0",
-    "@mantine/core": "^7.13.0",
-    "@mantine/form": "^7.13.0",
-    "@mantine/hooks": "^7.13.0",
+    "@mantine/charts": "^8.3.18",
+    "@mantine/core": "^8.3.18",
+    "@mantine/form": "^8.3.18",
+    "@mantine/hooks": "^8.3.18",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@tabler/icons-react": "^3.19.0",
-    "next": "^14.2.15",
-    "react": "^18",
-    "react-dom": "^18",
+    "next": "^16.2.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "recharts": "^2.12.7",
     "typesense": "^1.8.2"
   },
@@ -34,11 +34,14 @@
     "@types/react-dom": "^18",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
-    "eslint-config-next": "^16.1.2",
+    "eslint-config-next": "^16.2.1",
     "postcss": "^8.4.47",
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
     "prisma": "^7.2.0",
     "typescript": "^5"
+  },
+  "overrides": {
+    "react-is": "^19.2.4"
   }
 }

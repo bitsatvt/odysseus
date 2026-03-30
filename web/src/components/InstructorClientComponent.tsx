@@ -14,7 +14,7 @@ import {
   Space,
 } from '@mantine/core';
 import Link from 'next/link';
-import { Instructor } from '@prisma/client';
+import { Instructor } from "../../prisma/generated/prisma/client";
 
 export default function InstructorClientComponent({ instructor }: { instructor: Instructor & Record<string, any> }) {
   const [search, setSearch] = useState('');

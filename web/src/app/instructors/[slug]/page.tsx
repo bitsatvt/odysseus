@@ -3,14 +3,15 @@ import { notFound } from "next/navigation";
 import prisma from "@/db";
 import InstructorClientComponent from "@/components/InstructorClientComponent"; // Client Component
 
-export default async function Page({ params }: { params: { slug: string } }) {
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
     const instructor = await prisma.instructor.findUnique({
-        where: { id: decodeURIComponent(params.slug) },
+        where: { id: decodeURIComponent(slug) },
         include: {
             courses: {
                 include: {
                     sections: {
-                        where: { instructorName: decodeURIComponent(params.slug) }
+                        where: { instructorName: decodeURIComponent(slug) }
                     }
                 }
             },

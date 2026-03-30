@@ -1,8 +1,8 @@
 "use client"
-import { Section } from "@prisma/client";
 import { AreaChart, ChartTooltipProps, getFilteredChartTooltipPayload } from "@mantine/charts";
 import '@mantine/charts/styles.css';
 import { Paper, Text, Stack, Space } from '@mantine/core';
+import { Section } from "../../prisma/generated/prisma/client";
 
 interface SectionsGraphProps {
   sections: Section[]
@@ -32,7 +32,7 @@ function ChartTooltip({ label, payload }: ChartTooltipProps) {
       </Text>
       {getFilteredChartTooltipPayload(reversedPayload).map((item: any) => (
         <Text key={item.name} c={item.color} fz="sm">
-          {item.name} :  { item.name === "W" ? (Math.round(item.value * 10) / 10) : (Math.round(item.value / item.payload.avgGPA * 1000) / 10)}% 
+          {item.name} :  {item.name === "W" ? (Math.round(item.value * 10) / 10) : (Math.round(item.value / item.payload.avgGPA * 1000) / 10)}%
         </Text>
       ))}
     </Paper>
@@ -75,48 +75,48 @@ export function SectionsGraph({ sections }: SectionsGraphProps) {
   termData.forEach((currTerm, index) => {
     termData[index].W = currTerm.W
     termData[index].avgGPA = Math.round(currTerm.avgGPA * 100) / 100
-    termData[index].A = currTerm.A * termData[index].avgGPA / ( 1 - termData[index].W / 100) / 100 
-    termData[index].B = currTerm.B  * termData[index].avgGPA / ( 1 - termData[index].W / 100) / 100 
-    termData[index].C = currTerm.C  * termData[index].avgGPA / ( 1 - termData[index].W / 100) / 100 
-    termData[index].D = currTerm.D  * termData[index].avgGPA / ( 1 - termData[index].W / 100) / 100 
-    termData[index].F = currTerm.F  * termData[index].avgGPA / ( 1 - termData[index].W / 100) / 100 
+    termData[index].A = currTerm.A * termData[index].avgGPA / (1 - termData[index].W / 100) / 100
+    termData[index].B = currTerm.B * termData[index].avgGPA / (1 - termData[index].W / 100) / 100
+    termData[index].C = currTerm.C * termData[index].avgGPA / (1 - termData[index].W / 100) / 100
+    termData[index].D = currTerm.D * termData[index].avgGPA / (1 - termData[index].W / 100) / 100
+    termData[index].F = currTerm.F * termData[index].avgGPA / (1 - termData[index].W / 100) / 100
 
     // Make sure to add to 100
-    termData[index].B = termData[index].avgGPA * (termData[index].B / termData[index].avgGPA + ((100-((Math.round(termData[index].A / termData[index].avgGPA * 1000) / 10) + (Math.round(termData[index].B / termData[index].avgGPA * 1000) / 10) + (Math.round(termData[index].C / termData[index].avgGPA * 1000) / 10) + (Math.round(termData[index].D / termData[index].avgGPA * 1000) / 10) + (Math.round(termData[index].F / termData[index].avgGPA * 1000)/10)))/100))
+    termData[index].B = termData[index].avgGPA * (termData[index].B / termData[index].avgGPA + ((100 - ((Math.round(termData[index].A / termData[index].avgGPA * 1000) / 10) + (Math.round(termData[index].B / termData[index].avgGPA * 1000) / 10) + (Math.round(termData[index].C / termData[index].avgGPA * 1000) / 10) + (Math.round(termData[index].D / termData[index].avgGPA * 1000) / 10) + (Math.round(termData[index].F / termData[index].avgGPA * 1000) / 10))) / 100))
   })
 
   return (
     <Stack>
-    <AreaChart h={300} data={termData} dataKey="term" type="stacked"
-      tooltipProps={{
-        content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
-      }}
-      curveType="monotone"
-      // xAxisLabel="Term"
-      withXAxis={false}
-      yAxisLabel="GPA"
-      yAxisProps={{ domain: [0, 4], ticks: [0, 1, 2, 3, 4] }}
-      series={[
-        { name: 'F', color: 'red.6' },
-        { name: 'D', color: 'orange.6' },
-        { name: 'C', color: 'yellow.6' },
-        { name: 'B', color: 'green.6' },
-        { name: 'A', color: 'cyan.6' },
-      ]} 
-      areaChartProps={{ syncId: 'outcomes' }}/>
+      <AreaChart h={300} data={termData} dataKey="term" type="stacked"
+        tooltipProps={{
+          content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
+        }}
+        curveType="monotone"
+        // xAxisLabel="Term"
+        withXAxis={false}
+        yAxisLabel="GPA"
+        yAxisProps={{ domain: [0, 4], ticks: [0, 1, 2, 3, 4] }}
+        series={[
+          { name: 'F', color: 'red.6' },
+          { name: 'D', color: 'orange.6' },
+          { name: 'C', color: 'yellow.6' },
+          { name: 'B', color: 'green.6' },
+          { name: 'A', color: 'cyan.6' },
+        ]}
+        areaChartProps={{ syncId: 'outcomes' }} />
       <Space />
       <AreaChart h={125} data={termData} dataKey="term" type="stacked"
-      tooltipProps={{
-        content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
-      }}
-      curveType="monotone"
-      xAxisLabel="Term"
-      yAxisLabel="% W"
-      yAxisProps={{ domain: [0, 50], ticks: [0, 50] }}
-      series={[
-        { name: 'W', color: 'black' },
-      ]} 
-      areaChartProps={{ syncId: 'outcomes' }}/>
-      </Stack>
+        tooltipProps={{
+          content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
+        }}
+        curveType="monotone"
+        xAxisLabel="Term"
+        yAxisLabel="% W"
+        yAxisProps={{ domain: [0, 50], ticks: [0, 50] }}
+        series={[
+          { name: 'W', color: 'black' },
+        ]}
+        areaChartProps={{ syncId: 'outcomes' }} />
+    </Stack>
   )
 }
