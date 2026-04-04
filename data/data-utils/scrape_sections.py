@@ -14,39 +14,41 @@ def crn_term_map(super_crn):
     return crn_parts
 
 
-def fetch(session, super_crn, file, cookie):
+def fetch(session, super_crn, file):
     try:
         request_vars = crn_term_map(super_crn)
         with session.get(
-            url=f"https://apps.es.vt.edu/ssb/HZSKVTSC.P_ProcComments?CRN={request_vars[2]}&TERM={request_vars[1]}&YEAR={request_vars[0]}",
-            cookies = cookie
+            url=f"https://selfservice.banner.vt.edu/ssb/HZSKVTSC.P_ProcComments?CRN={request_vars[2]}&TERM={request_vars[1]}&YEAR={request_vars[0]}",
         ) as res:
             if res.status_code != 200:
-                file.write(f"{super_crn}:{res.status}\n")
-                print(f"An error occurred for section {super_crn}: {res.status}")
+                file.write(f"{super_crn}:N/A\n")
+                print(f"An error occurred for section {super_crn}: {res.status_code}")
                 return
+            
             html = res.text
             soup = BeautifulSoup(html, "html.parser")
             instructor_label = soup.find("td", class_="mplabel", string="Instructor")
-            instructor_name_cell = instructor_label.find_next("tr").find(
-                "td", class_="mpdefault"
-            )
-            instructor = instructor_name_cell.text.strip()
+            
+            instructor = "N/A"
+            if instructor_label:
+                instructor_name_row = instructor_label.find_next("tr")
+                if instructor_name_row:
+                    instructor_name_cell = instructor_name_row.find("td", class_="mpdefault")
+                    if instructor_name_cell:
+                        instructor = instructor_name_cell.text.strip()
+            
             file.write(f"{super_crn}:{instructor}\n")
-            return res.cookies.get_dict()['SESSID']
         
     except Exception as e:
         print(f"An error occurred for section {super_crn}: {e}")
-        file.write(f"{super_crn}:null\n")
+        file.write(f"{super_crn}:N/A\n")
 
 
 def main():
-    yourCookie = input("Go to the class timetable and click a class, and then copy your SESSID cookie here: ")
     with open("../raw-data/superCrnToProfessor.txt", "w") as f:
-        cookie =  {"SESSID": yourCookie}
         with requests.Session() as session:
             for i, section in enumerate(sections, 1):
-                cookie["SESSID"] = fetch(session, sections[section]["super_CRN"], f, cookie)
+                fetch(session, sections[section]["super_CRN"], f)
                 if i % 100 == 0:
                     print(f"Scraped {i} sections")
                     f.flush()
