@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client"
   output   = "./generated/prisma"
@@ -72,8 +73,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  sessions  Session[]
-  accounts  Account[]
+  sessions Session[]
+  accounts Account[]
+
+  emailVerified Boolean @default(false)
 
   @@map("user")
 }
@@ -85,23 +88,42 @@ model Session {
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+
   @@map("session")
+  @@unique([token])
+  @@index([userId])
 }
 
 model Account {
-  id                String   @id
+  id                String @id
   provider          String
   providerAccountId String
   userId            String
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  accessToken       String?
-  refreshToken      String?
-  idToken           String?
-  expiresAt         DateTime?
+  accessToken  String?
+  refreshToken String?
+  idToken      String?
+  expiresAt    DateTime?
+
+  accountId             String
+  providerId            String
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   @@unique([provider, providerAccountId])
   @@map("account")
+  @@index([userId])
 }
 
 model Verification {
@@ -110,5 +132,9 @@ model Verification {
   value      String
   expiresAt  DateTime
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("verification")
+  @@index([identifier])
 }
