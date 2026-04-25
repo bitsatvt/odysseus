@@ -4,6 +4,7 @@ import prisma from "@/db";
 
 const microsoftClientId = process.env.MICROSOFT_CLIENT_ID;
 const microsoftClientSecret = process.env.MICROSOFT_CLIENT_SECRET;
+const microsoftTenantId = process.env.MICROSOFT_TENANT_ID || "common";
 
 if (!microsoftClientId || !microsoftClientSecret) {
   throw new Error(
@@ -20,6 +21,7 @@ export const auth = betterAuth({
     microsoft: {
       clientId: microsoftClientId,
       clientSecret: microsoftClientSecret,
+      tenantId: microsoftTenantId,
     },
   },
 });
