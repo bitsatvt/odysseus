@@ -1,6 +1,7 @@
 import SearchBar from './SearchBar';
 import Link from 'next/link';
 import { Flex, Text, Stack, Box } from '@mantine/core';
+import MicrosoftSignInButton from './MicrosoftSignInButton';
 
 export default function Header() {
     return (
@@ -18,6 +19,7 @@ export default function Header() {
                 </Link>
                 <Box size={"xs"} hiddenFrom='xs'><SearchBar /></Box>
                 <Box size={'lg'} visibleFrom='xs' ml={'auto'}><SearchBar width={500} /></Box>
+                <Box ml={12}><MicrosoftSignInButton /></Box>
             </Flex>
         </header >
     );
