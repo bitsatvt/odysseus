@@ -1,3 +1,10 @@
+"""Scrape VT UDC grade distributions into the Odysseus CSV format.
+
+The UDC API stores table payloads as base64-encoded Brotli JSON. This script
+does the same work as the web page: discover subjects, discover courses, fetch
+grade rows for the selected window, then write a flat CSV.
+"""
+
 import argparse
 import asyncio
 import base64
@@ -71,17 +78,20 @@ FIELD_MAP = {
 
 
 def decompress_payload(payload):
+    """Decode a UDC compressed table payload."""
     if not payload:
         return None
     return json.loads(brotli.decompress(base64.b64decode(payload)))
 
 
 def cdt_to_rows(cdt):
+    """Convert UDC's compact data table shape into dictionaries."""
     schema = cdt["schema"]
     return [dict(zip(schema, row)) for row in cdt["data"]]
 
 
 def sql_value(value):
+    """Quote a value for UDC's simple SQL-like filter language."""
     return "'" + str(value).replace("'", "''") + "'"
 
 
@@ -105,6 +115,7 @@ def default_output_selected(output_path):
 
 
 def range_condition(from_academic_year, from_term, to_academic_year):
+    """Default window: starting term plus all rows in the next academic year."""
     return (
         f'(("academic_year"={sql_value(from_academic_year)} '
         f'AND "term"={sql_value(from_term)}) '
@@ -113,6 +124,7 @@ def range_condition(from_academic_year, from_term, to_academic_year):
 
 
 def selected_window(args):
+    """Use the default window unless the caller chose explicit filters."""
     if args.academic_year or args.term:
         return None
     return range_condition(
@@ -123,6 +135,7 @@ def selected_window(args):
 
 
 def row_in_window(row, args):
+    """Mirror the API filter locally so the CSV cannot leak extra rows."""
     if args.academic_year and row.get("academic_year") not in args.academic_year:
         return False
     if args.term and row.get("term") not in args.term:
@@ -147,6 +160,7 @@ def normalize_number(value):
 
 
 async def request_text(session, method, url, *, retries=5, **kwargs):
+    """Fetch a URL with a small retry loop for transient UDC errors."""
     for attempt in range(retries):
         try:
             async with session.request(method, url, **kwargs) as response:
@@ -160,6 +174,7 @@ async def request_text(session, method, url, *, retries=5, **kwargs):
 
 
 async def get_csrf_token(session):
+    """Load the UDC page once so the API accepts subsequent POST requests."""
     status, text = await request_text(session, "GET", BASE_URL, retries=8)
     if status != 200:
         raise RuntimeError(f"Could not load grade distribution page: HTTP {status}")
@@ -171,6 +186,7 @@ async def get_csrf_token(session):
 
 
 async def get_compressed_json(session, path, *, condition=None):
+    """Fetch and decode one UDC API endpoint."""
     url = f"{API_URL}/{path}"
     if condition:
         status, text = await request_text(session, "POST", url, json={"c": condition})
@@ -182,6 +198,7 @@ async def get_compressed_json(session, path, *, condition=None):
 
 
 async def get_subjects(session, selected_subjects):
+    """Return all subjects, or only the requested subject codes."""
     subjects = await get_compressed_json(session, "subject_code")
     if selected_subjects:
         selected = {subject.upper() for subject in selected_subjects}
@@ -190,6 +207,7 @@ async def get_subjects(session, selected_subjects):
 
 
 async def get_courses_for_subject(session, subject):
+    """Return the course list for one subject."""
     courses = await get_compressed_json(
         session,
         "course_no",
@@ -206,6 +224,7 @@ async def get_courses_for_subject(session, subject):
 
 
 async def fetch_course_rows(session, semaphore, course, academic_years, terms, window_condition):
+    """Fetch grade rows for one course."""
     condition = course_condition(
         course["subject"],
         course["course_number"],
@@ -227,6 +246,7 @@ async def fetch_course_rows(session, semaphore, course, academic_years, terms, w
 
 
 async def scrape(args):
+    """Scrape grade rows and write the output CSV."""
     output_path = Path(args.output)
     if output_path.exists() and not args.overwrite and not default_output_selected(output_path):
         raise FileExistsError(

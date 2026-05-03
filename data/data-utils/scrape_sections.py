@@ -1,3 +1,13 @@
+"""Scrape VT timetable section instructors.
+
+This script writes lines like:
+
+    2024;12;40002:Tew, Gregory
+
+The timetable search page gives us CRNs. The section detail page gives the
+canonical instructor name in "Last, First" form, so we fetch both pages.
+"""
+
 import re
 import threading
 import time
@@ -9,6 +19,8 @@ from bs4 import BeautifulSoup
 
 BASE_URL = "https://selfservice.banner.vt.edu/ssb/HZSKVTSC.P_ProcRequest"
 COMMENTS_URL = "https://selfservice.banner.vt.edu/ssb/HZSKVTSC.P_ProcComments"
+
+# Banner term codes for Winter 2024-25 through Spring 2026.
 START_TERM = "202412"
 END_TERM = "202601"
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "raw-data" / "superCrnToProfessor.txt"
@@ -29,6 +41,7 @@ HEADERS = {
 
 
 def get_session():
+    """Keep one requests session per worker thread."""
     if not hasattr(THREAD_LOCAL, "session"):
         THREAD_LOCAL.session = requests.Session()
         THREAD_LOCAL.session.headers.update(HEADERS)
@@ -36,6 +49,11 @@ def get_session():
 
 
 def request_text(method, url, **kwargs):
+    """Fetch a page with retries.
+
+    Banner sometimes returns "no available server" with a 503 during busy
+    periods. Treat that as retryable, but keep the final status for errors.
+    """
     last_status = 0
     last_text = ""
     for attempt in range(MAX_RETRIES):
@@ -73,6 +91,7 @@ def get_landing_page(history):
 
 
 def get_subjects_and_terms():
+    """Read the subject list and the allowed term window from Banner."""
     pages = {
         "Y": get_landing_page("Y"),
         "N": get_landing_page("N"),
@@ -99,6 +118,7 @@ def get_subjects_and_terms():
 
 
 def discover_refs(term, subject):
+    """Find all section-detail links for one subject in one term."""
     payload = {
         "CAMPUS": "0",
         "TERMYEAR": term["value"],
@@ -141,6 +161,7 @@ def discover_refs(term, subject):
 
 
 def parse_instructor(html):
+    """Extract the canonical instructor name from a section detail page."""
     soup = BeautifulSoup(html, "html.parser")
     instructor_label = soup.find("td", class_="mplabel", string="Instructor")
     if not instructor_label:
@@ -159,6 +180,7 @@ def parse_instructor(html):
 
 
 def fetch_instructor(ref):
+    """Return one output row for a section."""
     status, text = request_text("GET", COMMENTS_URL, params=ref["params"])
     if status != 200:
         return f"{ref['super_crn']}:N/A"
@@ -166,6 +188,7 @@ def fetch_instructor(ref):
 
 
 def run_pool(items, workers, fn, label):
+    """Run a simple retrying thread pool and lower pressure if Banner struggles."""
     results = []
     pending = list(items)
     round_number = 1
@@ -209,6 +232,7 @@ def run_pool(items, workers, fn, label):
 
 
 def scrape(discovery_workers, fetch_workers):
+    """Scrape all configured terms and replace the output file on success."""
     subjects, terms = get_subjects_and_terms()
 
     discovery_items = [(term, subject) for term in terms for subject in subjects]
