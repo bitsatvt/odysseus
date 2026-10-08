@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import prisma from "@/db";
 
+export const dynamic = "force-static";
+
 const courses = await prisma.course.findMany({
   select: {
     id: true,

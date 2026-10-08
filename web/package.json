@@ -20,6 +20,7 @@
     "@mantine/hooks": "^8.3.18",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
+    "@supabase/supabase-js": "^2.117.2",
     "@tabler/icons-react": "^3.19.0",
     "next": "^16.2.1",
     "react": "^19.2.4",
