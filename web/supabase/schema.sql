@@ -26,6 +26,8 @@ drop policy if exists "profiles_update_own" on public.profiles;
 create policy "profiles_update_own" on public.profiles
   for update to authenticated using (auth.uid() = id) with check (auth.uid() = id);
 
+-- KNOWN TRIAL RISK: callable with the public anon key, so anyone can map a
+-- username to its email. Acceptable only for this throwaway trial.
 -- Resolves a username to its email so /login can call signInWithPassword.
 -- Runs as the table owner to read auth.users; returns null when not found.
 create or replace function public.get_email_by_username(p_username text)
@@ -44,3 +46,17 @@ $$;
 
 revoke all on function public.get_email_by_username(text) from public;
 grant execute on function public.get_email_by_username(text) to anon, authenticated;
+
+-- Signup availability check that returns only a boolean, never an email.
+create or replace function public.username_available(p_username text)
+returns boolean
+language sql
+security definer
+set search_path = ''
+stable
+as $$
+  select not exists (select 1 from public.profiles where lower(username) = lower(p_username));
+$$;
+
+revoke all on function public.username_available(text) from public;
+grant execute on function public.username_available(text) to anon, authenticated;

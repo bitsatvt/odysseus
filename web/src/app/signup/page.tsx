@@ -57,9 +57,9 @@ export default function SignupPage() {
         if (!USERNAME_RE.test(username)) throw new Error('Username must be 3-24 letters, numbers, or underscores.');
         if (password.length < 8) throw new Error('Password must be at least 8 characters.');
         const supabase = getSupabase();
-        const { data: taken, error: rpcError } = await supabase.rpc('get_email_by_username', { p_username: username });
+        const { data: available, error: rpcError } = await supabase.rpc('username_available', { p_username: username });
         if (rpcError) throw rpcError;
-        if (taken) throw new Error('That username is taken.');
+        if (!available) throw new Error('That username is taken.');
 
         const { data, error } = await supabase.auth.updateUser({ password });
         if (error) throw error;
