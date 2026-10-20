@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Group, Text } from '@mantine/core';
-import { getSupabase } from '@/lib/supabase';
+import type { User } from '@supabase/supabase-js';
+import { ensureProfile, getSupabase } from '@/lib/supabase';
 
 export default function AuthStatus() {
     const router = useRouter();
@@ -20,19 +21,14 @@ export default function AuthStatus() {
             return;
         }
 
-        async function load(userId: string | undefined) {
-            if (!userId) {
-                setUsername(null);
-            } else {
-                const { data } = await supabase!.from('profiles').select('username').eq('id', userId).maybeSingle();
-                setUsername(data?.username ?? null);
-            }
+        async function load(user: User | undefined) {
+            setUsername(user ? await ensureProfile(user) : null);
             setReady(true);
         }
 
         // Defer the query out of the callback; awaiting Supabase calls inside it can deadlock.
         const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-            setTimeout(() => load(session?.user.id), 0);
+            setTimeout(() => load(session?.user), 0);
         });
         return () => sub.subscription.unsubscribe();
     }, []);

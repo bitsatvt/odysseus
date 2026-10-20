@@ -1,10 +1,10 @@
 "use client"
-// Temporary Supabase auth trial: email + username + password, no email verification.
+// Temporary Supabase auth trial: email + username + password, then email confirmation link.
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Alert, Button, Container, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
-import { getSupabase } from '@/lib/supabase';
+import { ensureProfile, getSupabase } from '@/lib/supabase';
 
 const USERNAME_RE = /^[A-Za-z0-9_]{3,24}$/;
 
@@ -15,6 +15,7 @@ export default function SignupPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [sent, setSent] = useState(false);
 
     async function signUp() {
         setError(null);
@@ -27,16 +28,20 @@ export default function SignupPage() {
             if (rpcError) throw rpcError;
             if (!available) throw new Error('That username is taken.');
 
-            const { data, error } = await supabase.auth.signUp({ email: email.trim(), password });
+            // The username rides in user_metadata; ensureProfile creates the profiles row once a session exists.
+            const { data, error } = await supabase.auth.signUp({
+                email: email.trim(),
+                password,
+                options: { data: { username }, emailRedirectTo: window.location.origin },
+            });
             if (error) throw error;
-            if (!data.session || !data.user) {
-                throw new Error('Account created but no session was returned. Turn off "Confirm email" in Supabase (Authentication → Sign In / Providers → Email), or this email is already registered.');
+            if (!data.session) {
+                setSent(true);
+                return;
             }
-
-            const { error: insertError } = await supabase.from('profiles').insert({ id: data.user.id, username });
-            if (insertError) {
+            if (!(await ensureProfile(data.user!))) {
                 await supabase.auth.signOut();
-                throw new Error(insertError.code === '23505' ? 'That username is taken.' : insertError.message);
+                throw new Error('That username is taken.');
             }
             router.push('/');
         } catch (e) {
@@ -44,6 +49,18 @@ export default function SignupPage() {
         } finally {
             setLoading(false);
         }
+    }
+
+    if (sent) {
+        return (
+            <Container size={420} py="xl">
+                <Stack>
+                    <Title order={2}>Check your email</Title>
+                    <Alert color="green">We sent a confirmation link to {email}. Click it to finish creating your account.</Alert>
+                    <Text size="sm">Already confirmed? <Link href="/login">Log in</Link></Text>
+                </Stack>
+            </Container>
+        );
     }
 
     return (
