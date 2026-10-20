@@ -42,6 +42,7 @@ After installing the tools, type these commands in your shell:
 
    ```
    npx prisma generate
+   npx prisma migrate deploy
    npx prisma db seed
    ```
 
@@ -54,3 +55,7 @@ After installing the tools, type these commands in your shell:
 You should now be able to navigate to
 [http://localhost:3000](http://localhost:3000) and browse the website.
 
+
+## Updating grade data
+
+See [the scraping and import workflow](data/data-utils/README.md) to update through calendar summer 2026, preview the merged data, and rerun database imports safely.

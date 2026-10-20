@@ -8,6 +8,7 @@ The timetable search page gives us CRNs. The section detail page gives the
 canonical instructor name in "Last, First" form, so we fetch both pages.
 """
 
+import argparse
 import re
 import threading
 import time
@@ -20,9 +21,9 @@ from bs4 import BeautifulSoup
 BASE_URL = "https://selfservice.banner.vt.edu/ssb/HZSKVTSC.P_ProcRequest"
 COMMENTS_URL = "https://selfservice.banner.vt.edu/ssb/HZSKVTSC.P_ProcComments"
 
-# Banner term codes for Winter 2024-25 through Spring 2026.
+# Banner term codes for Winter 2024-25 through Summer 2026 (Banner combines both summer sessions).
 START_TERM = "202412"
-END_TERM = "202601"
+END_TERM = "202606"
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "raw-data" / "superCrnToProfessor.txt"
 
 # Command line:
@@ -90,7 +91,7 @@ def get_landing_page(history):
     return text
 
 
-def get_subjects_and_terms():
+def get_subjects_and_terms(start_term=START_TERM, end_term=END_TERM):
     """Read the subject list and the allowed term window from Banner."""
     pages = {
         "Y": get_landing_page("Y"),
@@ -108,10 +109,15 @@ def get_subjects_and_terms():
     terms = {}
     for history, html in pages.items():
         for value, label in parse_options(html, "TERMYEAR"):
-            if value.isdigit() and len(value) == 6 and START_TERM <= value <= END_TERM:
+            if value.isdigit() and len(value) == 6 and start_term <= value <= end_term:
                 terms[value] = {"value": value, "label": label, "history": history}
 
     ordered_terms = [terms[value] for value in sorted(terms)]
+    if not subjects or not ordered_terms:
+        raise RuntimeError("No subjects or terms found; output was not replaced.")
+    missing = {start_term, end_term} - set(terms)
+    if missing:
+        raise RuntimeError(f"Requested term(s) unavailable in Banner: {sorted(missing)}")
     print(f"Found {len(subjects)} subjects.")
     print("Terms to scrape: " + ", ".join(f"{t['value']} ({t['label']})" for t in ordered_terms))
     return subjects, ordered_terms
@@ -183,7 +189,7 @@ def fetch_instructor(ref):
     """Return one output row for a section."""
     status, text = request_text("GET", COMMENTS_URL, params=ref["params"])
     if status != 200:
-        return f"{ref['super_crn']}:N/A"
+        return None
     return f"{ref['super_crn']}:{parse_instructor(text)}"
 
 
@@ -231,9 +237,10 @@ def run_pool(items, workers, fn, label):
     raise RuntimeError(f"{label} failed for {len(pending)} items after {MAX_POOL_ROUNDS} rounds.")
 
 
-def scrape(discovery_workers, fetch_workers):
+def scrape(discovery_workers, fetch_workers, start_term=START_TERM,
+           end_term=END_TERM, output_path=OUTPUT_PATH):
     """Scrape all configured terms and replace the output file on success."""
-    subjects, terms = get_subjects_and_terms()
+    subjects, terms = get_subjects_and_terms(start_term, end_term)
 
     discovery_items = [(term, subject) for term in terms for subject in subjects]
     discovered = run_pool(
@@ -248,6 +255,8 @@ def scrape(discovery_workers, fetch_workers):
         for ref in refs:
             unique_refs[ref["super_crn"]] = ref
 
+    if not unique_refs:
+        raise RuntimeError("No sections found; existing output was not replaced.")
     print(f"Discovered {len(unique_refs)} unique section refs.")
     rows = run_pool(list(unique_refs.values()), fetch_workers, fetch_instructor, "Instructor fetch")
 
@@ -255,22 +264,39 @@ def scrape(discovery_workers, fetch_workers):
     for row in rows:
         unique_rows[row.split(":", 1)[0]] = row
 
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = OUTPUT_PATH.with_suffix(".txt.tmp")
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = output_path.with_suffix(".txt.tmp")
     with open(tmp_path, "w", encoding="utf-8") as f:
         for row in sorted(unique_rows.values()):
             f.write(row + "\n")
-    tmp_path.replace(OUTPUT_PATH)
+    tmp_path.replace(output_path)
 
-    print(f"Done. Wrote {len(unique_rows)} section instructor entries to {OUTPUT_PATH}.")
+    print(f"Done. Wrote {len(unique_rows)} section instructor entries to {output_path}.")
+
+
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    # Retain the original positional worker arguments.
+    parser.add_argument("discovery_workers", nargs="?", type=int, default=DISCOVERY_WORKERS)
+    parser.add_argument("fetch_workers", nargs="?", type=int, default=FETCH_WORKERS)
+    parser.add_argument("--start-term", default=START_TERM, help="Inclusive Banner code, YYYYMM")
+    parser.add_argument("--end-term", default=END_TERM, help="Inclusive Banner code, YYYYMM")
+    parser.add_argument("--output", type=Path, default=OUTPUT_PATH)
+    args = parser.parse_args(argv)
+    for code in (args.start_term, args.end_term):
+        if not re.fullmatch(r"\d{4}(01|06|07|09|12)", code):
+            parser.error(f"Invalid Banner term: {code}")
+    if args.start_term > args.end_term:
+        parser.error("start-term must be before or equal to end-term")
+    if min(args.discovery_workers, args.fetch_workers) < 1:
+        parser.error("Worker counts must be positive")
+    return args
 
 
 def main():
-    import sys
-
-    discovery_workers = int(sys.argv[1]) if len(sys.argv) > 1 else DISCOVERY_WORKERS
-    fetch_workers = int(sys.argv[2]) if len(sys.argv) > 2 else FETCH_WORKERS
-    scrape(discovery_workers, fetch_workers)
+    args = parse_args()
+    scrape(args.discovery_workers, args.fetch_workers, args.start_term, args.end_term, args.output)
 
 
 if __name__ == "__main__":

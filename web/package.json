@@ -3,15 +3,14 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "prisma": {
-    "seed": "node prisma/seed.js"
-  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "init-search": "node scripts/init-search.js"
+    "init-search": "node scripts/init-search.js",
+    "import-data": "tsx prisma/seed.js",
+    "test:import": "tsx --test prisma/seed.test.js"
   },
   "dependencies": {
     "@mantine/charts": "^8.3.18",
@@ -39,6 +38,7 @@
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
     "prisma": "^7.2.0",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   },
   "overrides": {

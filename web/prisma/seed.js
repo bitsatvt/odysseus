@@ -1,190 +1,113 @@
-import prisma from "../src/db"
-import courses from "../../data/raw-data/class.json" with { type: "json" };
-import groups from "../../data/raw-data/group.json" with { type: "json" };
-import sections from "../../data/raw-data/section.json" with { type: "json" };
-import instructors from "../../data/raw-data/instructors.json" with { type: "json" };
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { parseArgs } from "node:util";
 
-async function createGroups() {
-  for (const key in groups) {
-    const group = groups[key];
-    try {
-      await prisma.group.create({
-        data: {
-          id: group.id,
-          type: group.type ? true : false,
-          coreqs: group.coreqs,
-          hash: group.hash,
-        },
-      });
-    } catch (error) {
-      console.error(
-        `Error inserting group ${group.hash}:`,
-        error,
-      );
+const defaultDataDir = fileURLToPath(new URL("../../data/raw-data/", import.meta.url));
+
+export async function loadData(directory = defaultDataDir) {
+  const names = { courses: "class", groups: "group", sections: "section", instructors: "instructors" };
+  return Object.fromEntries(await Promise.all(Object.entries(names).map(async ([key, name]) =>
+    [key, JSON.parse(await readFile(resolve(directory, `${name}.json`), "utf8"))],
+  )));
+}
+
+export function validateData({ courses, groups, sections, instructors }) {
+  const require = (condition, message) => { if (!condition) throw new Error(message); };
+  const hashes = new Set();
+  for (const [id, group] of Object.entries(groups)) {
+    require(String(group.id) === id, `Group key mismatch: ${id}`);
+    require(!hashes.has(group.hash), `Duplicate group hash: ${group.hash}`);
+    hashes.add(group.hash);
+    for (const target of group.requires) require(groups[target], `Group ${id} requires missing group ${target}`);
+  }
+  const courseGroups = new Set();
+  for (const [id, course] of Object.entries(courses)) {
+    require(course.id === id, `Course key mismatch: ${id}`);
+    if (course.groupId !== -1 && course.groupId != null) {
+      require(groups[course.groupId], `Course ${id} has missing group ${course.groupId}`);
+      require(!courseGroups.has(course.groupId), `Group ${course.groupId} belongs to multiple courses`);
+      courseGroups.add(course.groupId);
     }
+  }
+  for (const [id, instructor] of Object.entries(instructors)) {
+    for (const course of instructor.Courses) require(courses[course], `Instructor ${id} has missing course ${course}`);
+  }
+  for (const [id, section] of Object.entries(sections)) {
+    require(section.super_CRN === id, `Section key mismatch: ${id}`);
+    require(courses[section.course_id], `Section ${id} has missing course ${section.course_id}`);
+    require(instructors[section.Instructor], `Section ${id} has missing instructor ${section.Instructor}`);
+    require(Number.isFinite(section.GPA) && section.Grades_Dist.length === 13 && section.Grades_Dist.every(Number.isFinite),
+      `Invalid grades in section ${id}`);
   }
 }
 
-async function updateGroupRelations(groups) {
-  for (const key in groups) {
-    const group = groups[key];
-    await prisma.group.update({
-      where: { id: group.id },
-      data: {
-        requires: {
-          connect: group.requires.map((id) => ({ id })),
-        },
-      },
-    });
+const capitalize = (name) => name.split("-").map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
+
+export async function importData(prisma, data, { batchSize = 500 } = {}) {
+  validateData(data);
+  if (!Number.isInteger(batchSize) || batchSize < 1) throw new Error("batchSize must be positive");
+  const { courses, groups, sections, instructors } = data;
+  async function batches(label, entries, operation) {
+    for (let offset = 0; offset < entries.length; offset += batchSize) {
+      await prisma.$transaction(entries.slice(offset, offset + batchSize).map(operation));
+    }
+    console.log(`${label}: ${entries.length} records imported`);
   }
+  const upsert = (model, record) => model.upsert({ where: { id: record.id }, create: record, update: record });
+
+  await batches("Groups", Object.values(groups), (group) => upsert(prisma.group, {
+    id: group.id, hash: group.hash, type: group.type == null ? null : Boolean(group.type),
+  }));
+  await batches("Group prerequisites", Object.values(groups), (group) => prisma.group.update({
+    where: { id: group.id }, data: { requires: { set: group.requires.map((id) => ({ id })) } },
+  }));
+  await batches("Courses", Object.values(courses), (course) => upsert(prisma.course, {
+    id: course.id, subject: course.subject, code: course.code, level: course.level,
+    title: course.title, repeatability: course.repeatability, description: course.description,
+    pathways: course.pathways, hours: course.hours, coreqs: course.coreqs,
+    groupId: course.groupId === -1 ? null : course.groupId,
+  }));
+  await batches("Crosslists", Object.values(courses), (course) => prisma.course.update({
+    where: { id: course.id },
+    // The catalog contains crosslist references to courses absent from the source.
+    data: { crosslist: { set: course.crosslist.filter((id) => courses[id]).map((id) => ({ id })) } },
+  }));
+  await batches("Instructors", Object.entries(instructors), ([id, instructor]) => upsert(prisma.instructor, {
+    id, firstName: capitalize(instructor.firstName), lastName: capitalize(instructor.lastName),
+    difficulty: instructor.difficulty, rating: instructor.rating, recommendedPct: instructor.recommendedPct,
+    numRatings: instructor.numRatings, sectionsTaught: instructor.CoursesTaught,
+  }));
+  await batches("Instructor courses", Object.entries(instructors), ([id, instructor]) => prisma.instructor.update({
+    where: { id }, data: { courses: { set: instructor.Courses.map((courseId) => ({ id: courseId })) } },
+  }));
+  await batches("Sections", Object.values(sections), (section) => upsert(prisma.section, {
+    id: section.super_CRN, year: section.year, term: section.term, title: section.title,
+    gpa: section.GPA, gradeData: section.Grades_Dist, enrollment: section.Enrollment, crn: section.CRN,
+    instructorName: section.Instructor, credits: section.Credits, course_id: section.course_id,
+  }));
 }
 
-async function insertClasses(classes) {
-  for (const key in classes) {
-    const classData = classes[key];
-
-    const data = {
-      id: classData.id,
-      subject: classData.subject,
-      code: classData.code,
-      level: classData.level,
-      title: classData.title,
-      repeatability: classData.repeatability,
-      description: classData.description,
-      pathways: classData.pathways,
-      hours: classData.hours,
-      coreqs: classData.coreqs,
-    };
-    if (classData.groupId != -1) {
-      data.group = { connect: { id: classData.groupId } };
-    }
-    await prisma.course.create({ data: data });
-  }
-}
-
-async function updateCrosslistRelations(classes) {
-  const set = new Set(Object.keys(classes));
-
-  outer: for (const key in classes) {
-    const course = classes[key];
-    if (course.crosslist.length === 0) continue;
-    for (const crosslistName of course.crosslist) {
-      if (!set.has(crosslistName)) continue outer;
-    }
-    try {
-      await prisma.course.update({
-        where: { id: course.id },
-        data: {
-          crosslist: {
-            connect: course.crosslist.map((id) => ({ id })),
-          },
-        },
-      });
-    } catch (error) {
-      console.error(
-        `Error inserting/updating class ${course.crosslist}:`,
-        error,
-      );
-    }
-  }
-}
-
-async function insertInstructors(instructors) {
-  for (const key in instructors) {
-    const instructorData = instructors[key];
-    try {
-      await prisma.instructor.create({
-        data: {
-          id: key,
-          difficulty: instructorData.difficulty,
-          rating: instructorData.rating,
-          recommendedPct: instructorData.recommendedPct,
-          numRatings: instructorData.numRatings,
-          sectionsTaught: instructorData.CoursesTaught,
-          firstName: instructorData.firstName.split("-").map((s) =>
-            s.charAt(0).toUpperCase() + s.slice(1)
-          ).join(" "),
-          lastName: instructorData.lastName.split("-").map((s) =>
-            s.charAt(0).toUpperCase() + s.slice(1)
-          ).join(" "),
-        },
-      });
-    } catch (error) {
-      console.error(`Error inserting instructor ${instructorData.id}:`, error);
-    }
-  }
-}
-
-async function updateInstructorCourseRelations(instructors) {
-  for (const key in instructors) {
-    const instructorData = instructors[key];
-    try {
-      await prisma.instructor.update({
-        where: { id: key },
-        data: {
-          courses: {
-            connect: instructorData.Courses.map((id) => ({ id })),
-          },
-        },
-      });
-    } catch (error) {
-      console.error(`Error updating instructor ${instructorData.id} with Courses: ${instructorData.Courses}`, error);
-    }
-  }
-}
-
-async function insertSections(sections) {
-  for (const key in sections) {
-    const sectionData = sections[key];
-    try {
-      await prisma.section.create({
-        data: {
-          id: sectionData.super_CRN,
-          year: sectionData.year,
-          term: sectionData.term,
-          title: sectionData.title,
-          gpa: sectionData.GPA,
-          gradeData: sectionData.Grades_Dist,
-          enrollment: sectionData.Enrollment,
-          crn: sectionData.CRN,
-          instructor: { connect: { id: sectionData.Instructor } },
-          credits: sectionData.Credits,
-          course: { connect: { id: sectionData.course_id } },
-        },
-      });
-    } catch (error) {
-      console.error(
-        `Error inserting/updating class ${sectionData.super_CRN} with instructor ${sectionData.Instructor}:`,
-        error,
-      );
-    }
-  }
-}
-async function importData() {
+async function main() {
+  const { values } = parseArgs({ options: {
+    "data-dir": { type: "string", default: defaultDataDir },
+    "dry-run": { type: "boolean", default: false },
+  } });
+  const data = await loadData(values["data-dir"]);
+  validateData(data);
+  console.log("Validated input:", Object.fromEntries(Object.entries(data).map(([key, rows]) => [key, Object.keys(rows).length])));
+  if (values["dry-run"]) return;
+  const { default: prisma } = await import("../src/db.ts");
   try {
-    await createGroups(groups);
-    console.log("All groups created successfully");
-    await updateGroupRelations(groups);
-    console.log("All group relations updated successfully");
-    await insertClasses(courses);
-    console.log("All classes inserted");
-    await updateCrosslistRelations(courses);
-    console.log("All crosslists inserted");
-    await insertInstructors(instructors);
-    console.log("All instructors inserted");
-    await updateInstructorCourseRelations(instructors);
-    console.log("All instructors/course relations inserted");
-    await insertSections(sections);
-    console.log("All sections inserted");
-  } catch (error) {
-    console.error("Error importing data:", error);
+    await importData(prisma, data);
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
-importData();
-
-/*** const capitalizeAndJoin = (name) => name.split("-").map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
-
-  const fullName = `${capitalizeAndJoin(instructorData.firstName)} ${capitalizeAndJoin(instructorData.lastName)}`;
-
- */
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    console.error("Import failed. Completed batches can safely be rerun:", error);
+    process.exitCode = 1;
+  });
+}

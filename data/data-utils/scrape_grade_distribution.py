@@ -16,13 +16,15 @@ import aiohttp
 import brotli
 from yarl import URL
 
+from grade_terms import (
+    DEFAULT_FROM_ACADEMIC_YEAR, DEFAULT_FROM_TERM,
+    DEFAULT_TO_ACADEMIC_YEAR, DEFAULT_TO_TERM, TERMS, window_pairs,
+)
+
 
 BASE_URL = "https://udc.vt.edu/irdata/data/courses/grades"
 API_URL = "https://udc.vt.edu/api/irdata/data/courses/grades"
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "raw-data" / "newGradeDistribution.csv"
-DEFAULT_FROM_ACADEMIC_YEAR = "2024-25"
-DEFAULT_FROM_TERM = "Winter"
-DEFAULT_TO_ACADEMIC_YEAR = "2025-26"
 
 CSV_FIELDS = [
     "Academic Year",
@@ -48,6 +50,7 @@ CSV_FIELDS = [
     "Graded Enrollment",
     "CRN",
     "Credits",
+    "Term Code",
 ]
 
 FIELD_MAP = {
@@ -74,6 +77,7 @@ FIELD_MAP = {
     "Graded Enrollment": "student_no",
     "CRN": "course_ref_no",
     "Credits": "credit_hours",
+    "Term Code": "term_code_full",
 }
 
 
@@ -114,41 +118,31 @@ def default_output_selected(output_path):
     return output_path.resolve() == OUTPUT_PATH.resolve()
 
 
-def range_condition(from_academic_year, from_term, to_academic_year):
-    """Default window: starting term plus all rows in the next academic year."""
-    return (
-        f'(("academic_year"={sql_value(from_academic_year)} '
-        f'AND "term"={sql_value(from_term)}) '
-        f'OR "academic_year"={sql_value(to_academic_year)})'
-    )
+def range_condition(from_academic_year, from_term, to_academic_year, to_term):
+    """Include every term in the inclusive academic-year window."""
+    pairs = window_pairs(from_academic_year, from_term, to_academic_year, to_term)
+    return "(" + " OR ".join(
+        f'("academic_year"={sql_value(year)} AND "term"={sql_value(term)})'
+        for year, term in pairs
+    ) + ")"
 
 
 def selected_window(args):
-    """Use the default window unless the caller chose explicit filters."""
+    """Explicit academic-year/term filters override the default date window."""
     if args.academic_year or args.term:
         return None
-    return range_condition(
-        args.from_academic_year,
-        args.from_term,
-        args.to_academic_year,
-    )
+    return range_condition(args.from_academic_year, args.from_term,
+                           args.to_academic_year, args.to_term)
 
 
 def row_in_window(row, args):
     """Mirror the API filter locally so the CSV cannot leak extra rows."""
-    if args.academic_year and row.get("academic_year") not in args.academic_year:
-        return False
-    if args.term and row.get("term") not in args.term:
-        return False
     if args.academic_year or args.term:
-        return True
-    return (
-        row.get("academic_year") == args.to_academic_year
-        or (
-            row.get("academic_year") == args.from_academic_year
-            and row.get("term") == args.from_term
-        )
-    )
+        return ((not args.academic_year or row.get("academic_year") in args.academic_year)
+                and (not args.term or row.get("term") in args.term))
+    return (row.get("academic_year"), row.get("term")) in set(window_pairs(
+        args.from_academic_year, args.from_term, args.to_academic_year, args.to_term
+    ))
 
 
 def normalize_number(value):
@@ -253,6 +247,7 @@ async def scrape(args):
             f"{output_path} already exists. Pass --overwrite to replace it."
         )
 
+    window_condition = selected_window(args)
     timeout = aiohttp.ClientTimeout(total=args.timeout)
     connector = aiohttp.TCPConnector(limit=0, ttl_dns_cache=300)
     cookie_jar = aiohttp.CookieJar()
@@ -292,7 +287,6 @@ async def scrape(args):
         rows = []
         failed = []
         semaphore = asyncio.Semaphore(args.concurrency)
-        window_condition = selected_window(args)
         tasks = [
             fetch_course_rows(
                 session,
@@ -337,18 +331,22 @@ async def scrape(args):
         seen.add(key)
         csv_rows.append([normalize_number(row.get(FIELD_MAP[field])) for field in CSV_FIELDS])
 
-    csv_rows.sort(key=lambda row: (row[0], row[1], row[2], row[3], row[20], row[5]))
+    csv_rows.sort(key=lambda row: (row[0], row[1], row[2], row[3], row[21], row[5]))
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, "w", newline="", encoding="utf-8") as csvfile:
+    if not csv_rows:
+        raise RuntimeError("No grade rows found; existing output was not replaced.")
+    tmp_path = output_path.with_suffix(output_path.suffix + ".tmp")
+    with open(tmp_path, "w", newline="", encoding="utf-8") as csvfile:
         csvfile.write(",".join(CSV_FIELDS) + "\n")
         writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
         writer.writerows(csv_rows)
+    tmp_path.replace(output_path)
 
     print(f"Done. Wrote {len(csv_rows)} grade distribution rows to {output_path}.")
 
 
-def parse_args():
+def parse_args(argv=None):
     parser = argparse.ArgumentParser(
         description="Scrape VT UDC grade distributions into the Odysseus CSV format."
     )
@@ -363,7 +361,8 @@ def parse_args():
         "--term",
         action="append",
         default=[],
-        help="Term to include. Overrides the default Winter 2024 onward window when used.",
+        choices=TERMS,
+        help="Term to include. Overrides the default date window when used.",
     )
     parser.add_argument(
         "--from-academic-year",
@@ -373,13 +372,16 @@ def parse_args():
     parser.add_argument(
         "--from-term",
         default=DEFAULT_FROM_TERM,
+        choices=TERMS,
         help='Default range start term, e.g. "Winter".',
     )
     parser.add_argument(
         "--to-academic-year",
         default=DEFAULT_TO_ACADEMIC_YEAR,
-        help='Default range end academic year, e.g. "2025-26".',
+        help='Default range end academic year; summer 2026 is "2026-27".',
     )
+    parser.add_argument("--to-term", default=DEFAULT_TO_TERM, choices=TERMS,
+                        help="Inclusive final term (default: Summer II).")
     parser.add_argument(
         "--subject",
         action="append",
@@ -405,7 +407,14 @@ def parse_args():
         default=0,
         help="Only scrape the first N discovered courses. Intended for smoke tests.",
     )
-    return parser.parse_args()
+    args = parser.parse_args(argv)
+    if args.concurrency < 1 or args.timeout < 1 or args.limit_courses < 0:
+        parser.error("Concurrency/timeout must be positive and limit-courses nonnegative")
+    try:
+        selected_window(args)
+    except ValueError as error:
+        parser.error(str(error))
+    return args
 
 
 def main():
