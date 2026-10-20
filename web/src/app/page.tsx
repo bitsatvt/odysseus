@@ -1,5 +1,6 @@
 "use client"
 import SearchBar from "@/components/SearchBar"
+import AuthStatus from "@/components/AuthStatus"
 import { Flex, Text, Stack, Box, Alert, Container } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 
@@ -11,6 +12,7 @@ export default function Page() {
           <Stack align="center" gap={0} p="1%">
             <img src="/OfficialOdysseusLogo.svg" width={80} height={130} alt="Odysseus Logo" />
           </Stack>
+          <Box ml={{ base: 0, xs: 'auto' }} p="1%" style={{ alignSelf: 'center' }}><AuthStatus /></Box>
         </Flex>
         <img src="/exploreVT.svg" width={250} height={70} alt="Explore VT" />
         <Box w={'100%'}>

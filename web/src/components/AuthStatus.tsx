@@ -40,7 +40,12 @@ export default function AuthStatus() {
     if (!ready) return null;
 
     if (!username) {
-        return <Link href="/login"><Text c="black" fw={500}>Sign in</Text></Link>;
+        return (
+            <Group gap="sm" wrap="nowrap">
+                <Button component={Link} href="/login" size="xs" variant="default">Log in</Button>
+                <Button component={Link} href="/signup" size="xs">Sign up</Button>
+            </Group>
+        );
     }
 
     return (
