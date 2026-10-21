@@ -94758,5 +94758,885 @@
         "requiredBy": [],
         "courseID": "FOR-2554",
         "hash": "FOR-2554:"
+    },
+    "9322": {
+        "id": 9322,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "NEUR-5814",
+        "hash": "NEUR-5814:"
+    },
+    "9323": {
+        "id": 9323,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "WATR-5244",
+        "hash": "WATR-5244:"
+    },
+    "9324": {
+        "id": 9324,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECE-4110",
+        "hash": "ECE-4110:"
+    },
+    "9325": {
+        "id": 9325,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECE-6474",
+        "hash": "ECE-6474:"
+    },
+    "9326": {
+        "id": 9326,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "GEOG-5094",
+        "hash": "GEOG-5094:"
+    },
+    "9327": {
+        "id": 9327,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECE-5114",
+        "hash": "ECE-5114:"
+    },
+    "9328": {
+        "id": 9328,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ENGE-1034",
+        "hash": "ENGE-1034:"
+    },
+    "9329": {
+        "id": 9329,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CS-5740",
+        "hash": "CS-5740:"
+    },
+    "9330": {
+        "id": 9330,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "SPIA-6984",
+        "hash": "SPIA-6984:"
+    },
+    "9331": {
+        "id": 9331,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "MSE-5344",
+        "hash": "MSE-5344:"
+    },
+    "9332": {
+        "id": 9332,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "EDEP-6984",
+        "hash": "EDEP-6984:"
+    },
+    "9333": {
+        "id": 9333,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ARCH-5944",
+        "hash": "ARCH-5944:"
+    },
+    "9334": {
+        "id": 9334,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ITAL-2404",
+        "hash": "ITAL-2404:"
+    },
+    "9335": {
+        "id": 9335,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "HNFE-5714",
+        "hash": "HNFE-5714:"
+    },
+    "9336": {
+        "id": 9336,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "HNFE-5704",
+        "hash": "HNFE-5704:"
+    },
+    "9337": {
+        "id": 9337,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "HNFE-5724",
+        "hash": "HNFE-5724:"
+    },
+    "9338": {
+        "id": 9338,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "AHRM-3954",
+        "hash": "AHRM-3954:"
+    },
+    "9339": {
+        "id": 9339,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "IS-3984",
+        "hash": "IS-3984:"
+    },
+    "9340": {
+        "id": 9340,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "FIN-4414",
+        "hash": "FIN-4414:"
+    },
+    "9341": {
+        "id": 9341,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "NANO-1014",
+        "hash": "NANO-1014:"
+    },
+    "9342": {
+        "id": 9342,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "PHYS-5514",
+        "hash": "PHYS-5514:"
+    },
+    "9343": {
+        "id": 9343,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECE-5124",
+        "hash": "ECE-5124:"
+    },
+    "9344": {
+        "id": 9344,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECE-5440",
+        "hash": "ECE-5440:"
+    },
+    "9345": {
+        "id": 9345,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ESM-5245",
+        "hash": "ESM-5245:"
+    },
+    "9346": {
+        "id": 9346,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "MGT-3844",
+        "hash": "MGT-3844:"
+    },
+    "9347": {
+        "id": 9347,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECE-5024",
+        "hash": "ECE-5024:"
+    },
+    "9348": {
+        "id": 9348,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "HIST-1744",
+        "hash": "HIST-1744:"
+    },
+    "9349": {
+        "id": 9349,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "FREC-1024",
+        "hash": "FREC-1024:"
+    },
+    "9350": {
+        "id": 9350,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CEE-5364",
+        "hash": "CEE-5364:"
+    },
+    "9351": {
+        "id": 9351,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ENGL-5754",
+        "hash": "ENGL-5754:"
+    },
+    "9352": {
+        "id": 9352,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "STAT-4734",
+        "hash": "STAT-4734:"
+    },
+    "9353": {
+        "id": 9353,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECE-4120",
+        "hash": "ECE-4120:"
+    },
+    "9354": {
+        "id": 9354,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECE-5354",
+        "hash": "ECE-5354:"
+    },
+    "9355": {
+        "id": 9355,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "EDHE-6934",
+        "hash": "EDHE-6934:"
+    },
+    "9356": {
+        "id": 9356,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ADS-5984",
+        "hash": "ADS-5984:"
+    },
+    "9357": {
+        "id": 9357,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "GEOG-5304",
+        "hash": "GEOG-5304:"
+    },
+    "9358": {
+        "id": 9358,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "GEOG-5164",
+        "hash": "GEOG-5164:"
+    },
+    "9359": {
+        "id": 9359,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "APSC-4344",
+        "hash": "APSC-4344:"
+    },
+    "9360": {
+        "id": 9360,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "BSE-4014",
+        "hash": "BSE-4014:"
+    },
+    "9361": {
+        "id": 9361,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CEE-5234",
+        "hash": "CEE-5234:"
+    },
+    "9362": {
+        "id": 9362,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CEE-4854",
+        "hash": "CEE-4854:"
+    },
+    "9363": {
+        "id": 9363,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "PSYC-5524",
+        "hash": "PSYC-5524:"
+    },
+    "9364": {
+        "id": 9364,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "BIOL-4304",
+        "hash": "BIOL-4304:"
+    },
+    "9365": {
+        "id": 9365,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "RLCL-1074",
+        "hash": "RLCL-1074:"
+    },
+    "9366": {
+        "id": 9366,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "HUM-1074",
+        "hash": "HUM-1074:"
+    },
+    "9367": {
+        "id": 9367,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "HD-1034",
+        "hash": "HD-1034:"
+    },
+    "9368": {
+        "id": 9368,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "AOE-2014",
+        "hash": "AOE-2014:"
+    },
+    "9369": {
+        "id": 9369,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "PHIL-1404",
+        "hash": "PHIL-1404:"
+    },
+    "9370": {
+        "id": 9370,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ISC-1984",
+        "hash": "ISC-1984:"
+    },
+    "9371": {
+        "id": 9371,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ART-3104",
+        "hash": "ART-3104:"
+    },
+    "9372": {
+        "id": 9372,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CEE-4424",
+        "hash": "CEE-4424:"
+    },
+    "9373": {
+        "id": 9373,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CEE-4434",
+        "hash": "CEE-4434:"
+    },
+    "9374": {
+        "id": 9374,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "NANO-1024",
+        "hash": "NANO-1024:"
+    },
+    "9375": {
+        "id": 9375,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "FREC-3514",
+        "hash": "FREC-3514:"
+    },
+    "9376": {
+        "id": 9376,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "FREC-4544",
+        "hash": "FREC-4544:"
+    },
+    "9377": {
+        "id": 9377,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECE-5610",
+        "hash": "ECE-5610:"
+    },
+    "9378": {
+        "id": 9378,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CEE-4364",
+        "hash": "CEE-4364:"
+    },
+    "9379": {
+        "id": 9379,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECON-3174",
+        "hash": "ECON-3174:"
+    },
+    "9380": {
+        "id": 9380,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ME-3704",
+        "hash": "ME-3704:"
+    },
+    "9381": {
+        "id": 9381,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECE-5294",
+        "hash": "ECE-5294:"
+    },
+    "9382": {
+        "id": 9382,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "BMES-4224",
+        "hash": "BMES-4224:"
+    },
+    "9383": {
+        "id": 9383,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "MGT-3854",
+        "hash": "MGT-3854:"
+    },
+    "9384": {
+        "id": 9384,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "NDIG-1104",
+        "hash": "NDIG-1104:"
+    },
+    "9385": {
+        "id": 9385,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "LDRS-4454",
+        "hash": "LDRS-4454:"
+    },
+    "9386": {
+        "id": 9386,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "RUS-3474",
+        "hash": "RUS-3474:"
+    },
+    "9387": {
+        "id": 9387,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ENGL-1724",
+        "hash": "ENGL-1724:"
+    },
+    "9388": {
+        "id": 9388,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ENGL-5764",
+        "hash": "ENGL-5764:"
+    },
+    "9389": {
+        "id": 9389,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ENGL-6664",
+        "hash": "ENGL-6664:"
+    },
+    "9390": {
+        "id": 9390,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ENGL-5604",
+        "hash": "ENGL-5604:"
+    },
+    "9391": {
+        "id": 9391,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "AT-0744",
+        "hash": "AT-0744:"
+    },
+    "9392": {
+        "id": 9392,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ARBC-3414",
+        "hash": "ARBC-3414:"
+    },
+    "9393": {
+        "id": 9393,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CHEM-5024G",
+        "hash": "CHEM-5024G:"
+    },
+    "9394": {
+        "id": 9394,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ISE-5894",
+        "hash": "ISE-5894:"
+    },
+    "9395": {
+        "id": 9395,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "PSYC-3064",
+        "hash": "PSYC-3064:"
+    },
+    "9396": {
+        "id": 9396,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECE-5864",
+        "hash": "ECE-5864:"
+    },
+    "9397": {
+        "id": 9397,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ALCE-4814",
+        "hash": "ALCE-4814:"
+    },
+    "9398": {
+        "id": 9398,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "BMES-2054",
+        "hash": "BMES-2054:"
+    },
+    "9399": {
+        "id": 9399,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "SPES-2014",
+        "hash": "SPES-2014:"
+    },
+    "9400": {
+        "id": 9400,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "MUS-1154",
+        "hash": "MUS-1154:"
+    },
+    "9401": {
+        "id": 9401,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "NEUR-3704",
+        "hash": "NEUR-3704:"
+    },
+    "9402": {
+        "id": 9402,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "NEUR-2074",
+        "hash": "NEUR-2074:"
+    },
+    "9403": {
+        "id": 9403,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CS-4094",
+        "hash": "CS-4094:"
+    },
+    "9404": {
+        "id": 9404,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ISE-6664",
+        "hash": "ISE-6664:"
+    },
+    "9405": {
+        "id": 9405,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CINE-3984",
+        "hash": "CINE-3984:"
+    },
+    "9406": {
+        "id": 9406,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "STAT-2704",
+        "hash": "STAT-2704:"
+    },
+    "9407": {
+        "id": 9407,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "FST-3614",
+        "hash": "FST-3614:"
+    },
+    "9408": {
+        "id": 9408,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "COS-2024",
+        "hash": "COS-2024:"
+    },
+    "9409": {
+        "id": 9409,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "AAEC-3434",
+        "hash": "AAEC-3434:"
+    },
+    "9410": {
+        "id": 9410,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CEE-4444",
+        "hash": "CEE-4444:"
+    },
+    "9411": {
+        "id": 9411,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "AIS-2414",
+        "hash": "AIS-2414:"
+    },
+    "9412": {
+        "id": 9412,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "APSC-4174",
+        "hash": "APSC-4174:"
+    },
+    "9413": {
+        "id": 9413,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "BMES-3234",
+        "hash": "BMES-3234:"
+    },
+    "9414": {
+        "id": 9414,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "NANO-2984E",
+        "hash": "NANO-2984E:"
+    },
+    "9415": {
+        "id": 9415,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "BMES-4024",
+        "hash": "BMES-4024:"
+    },
+    "9416": {
+        "id": 9416,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "HNFE-3814",
+        "hash": "HNFE-3814:"
+    },
+    "9417": {
+        "id": 9417,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "LDRS-4414",
+        "hash": "LDRS-4414:"
+    },
+    "9418": {
+        "id": 9418,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ALCE-4824",
+        "hash": "ALCE-4824:"
+    },
+    "9419": {
+        "id": 9419,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "LAHS-2114",
+        "hash": "LAHS-2114:"
+    },
+    "9420": {
+        "id": 9420,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "BSE-2504",
+        "hash": "BSE-2504:"
+    },
+    "9421": {
+        "id": 9421,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "TBMH-5124",
+        "hash": "TBMH-5124:"
+    },
+    "9422": {
+        "id": 9422,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ME-5774",
+        "hash": "ME-5774:"
+    },
+    "9423": {
+        "id": 9423,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "MINE-4744",
+        "hash": "MINE-4744:"
+    },
+    "9424": {
+        "id": 9424,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ECON-2904",
+        "hash": "ECON-2904:"
+    },
+    "9425": {
+        "id": 9425,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "BSE-4634",
+        "hash": "BSE-4634:"
+    },
+    "9426": {
+        "id": 9426,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "PSYC-2124",
+        "hash": "PSYC-2124:"
+    },
+    "9427": {
+        "id": 9427,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CEM-2974",
+        "hash": "CEM-2974:"
+    },
+    "9428": {
+        "id": 9428,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "NR-5324",
+        "hash": "NR-5324:"
+    },
+    "9429": {
+        "id": 9429,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "HUM-3954M",
+        "hash": "HUM-3954M:"
+    },
+    "9430": {
+        "id": 9430,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "CINE-3144",
+        "hash": "CINE-3144:"
+    },
+    "9431": {
+        "id": 9431,
+        "type": null,
+        "requires": [],
+        "requiredBy": [],
+        "courseID": "ALS-5174",
+        "hash": "ALS-5174:"
     }
 }

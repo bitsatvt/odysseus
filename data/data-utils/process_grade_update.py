@@ -200,7 +200,7 @@ def main():
     for name, value in {**merged, "grade-update-report": report}.items():
         target = output / f"{name}.json"
         temporary = target.with_suffix(".json.tmp")
-        temporary.write_text(json.dumps(value, indent=4, allow_nan=False) + "\n")
+        temporary.write_text(json.dumps(value, indent=2 if name == "section" else 4, allow_nan=False) + "\n")
         pending.append((temporary, target))
     for temporary, target in pending:
         temporary.replace(target)

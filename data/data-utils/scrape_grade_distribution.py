@@ -339,7 +339,7 @@ async def scrape(args):
     tmp_path = output_path.with_suffix(output_path.suffix + ".tmp")
     with open(tmp_path, "w", newline="", encoding="utf-8") as csvfile:
         csvfile.write(",".join(CSV_FIELDS) + "\n")
-        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL, lineterminator="\n")
         writer.writerows(csv_rows)
     tmp_path.replace(output_path)
 
