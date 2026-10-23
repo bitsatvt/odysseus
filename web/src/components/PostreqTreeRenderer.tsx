@@ -1,5 +1,6 @@
 // components/PostreqTreeRenderer.tsx
 import Link from 'next/link';
+import styles from './RequirementTree.module.css';
 
 interface PostreqNode {
   id: number;
@@ -22,13 +23,15 @@ export default function PostreqTreeRenderer({
     return <>N/A</>;
   }
 
-  return [...postReqs].map((postReq, index) => {
-    return (
-      <Link key={index} href={`./${postReq}`}>
-        {index == 0 ? '' : ','} {postReq}
-      </Link>
-    )
-  })
+  return (
+    <span className={styles.postreqList}>
+      {[...postReqs].map((postReq) => (
+        <Link className={styles.postreq} key={postReq} href={`./${postReq}`}>
+          {postReq}
+        </Link>
+      ))}
+    </span>
+  );
 }
 
 function traversePostreqs(tree: PostreqNode, postReqs: Set<string>) {

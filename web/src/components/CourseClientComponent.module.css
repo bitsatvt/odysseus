@@ -1,0 +1,35 @@
+.analytics { padding: 42px; border-radius: 0 40px 40px 40px; background: #f1f2f3; }
+.headingRow { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+.eyebrow, .blockHeading p { margin: 0 0 7px; color: #e64d1b; font-size: 12px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.headingRow h2 { margin: 0; font-size: clamp(34px, 4vw, 48px); line-height: 1; letter-spacing: -.04em; }
+.rangeControl { display: inline-flex; padding: 4px; border: 1px solid #c9c9c9; border-radius: 999px; background: white; }
+.rangeControl button { border: 0; border-radius: 999px; padding: 8px 13px; color: #555; background: transparent; font: inherit; font-size: 12px; cursor: pointer; }
+.rangeControl button:hover { color: #111; }
+.rangeControl .active { color: white; background: #171717; }
+.metrics { display: grid; grid-template-columns: 1.25fr repeat(4, 1fr); margin-top: 32px; border: 1px solid #d4d4d4; border-radius: 0 24px 24px 24px; overflow: hidden; background: white; }
+.metrics > div { min-height: 128px; display: flex; flex-direction: column; justify-content: space-between; padding: 18px; border-right: 1px solid #dedede; }
+.metrics > div:last-child { border: 0; }
+.metrics span { color: #5b5b5b; font-size: 12px; }
+.metrics strong { font-size: clamp(26px, 3vw, 39px); line-height: 1; letter-spacing: -.04em; }
+.metrics small { color: #555; }
+.metrics .primaryMetric { color: white; background: #ee5723; }
+.primaryMetric span, .primaryMetric small { color: white; }
+.block { margin-top: 48px; }
+.blockHeading { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
+.blockHeading p { margin: 0; }
+.blockHeading h3 { margin: 0; font-size: 27px; letter-spacing: -.025em; }
+@media (max-width: 850px) {
+  .analytics { padding: 30px 24px; }
+  .headingRow { align-items: flex-start; flex-direction: column; }
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .metrics > div { border-bottom: 1px solid #dedede; }
+  .metrics .primaryMetric { grid-column: 1 / -1; }
+}
+@media (max-width: 540px) {
+  .analytics { padding: 26px 14px; border-radius: 0 28px 28px 28px; }
+  .rangeControl { width: 100%; }
+  .rangeControl button { flex: 1; padding-inline: 5px; }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .metrics > div { min-height: 110px; padding: 14px; }
+  .blockHeading { align-items: flex-start; flex-direction: column; gap: 4px; }
+}

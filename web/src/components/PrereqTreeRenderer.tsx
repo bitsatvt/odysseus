@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import styles from './RequirementTree.module.css';
 
 interface PrereqNode {
   id: number;
@@ -33,10 +34,10 @@ export default function PrereqTreeRenderer({
           />
         </span>
       ));
-      return <>{childElements}</>;
+      return <span className={styles.branch}>{childElements}</span>;
     } else {
       return (
-        <Link href={`./${String(tree.courseId)}`}>
+        <Link className={styles.course} href={`./${String(tree.courseId)}`}>
           {String(tree.courseId)}
         </Link>
       );
@@ -53,11 +54,11 @@ export default function PrereqTreeRenderer({
       </span>
     ));
     return includeParens ? (
-      <>
+      <span className={styles.group}>
         ({childElements})
-      </>
+      </span>
     ) : (
-      <>{childElements}</>
+      <span className={styles.group}>{childElements}</span>
     );
   }
 }

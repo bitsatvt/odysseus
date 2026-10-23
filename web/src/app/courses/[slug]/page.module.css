@@ -1,0 +1,39 @@
+.page { width: min(1085px, calc(100% - 40px)); margin: 52px auto 72px; color: #171717; }
+.courseTrail { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px; font-weight: 650; }
+.marker { width: 11px; height: 11px; background: #f15a24; flex: 0 0 auto; }
+.subjectBadge, .courseChip { min-height: 30px; display: inline-flex; align-items: center; padding: 5px 12px; border: 1px solid #171717; }
+.subjectBadge { color: white; background: #171717; }
+.courseChip { background: white; }
+.heroCard { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(300px, .95fr); gap: 54px; padding: 38px 42px 40px; background: #f1f2f3; border-radius: 0 40px 40px 40px; }
+.identity { align-self: center; }
+.eyebrow, .sectionLabel { margin: 0 0 8px; color: #e64d1b; font-size: 13px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.identity h1 { max-width: 520px; margin: 0; font-size: clamp(34px, 4vw, 55px); line-height: .98; letter-spacing: -.045em; }
+.quickFacts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 25px; }
+.quickFacts span { padding: 8px 12px; background: white; border-radius: 999px; font-size: 13px; }
+.details { display: grid; gap: 17px; margin: 0; }
+.details div { display: grid; grid-template-columns: 92px 1fr; gap: 12px; }
+.details dt { font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: .04em; }
+.details dd { margin: 0; color: #444; font-size: 14px; line-height: 1.45; }
+.details a, .treeSurface a { color: #c94216; text-underline-offset: 3px; }
+.requirements { padding: 54px 4px 46px; }
+.requirements h2 { margin: 0 0 24px; font-size: clamp(30px, 4vw, 45px); letter-spacing: -.035em; }
+.treeSurface { min-height: 112px; display: flex; align-items: center; padding: 24px 28px; border: 1px solid #d8d8d8; border-radius: 0 28px 28px 28px; background: white; overflow-x: auto; font-weight: 650; line-height: 2.6; }
+.corequisites { display: grid; grid-template-columns: 180px 1fr; align-items: baseline; padding: 25px 3px 0; border-top: 1px solid #d8d8d8; margin-top: 28px; }
+.corequisites h3, .corequisites p { margin: 0; }
+.corequisites h3 { font-size: 16px; }
+.corequisites p { color: #555; }
+@media (max-width: 760px) {
+  .page { width: min(100% - 28px, 620px); margin-top: 30px; }
+  .heroCard { grid-template-columns: 1fr; gap: 34px; padding: 30px 24px; border-radius: 0 30px 30px 30px; }
+  .details div { grid-template-columns: 100px 1fr; }
+  .requirements { padding-top: 42px; }
+  .treeSurface { padding: 20px; }
+}
+@media (max-width: 440px) {
+  .page { width: calc(100% - 24px); }
+  .courseTrail { gap: 5px; font-size: 11px; }
+  .subjectBadge, .courseChip { padding-inline: 8px; }
+  .identity h1 { font-size: 38px; }
+  .details div { grid-template-columns: 1fr; gap: 4px; }
+  .corequisites { grid-template-columns: 1fr; gap: 8px; }
+}

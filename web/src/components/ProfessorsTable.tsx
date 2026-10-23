@@ -1,262 +1,90 @@
 "use client";
 
-import { useState } from 'react';
-import {
-  ScrollArea,
-  Table,
-  TextInput,
-  UnstyledButton,
-  Group,
-  Text,
-  Center,
-  rem,
-  Box,
-  Paper,
-} from '@mantine/core';
-import { Section } from '../../prisma/generated/prisma/client';
-import Link from 'next/link';
-import {
-  IconChevronUp,
-  IconChevronDown,
-  IconSelector,
-} from '@tabler/icons-react';
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import type { Section } from "../../prisma/generated/prisma/client";
+import styles from "./ProfessorsTable.module.css";
 
-// Define types
-type GradeKeys = 'A' | 'B' | 'C' | 'D' | 'F' | 'W';
+type GradeKey = "A" | "B" | "C" | "D" | "F" | "W";
+type SortKey = "instructor" | "recentTerm" | "avgGPA" | "numberSections" | GradeKey;
+type Combined = { numberSections: number; recentTerm: number; gpaSum: number; grades: Record<GradeKey, number> };
+const gradeKeys: GradeKey[] = ["A", "B", "C", "D", "F", "W"];
+const gradeColors: Record<GradeKey, string> = { A: "#ed5722", B: "#f18a42", C: "#f3bd63", D: "#8e9c91", F: "#4a514d", W: "#202020" };
 
-type CombinedProfs = {
-  numberSections: number;
-  enrollment: number;
-  A: number[];
-  B: number[];
-  C: number[];
-  D: number[];
-  F: number[];
-  W: number[];
-  recentTerm: number;
-  gpaSum: number;
-};
-
-// ThProps interface
-interface ThProps {
-  children: React.ReactNode;
-  reversed: boolean;
-  sorted: boolean;
-  onSort: () => void;
-}
-
-// Custom Th component
-function Th({ children, reversed, sorted, onSort }: ThProps) {
-  const Icon = sorted ? (reversed ? IconChevronUp : IconChevronDown) : IconSelector;
-  return (
-    <Table.Th>
-      <UnstyledButton onClick={onSort}>
-        <Group>
-          <Text fw={500} fz="sm">
-            {children}
-          </Text>
-          <Icon style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-        </Group>
-      </UnstyledButton>
-    </Table.Th>
-  );
+function formatName(name: string) {
+  const parts = name.split("-");
+  const lastName = parts.shift();
+  parts.push(lastName!);
+  return parts.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
 }
 
 export default function ProfessorsTable({ sections }: { sections: Section[] }) {
-  const capitalizeAndJoin = (name: string) => {
-    const arr = name.split("-");
-    const lastName = arr.shift();
-    arr.push(lastName!);
-    return arr.map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
-  };
-  // Combine professor data
-  const combinedProfs = sections.reduce((acc, curr) => {
-    let value = acc[curr.instructorName];
-    if (!value) {
-      acc[curr.instructorName] = {
-        numberSections: 0,
-        enrollment: 0,
-        A: [],
-        B: [],
-        C: [],
-        D: [],
-        F: [],
-        W: [],
-        gpaSum: 0,
-        recentTerm: 0,
-      };
-      value = acc[curr.instructorName];
-    }
-    const gradeRatios = curr.gradeData;
-    value.numberSections++;
-    value.gpaSum += curr.gpa;
-    value.enrollment += curr.enrollment
-    value.A.push(gradeRatios[0] + gradeRatios[1]);
-    value.B.push(gradeRatios[2] + gradeRatios[3] + gradeRatios[4]);
-    value.C.push(gradeRatios[5] + gradeRatios[6] + gradeRatios[7]);
-    value.D.push(gradeRatios[8] + gradeRatios[9] + gradeRatios[10]);
-    value.F.push(gradeRatios[11]);
-    value.W.push(gradeRatios[12]);
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<{ key: SortKey; direction: "asc" | "desc" }>({ key: "avgGPA", direction: "desc" });
 
-    if (curr.year > value.recentTerm) {
-      value.recentTerm = curr.year;
-    }
+  const rows = useMemo(() => {
+    const combined = sections.reduce<Record<string, Combined>>((all, section) => {
+      const current = all[section.instructorName] ?? { numberSections: 0, recentTerm: 0, gpaSum: 0, grades: { A: 0, B: 0, C: 0, D: 0, F: 0, W: 0 } };
+      current.numberSections += 1;
+      current.recentTerm = Math.max(current.recentTerm, section.year);
+      current.gpaSum += section.gpa;
+      current.grades.A += section.gradeData[0] + section.gradeData[1];
+      current.grades.B += section.gradeData[2] + section.gradeData[3] + section.gradeData[4];
+      current.grades.C += section.gradeData[5] + section.gradeData[6] + section.gradeData[7];
+      current.grades.D += section.gradeData[8] + section.gradeData[9] + section.gradeData[10];
+      current.grades.F += section.gradeData[11];
+      current.grades.W += section.gradeData[12];
+      all[section.instructorName] = current;
+      return all;
+    }, {});
 
-    return acc;
-  }, {} as Record<string, CombinedProfs>);
-
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(
-    null
-  );
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const requestSort = (key: string) => {
-    let direction: 'asc' | 'desc' = 'desc';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'desc') {
-      direction = 'asc';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const gradeKeys: GradeKeys[] = ['A', 'B', 'C', 'D', 'F', 'W'];
-
-  // Convert combinedProfs to an array for sorting
-  const profsArray = Object.entries(combinedProfs)
-    .filter(([instructor]) => instructor.toLowerCase().includes(searchQuery.toLowerCase()))
-    .map(([instructor, v]: [string, CombinedProfs]) => {
-      // Calculate average grades
-      const avgGrades = gradeKeys.reduce((acc, grade) => {
-        const totalGrade = v[grade].reduce((a: number, b: number) => a + b, 0);
-        const avgGrade = totalGrade / v.numberSections;
-        acc[grade] = avgGrade;
-        return acc;
-      }, {} as Record<GradeKeys, number>);
-
-      const avgGPA = v.gpaSum / v.numberSections;
-
-      return {
+    return Object.entries(combined)
+      .map(([instructor, data]) => ({
         instructor,
-        numberSections: v.numberSections,
-        recentTerm: v.recentTerm,
-        avgGrades,
-        avgGPA,
-      };
-    });
+        numberSections: data.numberSections,
+        recentTerm: data.recentTerm,
+        avgGPA: data.gpaSum / data.numberSections,
+        grades: Object.fromEntries(gradeKeys.map((grade) => [grade, data.grades[grade] / data.numberSections])) as Record<GradeKey, number>,
+      }))
+      .filter((row) => formatName(row.instructor).toLowerCase().includes(query.toLowerCase()))
+      .sort((a, b) => {
+        const aValue = sort.key === "instructor" ? formatName(a.instructor) : gradeKeys.includes(sort.key as GradeKey) ? a.grades[sort.key as GradeKey] : a[sort.key as Exclude<SortKey, GradeKey | "instructor">];
+        const bValue = sort.key === "instructor" ? formatName(b.instructor) : gradeKeys.includes(sort.key as GradeKey) ? b.grades[sort.key as GradeKey] : b[sort.key as Exclude<SortKey, GradeKey | "instructor">];
+        return (aValue < bValue ? -1 : aValue > bValue ? 1 : 0) * (sort.direction === "asc" ? 1 : -1);
+      });
+  }, [query, sections, sort]);
 
-  // Sorting the data
-  if (sortConfig !== null) {
-    profsArray.sort((a, b) => {
-      let aValue: string | number = '';
-      let bValue: string | number = '';
-
-      if (sortConfig.key === 'instructor') {
-        aValue = capitalizeAndJoin(b.instructor.toLowerCase());
-        bValue = capitalizeAndJoin(a.instructor.toLowerCase());
-      } else if (sortConfig.key === 'numberSections') {
-        aValue = a.numberSections;
-        bValue = b.numberSections;
-      } else if (sortConfig.key === 'recentTerm') {
-        aValue = a.recentTerm;
-        bValue = b.recentTerm;
-      } else if (sortConfig.key.startsWith('grade_')) {
-        const gradeIndex = parseInt(sortConfig.key.split('_')[1], 10);
-        const gradeKey = gradeKeys[gradeIndex];
-        aValue = a.avgGrades[gradeKey];
-        bValue = b.avgGrades[gradeKey];
-      } else if (sortConfig.key === 'avgGPA') {
-        aValue = a.avgGPA;
-        bValue = b.avgGPA;
-      }
-
-      if (aValue < bValue) {
-        return sortConfig.direction === 'asc' ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return sortConfig.direction === 'asc' ? 1 : -1;
-      }
-      return 0;
-    });
-  }
-
-  const rows = profsArray.map((prof) => {
-    const formattedGPA = prof.avgGPA.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })
-
-    return (
-      <Table.Tr key={prof.instructor}>
-        <Table.Td>
-          <Link href={`../instructors/${prof.instructor}`} style={{ color: '#cf4420', textDecoration: 'underline' }}>{capitalizeAndJoin(prof.instructor)}</Link>
-        </Table.Td>
-        <Table.Td>{prof.recentTerm}</Table.Td>
-        {gradeKeys.map((grade) => (
-          <Table.Td key={grade}>{prof.avgGrades[grade].toFixed(1)}%</Table.Td>
-        ))}
-        <Table.Td>{formattedGPA}</Table.Td>
-        <Table.Td>{prof.numberSections}</Table.Td>
-      </Table.Tr>
-    )
-  });
+  const requestSort = (key: SortKey) => setSort((current) => ({ key, direction: current.key === key && current.direction === "desc" ? "asc" : "desc" }));
+  const heading = (label: string, key: SortKey) => (
+    <button type="button" onClick={() => requestSort(key)} aria-label={`Sort by ${label}`}>
+      {label}<span aria-hidden="true">{sort.key === key ? (sort.direction === "desc" ? " ↓" : " ↑") : " ↕"}</span>
+    </button>
+  );
 
   return (
-    <>
-      <TextInput
-        placeholder="Search for an instructor"
-        value={searchQuery}
-        onChange={(event) => setSearchQuery(event.currentTarget.value)}
-        mb="md"
-        w={300}
-      />
-
-      <Paper withBorder radius="lg" style={{ overflow: 'auto', maxHeight: '500px' }} >
-        <Table
-          stickyHeader
-          horizontalSpacing="sm"
-          verticalSpacing="xs"
-        >
-          <Table.Thead w={'100%'}>
-            <Table.Tr style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>
-              <Th
-                sorted={sortConfig?.key === 'instructor'}
-                reversed={sortConfig?.direction === 'desc'}
-                onSort={() => requestSort('instructor')}
-              >
-                Instructor
-              </Th>
-              <Th
-                sorted={sortConfig?.key === 'recentTerm'}
-                reversed={sortConfig?.direction === 'desc'}
-                onSort={() => requestSort('recentTerm')}
-              >
-                Most Recent Term
-              </Th>
-              {gradeKeys.map((grade, index) => (
-                <Th
-                  key={grade}
-                  sorted={sortConfig?.key === `grade_${index}`}
-                  reversed={sortConfig?.direction === 'desc'}
-                  onSort={() => requestSort(`grade_${index}`)}
-                >
-                  {grade} (%)
-                </Th>
-              ))}
-              <Th
-                sorted={sortConfig?.key === 'avgGPA'}
-                reversed={sortConfig?.direction === 'desc'}
-                onSort={() => requestSort('avgGPA')}
-              >
-                GPA
-              </Th>
-              <Th
-                sorted={sortConfig?.key === 'numberSections'}
-                reversed={sortConfig?.direction === 'desc'}
-                onSort={() => requestSort('numberSections')}
-              >
-                # Sections
-              </Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
-      </Paper >
-    </>
+    <div>
+      <label className={styles.search}><span>Find an instructor</span><input value={query} onChange={(event) => setQuery(event.currentTarget.value)} placeholder="Search by name" /></label>
+      <div className={styles.tableWrap}>
+        <table>
+          <thead><tr><th>{heading("Instructor", "instructor")}</th><th>{heading("Most recent", "recentTerm")}</th><th>Grade distribution</th><th>{heading("GPA", "avgGPA")}</th><th>{heading("Sections", "numberSections")}</th></tr></thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.instructor}>
+                <td><Link href={`../instructors/${row.instructor}`}>{formatName(row.instructor)}</Link></td>
+                <td>{row.recentTerm}</td>
+                <td>
+                  <div className={styles.distribution} aria-label={gradeKeys.map((grade) => `${grade} ${row.grades[grade].toFixed(1)}%`).join(", ")}>
+                    {gradeKeys.map((grade) => <span key={grade} style={{ width: `${Math.max(0, row.grades[grade])}%`, background: gradeColors[grade] }} title={`${grade}: ${row.grades[grade].toFixed(1)}%`} />)}
+                  </div>
+                </td>
+                <td>{row.avgGPA.toFixed(2)}</td><td>{row.numberSections}</td>
+              </tr>
+            ))}
+            {!rows.length && <tr><td colSpan={5} className={styles.empty}>No instructors match this search.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+      <div className={styles.legend}>{gradeKeys.map((grade) => <button type="button" key={grade} onClick={() => requestSort(grade)} aria-pressed={sort.key === grade}><i style={{ background: gradeColors[grade] }} />{grade}{sort.key === grade && (sort.direction === "desc" ? " ↓" : " ↑")}</button>)}</div>
+    </div>
   );
 }

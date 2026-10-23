@@ -1,119 +1,91 @@
-'use client';
+"use client";
+
+import { useMemo, useState } from "react";
+import type { Course, Section } from "../../prisma/generated/prisma/client";
 import { SectionsGraph } from "@/components/SectionsCharts";
 import ProfessorsTable from "@/components/ProfessorsTable";
-import { Divider, Flex, Title, SegmentedControl, Button, Text, Space } from "@mantine/core";
-import React, { useState, useMemo } from 'react';
-import { Course, Section } from "../../prisma/generated/prisma/client";
+import styles from "./CourseClientComponent.module.css";
 
-export default function CourseClientComponent({ course }: { course: Course & Record<string, any> }) {
-    const sections = course.sections
-    const [filteredSections, setFilteredSections] = useState(sections.filter((section: Section) => parseInt(section.id.substring(0, 4)) > 2023 - 5))
-    const [nYears, setNYears] = useState("5")
-    const filterNYears = (years: string, sections: Section[]) => {
-        setNYears(years)
-        const years_num = parseInt(years)
-        const earliestAllowed = 2023 - years_num;
-        setFilteredSections(sections.filter((section) => parseInt(section.id.substring(0, 4)) > earliestAllowed))
-    }
+const ranges = [
+  { label: "3 years", value: "3" },
+  { label: "5 years", value: "5" },
+  { label: "10 years", value: "10" },
+  { label: "All", value: "all" },
+];
 
-    function gpaToLetterGrade(gpa: number) {
-        if (gpa >= 3.85) {
-            return 'A';
-        } else if (gpa >= 3.5) {
-            return 'A-';
-        } else if (gpa >= 3.15) {
-            return 'B+';
-        } else if (gpa >= 2.85) {
-            return 'B';
-        } else if (gpa >= 2.5) {
-            return 'B-';
-        } else if (gpa >= 2.15) {
-            return 'C+';
-        } else if (gpa >= 1.85) {
-            return 'C';
-        } else if (gpa >= 1.5) {
-            return 'C-';
-        } else if (gpa >= 1.15) {
-            return 'D+';
-        } else if (gpa >= 0.85) {
-            return 'D';
-        } else {
-            return 'F';
-        }
-    }
-    return (
-        <>
-            <SegmentedControl
-                value={nYears}
-                onChange={(value: string) => filterNYears(value as "3" | "5" | "10" | "30", sections)}
-                data={[
-                    { label: 'Last 3 Years', value: '3' },
-                    { label: 'Last 5 Years', value: '5' },
-                    { label: 'Last 10 Years', value: '10' },
-                    { label: 'All', value: '30' },
-                ]}
-                size="sm"
-                radius="xl"
-                color="#f05400"
-            />
-            <Space h="sm" />
-            <Flex style={{ justifyContent: 'space-between' }} direction={{ base: 'column', sm: 'row' }} gap={10} py={5}>
+function gpaToLetterGrade(gpa: number) {
+  if (gpa >= 3.85) return "A";
+  if (gpa >= 3.5) return "A-";
+  if (gpa >= 3.15) return "B+";
+  if (gpa >= 2.85) return "B";
+  if (gpa >= 2.5) return "B-";
+  if (gpa >= 2.15) return "C+";
+  if (gpa >= 1.85) return "C";
+  if (gpa >= 1.5) return "C-";
+  if (gpa >= 1.15) return "D+";
+  if (gpa >= .85) return "D";
+  return "F";
+}
 
-                <Text>
-                    <strong>Sections Taught: </strong>
-                    {filteredSections === null ? 'N/A' : filteredSections.length}
-                </Text>
-                <Text >
-                    <strong> Average GPA: </strong>  {(() => {
-                        if (filteredSections != null && filteredSections.length > 0) {
-                            const totalGPA = filteredSections.reduce((sum: number, item: Section) => {
+export default function CourseClientComponent({ course }: { course: Course & { sections: Section[] } }) {
+  const sections = course.sections;
+  const latestYear = sections.length
+    ? Math.max(...sections.map((section) => section.year))
+    : new Date().getFullYear();
+  const [range, setRange] = useState("5");
+  const filteredSections = useMemo(() => {
+    if (range === "all") return sections;
+    const earliestYear = latestYear - Number(range) + 1;
+    return sections.filter((section) => section.year >= earliestYear);
+  }, [latestYear, range, sections]);
 
-                                return sum + (item.gpa || 0); // Parse GPA and add to the sum
-                            }, 0);
-                            const avgGPA = ((totalGPA / filteredSections.length).toFixed(2))
-                            const letterGrade = gpaToLetterGrade(parseFloat(avgGPA))
-                            return `${avgGPA} (rounds to ${letterGrade})`; // Return the total GPA rounded to 2 decimal places
-                        } else {
-                            return 'N/A';
-                        }
-                    })()}
-                </Text>
-                <Text >
-                    <strong> Strict A Rate (No A-) : </strong>  {(() => {
-                        if (filteredSections != null && filteredSections.length > 0) {
-                            const totalAs = filteredSections.reduce((sum: number, item: Section) => {
+  const metrics = useMemo(() => {
+    if (!filteredSections.length) return null;
+    const average = (select: (section: Section) => number) =>
+      filteredSections.reduce((sum, section) => sum + select(section), 0) / filteredSections.length;
+    const gpa = average((section) => section.gpa || 0);
+    return {
+      gpa,
+      grade: gpaToLetterGrade(gpa),
+      aRate: average((section) => section.gradeData[0] || 0),
+      withdrawalRate: average((section) => section.gradeData[12] || 0),
+      enrollment: average((section) => section.enrollment || 0),
+    };
+  }, [filteredSections]);
 
-                                return sum + (item.gradeData[0] || 0); // Parse W and add to the sum
-                            }, 0);
-                            const avgA = ((totalAs / filteredSections.length).toFixed(2))
-                            return avgA; // Return the total GPA rounded to 2 decimal places
-                        } else {
-                            return 'N/A';
-                        }
-                    })()}%
-                </Text>
-                <Text >
-                    <strong> Average Withdrawal Rate: </strong>  {(() => {
-                        if (filteredSections != null && filteredSections.length > 0) {
-                            const totalWithdrawals = filteredSections.reduce((sum: number, item: Section) => {
+  return (
+    <section className={styles.analytics} aria-labelledby="course-statistics-heading">
+      <div className={styles.headingRow}>
+        <div>
+          <p className={styles.eyebrow}>Historical outcomes</p>
+          <h2 id="course-statistics-heading">Course statistics</h2>
+        </div>
+        <div className={styles.rangeControl} aria-label="Filter course data by year range">
+          {ranges.map((item) => (
+            <button key={item.value} type="button" className={range === item.value ? styles.active : ""} aria-pressed={range === item.value} onClick={() => setRange(item.value)}>
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
-                                return sum + (item.gradeData[12] || 0); // Parse W and add to the sum
-                            }, 0);
-                            const avgWithdrawals = ((totalWithdrawals / filteredSections.length).toFixed(2))
-                            return avgWithdrawals; // Return the total GPA rounded to 2 decimal places
-                        } else {
-                            return 'N/A';
-                        }
-                    })()}%
-                </Text>
-            </Flex>
+      <div className={styles.metrics}>
+        <div className={styles.primaryMetric}><span>Average grade</span><strong>{metrics ? metrics.grade : "N/A"}</strong><small>{metrics ? `${metrics.gpa.toFixed(2)} GPA` : "No data"}</small></div>
+        <div><span>Sections taught</span><strong>{filteredSections.length}</strong></div>
+        <div><span>Strict A rate</span><strong>{metrics ? `${metrics.aRate.toFixed(1)}%` : "N/A"}</strong></div>
+        <div><span>Withdrawal rate</span><strong>{metrics ? `${metrics.withdrawalRate.toFixed(1)}%` : "N/A"}</strong></div>
+        <div><span>Average class size</span><strong>{metrics ? Math.round(metrics.enrollment) : "N/A"}</strong></div>
+      </div>
 
-            <Space h="xs" />
-            <Divider />
-            <Space h="xs" />
-            <ProfessorsTable sections={filteredSections} />
-            <Title order={2} my={20}>Grade Distribution Over Time</Title>
-            <SectionsGraph sections={filteredSections} />
-        </>
-    );
+      <div className={styles.block}>
+        <div className={styles.blockHeading}><p>Teaching history</p><h3>Instructors</h3></div>
+        <ProfessorsTable sections={filteredSections} />
+      </div>
+
+      <div className={styles.block}>
+        <div className={styles.blockHeading}><p>Term by term</p><h3>Grade distribution</h3></div>
+        <SectionsGraph sections={filteredSections} />
+      </div>
+    </section>
+  );
 }

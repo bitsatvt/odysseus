@@ -1,0 +1,18 @@
+.search { width: min(320px, 100%); display: grid; gap: 7px; margin-bottom: 15px; color: #555; font-size: 12px; }
+.search input { width: 100%; box-sizing: border-box; padding: 10px 13px; border: 1px solid #bdbdbd; border-radius: 0 14px 14px 14px; background: white; font: inherit; }
+.search input:focus { outline: 2px solid #ed5722; outline-offset: 2px; }
+.tableWrap { max-height: 510px; overflow: auto; border: 1px solid #cecece; border-radius: 0 20px 20px 20px; background: white; }
+.tableWrap table { width: 100%; min-width: 780px; border-collapse: collapse; font-size: 13px; }
+.tableWrap thead { position: sticky; top: 0; z-index: 1; background: #202020; color: white; }
+.tableWrap th, .tableWrap td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #e2e2e2; }
+.tableWrap th button { padding: 0; border: 0; color: inherit; background: none; font: inherit; font-weight: 650; cursor: pointer; }
+.tableWrap tbody tr:hover { background: #faf4f1; }
+.tableWrap td a { color: #bd3c13; font-weight: 650; text-underline-offset: 3px; }
+.distribution { width: 250px; height: 18px; display: flex; overflow: hidden; border-radius: 999px; background: #eee; }
+.distribution span { min-width: 1px; height: 100%; }
+.legend { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; margin-top: 11px; font-size: 11px; }
+.legend button { display: inline-flex; align-items: center; gap: 5px; padding: 3px 5px; border: 0; border-radius: 5px; background: transparent; font: inherit; cursor: pointer; }
+.legend button:hover, .legend button[aria-pressed="true"] { background: white; }
+.legend i { width: 8px; height: 8px; display: block; border-radius: 50%; }
+.empty { padding: 30px !important; text-align: center !important; color: #666; }
+@media (max-width: 540px) { .tableWrap table { min-width: 690px; } .tableWrap th, .tableWrap td { padding: 12px; } .distribution { width: 210px; } }
