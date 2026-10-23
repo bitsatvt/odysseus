@@ -1,0 +1,9 @@
+.header { display: flex; min-height: 89px; align-items: center; justify-content: space-between; gap: 36px; padding: 16px max(32px, 7.7vw); border-bottom: 1px solid rgba(32, 32, 32, 0.12); background: #fdfdfd; }
+.wordmark { display: inline-grid; flex: 0 0 auto; line-height: 1; }
+.wordmark strong { color: #000; font-size: 15px; font-weight: 800; letter-spacing: -0.7px; }
+.wordmark span { margin-top: 5px; color: #fe8216; font-family: var(--font-outfit), sans-serif; font-size: 15px; }
+.search { width: min(500px, 52vw); }
+@media (max-width: 700px) {
+  .header { align-items: flex-start; flex-direction: column; gap: 16px; padding: 20px; }
+  .search { width: 100%; }
+}

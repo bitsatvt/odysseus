@@ -1,30 +1,43 @@
-"use client"
-import SearchBar from "@/components/SearchBar"
-import { Flex, Text, Stack, Box, Alert, Container } from '@mantine/core';
-import { IconAlertCircle } from '@tabler/icons-react';
+"use client";
+import SearchBar from "@/components/SearchBar";
+import Link from "next/link";
+import styles from './page.module.css';
 
 export default function Page() {
   return (
-    <Flex direction={{ base: 'column', xs: 'column' }} style={{ height: '100%' }} align={'center'} className="pt-4" justify="space-between">
-      <Stack style={{ width: '100%' }} align={'center'}>
-        <Flex direction={{ base: 'column', xs: 'row' }} style={{ width: '100%' }} align={'left'} className="mb-2">
-          <Stack align="center" gap={0} p="1%">
-            <img src="/OfficialOdysseusLogo.svg" width={80} height={130} alt="Odysseus Logo" />
-          </Stack>
-        </Flex>
-        <img src="/exploreVT.svg" width={250} height={70} alt="Explore VT" />
-        <Box w={'100%'}>
-          <SearchBar />
-        </Box>
-        <Container size="sm" pt="lg">
-          <Alert
-            icon={<IconAlertCircle size={32} />}
-            title="The website is under development and may experience occasional issues."
-            color="yellow"
-            radius="md"
-          />
-        </Container>
-      </Stack>
-    </Flex>
+    <div className={styles.page}>
+      <div className={styles.ambientBars} aria-hidden="true">
+        {Array.from({ length: 27 }).map((_, index) => <span key={index} />)}
+      </div>
+      <div className={styles.contentFade} aria-hidden="true" />
+      <header className={styles.homeHeader}>
+        <Link className={styles.wordmark} href="/" aria-label="Odysseus Advisor home">
+          <strong>ODYSSEUS</strong>
+          <span>Virginia Tech</span>
+        </Link>
+      </header>
+      <section className={styles.hero}>
+        <div className={styles.heroCopy}>
+          <h1><span>Plan your semester with</span><span>confidence.</span></h1>
+          <div className={styles.searchRow}>
+            <SearchBar variant="hero" />
+          </div>
+        </div>
+        <div className={styles.preview} aria-label="Preview of Odysseus course insights">
+          <div className={`${styles.previewLayer} ${styles.coursePreview}`}>
+            <img src="/figma/hero-course.png" alt="Odysseus course and prerequisite information" />
+            <img className={styles.blurLow} src="/figma/hero-course.png" alt="" aria-hidden="true" />
+            <img className={styles.blurMid} src="/figma/hero-course.png" alt="" aria-hidden="true" />
+            <img className={styles.blurHigh} src="/figma/hero-course.png" alt="" aria-hidden="true" />
+          </div>
+          <div className={`${styles.previewLayer} ${styles.chartPreview}`}>
+            <img src="/figma/hero-chart.png" alt="Odysseus grade distribution visualization" />
+            <img className={styles.blurLow} src="/figma/hero-chart.png" alt="" aria-hidden="true" />
+            <img className={styles.blurMid} src="/figma/hero-chart.png" alt="" aria-hidden="true" />
+            <img className={styles.blurHigh} src="/figma/hero-chart.png" alt="" aria-hidden="true" />
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

@@ -1,0 +1,81 @@
+.search { position: relative; width: 100%; min-width: 0; }
+.controlRow { display: flex; width: 100%; min-width: 0; align-items: center; gap: 16px; }
+.inputShell { display: grid; min-width: 0; flex: 1 1 0; grid-template-columns: 39px minmax(0, 1fr); align-items: center; gap: 8px; }
+.searchIcon {
+  display: grid;
+  width: 39px;
+  height: 33px;
+  flex: 0 0 39px;
+  place-items: center;
+  border: 1px solid #202020;
+  border-radius: 10px;
+  background: #fff;
+}
+.searchIcon img { width: 17px; height: 17px; }
+.input {
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 33px;
+  padding: 5px 10px;
+  border: 1px solid #202020;
+  border-radius: 10px;
+  outline: none;
+  background: #fff;
+  color: #202020;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.input::placeholder { color: rgba(32, 32, 32, 0.4); opacity: 1; }
+.input:focus, .searchIcon:has(+ .input:focus) { box-shadow: 0 0 0 3px rgba(254, 130, 22, 0.2); }
+.typeToggle { display: flex; flex: 0 0 auto; }
+.typeToggle button {
+  height: 33px;
+  padding: 5px 10px;
+  border: 1px solid rgba(32, 32, 32, 0.3);
+  background: #fff;
+  color: #202020;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+.typeToggle button:first-child { border-radius: 10px 0 0 10px; }
+.typeToggle button:last-child { margin-left: -1px; border-radius: 0 10px 10px 0; }
+.typeToggle button.active { position: relative; z-index: 1; border-color: #202020; background: #fe8216; }
+.results {
+  position: absolute;
+  z-index: 20;
+  top: 45px;
+  left: 55px;
+  width: min(520px, calc(100% - 55px));
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid rgba(32, 32, 32, 0.22);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(32, 32, 32, 0.14);
+}
+.result { display: grid; gap: 3px; padding: 11px 14px; border-bottom: 1px solid #eee; }
+.result:last-child { border-bottom: 0; }
+.result:hover, .result:focus-visible { background: #fff4eb; outline: none; }
+.result strong { font-size: 14px; }
+.result span { overflow: hidden; color: rgba(32, 32, 32, 0.62); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.hero { max-width: 480px; }
+.header { max-width: 500px; }
+.header .controlRow { gap: 8px; }
+.header .searchIcon { width: 34px; height: 28px; flex-basis: 34px; }
+.header .input, .header .typeToggle button { height: 28px; font-size: 12px; }
+.header .results { top: 38px; left: 42px; }
+
+@media (max-width: 620px) {
+  .controlRow { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; gap: 10px; }
+  .inputShell { width: 100%; grid-template-columns: 39px minmax(0, 1fr); }
+  .typeToggle { width: fit-content; max-width: calc(100% - 47px); margin-left: 47px; }
+  .typeToggle button { min-width: 0; }
+  .results { top: 78px; left: 47px; width: calc(100% - 47px); }
+}
+
+@media (max-width: 360px) {
+  .typeToggle button { padding-inline: 8px; font-size: 13px; }
+}

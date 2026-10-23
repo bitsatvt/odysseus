@@ -1,259 +1,167 @@
+"use client";
+
 import Typesense from "typesense";
-import { useState, useEffect, useRef, CSSProperties } from 'react';
-import { SegmentedControl, TextInput, Container, Box, ScrollArea } from '@mantine/core';
-import { IconSearch } from '@tabler/icons-react';
-import { Text } from "@mantine/core";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import styles from "./SearchBar.module.css";
 
-interface Course {
-  code: string;
-  title: string;
-  desc?: string;
-}
-
-interface Instructor {
-  id: string;
-  firstName: string;
-  lastName: string;
-}
-
+interface Course { code: string; title: string; desc?: string; }
+interface Instructor { id: string; firstName: string; lastName: string; }
 type Result = Course | Instructor;
 
-export default function SearchBar({ width }: Record<string, number>) {
+interface SearchBarProps {
+  variant?: "hero" | "header";
+  width?: number;
+}
 
-  const [searchType, setSearchType] = useState<'courses' | 'instructors'>('courses');
-  const [query, setQuery] = useState('');
+export default function SearchBar({ variant = "header", width }: SearchBarProps) {
+  const [searchType, setSearchType] = useState<"courses" | "instructors">("courses");
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState<Result[]>([]);
   const [isResultsVisible, setIsResultsVisible] = useState(false);
-
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const pathname = usePathname();
-
-  // Debounce timer
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const searchRequest = useRef(0);
 
-
-
-  // Debounced search effect
   useEffect(() => {
     const client = new Typesense.Client({
-      nodes: [
-        {
-          host: process.env.NODE_ENV == 'production' ? "api.odyadvisor.com" : 'localhost',
-          port: + (process.env.NODE_ENV == 'production' ? 443 : 8108),
-          protocol: process.env.NODE_ENV == 'production' ? 'https' : 'http',
-        },
-      ],
+      nodes: [{
+        host: process.env.NODE_ENV === "production" ? "api.odyadvisor.com" : "localhost",
+        port: process.env.NODE_ENV === "production" ? 443 : 8108,
+        protocol: process.env.NODE_ENV === "production" ? "https" : "http",
+      }],
       apiKey: "search-only",
     });
 
-    const handleSearch = async (searchQuery: string, currentSearchType: 'courses' | 'instructors') => {
+    async function handleSearch(searchQuery: string, currentSearchType: "courses" | "instructors") {
+      const request = ++searchRequest.current;
       if (!searchQuery.trim()) {
-        setResults([]); // Clear results if input is empty
+        setResults([]);
+        setIsResultsVisible(false);
         return;
       }
-      const collection = searchType;
+
       try {
-        const searchParameters = {
-          q: searchQuery,
-          query_by:
-            currentSearchType === 'courses'
-              ? 'code,title,desc'
-              : 'firstName,lastName',
-          per_page: 20,
-          num_typos:
-            currentSearchType === 'courses' ? "0,1,2" : '2,2'
-        };
-
         const searchResults = await client
-          .collections(collection)
+          .collections(currentSearchType)
           .documents()
-          .search(searchParameters);
+          .search({
+            q: searchQuery,
+            query_by: currentSearchType === "courses" ? "code,title,desc" : "firstName,lastName",
+            per_page: 20,
+            num_typos: currentSearchType === "courses" ? "0,1,2" : "2,2",
+          });
 
-        // Check if searchType hasn't changed during the async operation
-        if (currentSearchType !== searchType) {
-          return; // Discard the results if searchType has changed
-        }
-
-        if (searchResults.hits) {
-          const mappedResults = searchResults.hits.map((hit) => hit.document as Result);
-          setResults(mappedResults);
-          setIsResultsVisible(true); // Show results
-        } else {
-          setResults([]);
-          setIsResultsVisible(false);
-        }
-      } catch (err) {
-        console.error(err);
+        const mappedResults = (searchResults.hits ?? []).map((hit) => hit.document as Result);
+        if (request !== searchRequest.current) return;
+        setResults(mappedResults);
+        setIsResultsVisible(mappedResults.length > 0);
+      } catch (error) {
+        console.error(error);
         setResults([]);
         setIsResultsVisible(false);
       }
-    };
-
-
-    if (debounceTimer.current) {
-      clearTimeout(debounceTimer.current);
     }
 
-    debounceTimer.current = setTimeout(() => {
-      handleSearch(query, searchType);
-    }, 300); // Adjust the debounce delay as needed
-
-    return () => {
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
-    };
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => handleSearch(query, searchType), 300);
+    return () => { if (debounceTimer.current) clearTimeout(debounceTimer.current); };
   }, [query, searchType]);
 
-  // Clear results when searchType changes
-  useEffect(() => {
+  function selectSearchType(type: "courses" | "instructors") {
+    searchRequest.current += 1;
+    setSearchType(type);
     setResults([]);
     setIsResultsVisible(false);
-  }, [searchType]);
+  }
 
-  // Hide results when clicking outside the search bar
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsResultsVisible(false);
       }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  // Hide results when the Escape key is pressed
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
         setIsResultsVisible(false);
-        inputRef.current?.blur(); // Optionally blur the input
+        inputRef.current?.blur();
       }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
-  // Hide results when the pathname changes (navigating to a new page)
-  useEffect(() => {
-    setIsResultsVisible(false);
-  }, [pathname]);
 
   return (
-    <Container px={0} w={width}>
-      < div
-        ref={containerRef}
-        style={{ position: 'relative' }}
-      >
-        <div style={searchBarStyle}>
-          <IconSearch style={iconStyle} size={18} />
-          <SegmentedControl
-            value={searchType}
-            onChange={(value: string) => {
-              setSearchType(value as "courses" | "instructors");
-            }}
-            data={[
-              { label: 'Course', value: 'courses' },
-              { label: 'Instructor', value: 'instructors' },
-            ]}
-            size="sm"
-            radius="xl"
-            color="#f05400"
-            style={{ marginRight: '1%' }}
-          />
-          <TextInput
+    <div
+      ref={containerRef}
+      className={`${styles.search} ${styles[variant]}`}
+      style={width ? { maxWidth: width } : undefined}
+    >
+      <div className={styles.controlRow}>
+        <div className={styles.inputShell}>
+          <span className={styles.searchIcon} aria-hidden="true">
+            <img src="/figma/search.svg" alt="" />
+          </span>
+          <input
             ref={inputRef}
-            placeholder={`Enter a ${searchType === 'courses' ? 'Course' : 'Instructor'
-              } Name`}
-            radius="xl"
-            size="sm"
-            style={{ flex: 1 }}
+            className={styles.input}
+            aria-label={`Search ${searchType}`}
+            placeholder={searchType === "courses" ? "Course name or number" : "Professor name"}
             value={query}
-            onChange={(e) => setQuery(e.currentTarget.value)}
-            onFocus={() => {
-              if (results.length > 0) {
-                setIsResultsVisible(true);
-              }
-            }}
+            onChange={(event) => setQuery(event.currentTarget.value)}
+            onFocus={() => results.length > 0 && setIsResultsVisible(true)}
           />
         </div>
+        <div className={styles.typeToggle} aria-label="Search type">
+          <button
+            type="button"
+            className={searchType === "courses" ? styles.active : ""}
+            aria-pressed={searchType === "courses"}
+            onClick={() => selectSearchType("courses")}
+          >
+            Course
+          </button>
+          <button
+            type="button"
+            className={searchType === "instructors" ? styles.active : ""}
+            aria-pressed={searchType === "instructors"}
+            onClick={() => selectSearchType("instructors")}
+          >
+            Professor
+          </button>
+        </div>
+      </div>
 
-        {/* Results Section */}
-        {
-          isResultsVisible && results.length > 0 && (
-            <ScrollArea.Autosize mah={300} type="scroll" style={resultsContainerStyle}>
-              {results.map((result, index) => (
-                <Link
-                  key={index}
-                  href={`/${searchType}/${searchType === 'courses' ? (result as Course).code : (result as Instructor).id}`}
-                  onClick={() => setIsResultsVisible(false)}
-                >
-                  <Box style={resultItemStyle}>
-                    <strong>
-                      {searchType === 'courses'
-                        ? `${(result as Course).code} ${(result as Course).title}`
-                        : `${(result as Instructor).firstName} ${(result as Instructor).lastName}`}
-                    </strong>
-                    {searchType === 'courses' && (result as Course).desc && (
-                      <Text truncate style={{ maxWidth: '100%' }}>
-                        {(result as Course).desc}
-                      </Text>
-                    )}
-                  </Box>
-                </Link>
-              ))}
-            </ScrollArea.Autosize>
-          )
-        }
-      </div >
-    </Container >
+      {isResultsVisible && results.length > 0 && (
+        <div className={styles.results} role="listbox" aria-label="Search results">
+          {results.map((result, index) => {
+            const course = result as Course;
+            const instructor = result as Instructor;
+            const href = searchType === "courses" ? `/courses/${course.code}` : `/instructors/${instructor.id}`;
+            return (
+              <Link
+                key={`${href}-${index}`}
+                href={href}
+                className={styles.result}
+                role="option"
+                onClick={() => setIsResultsVisible(false)}
+              >
+                <strong>
+                  {searchType === "courses"
+                    ? `${course.code} ${course.title}`
+                    : `${instructor.firstName} ${instructor.lastName}`}
+                </strong>
+                {searchType === "courses" && course.desc && <span>{course.desc}</span>}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
-
-const iconStyle = {
-  marginRight: '3%',
-};
-
-const searchBarStyle: CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  border: '1px solid red',
-  borderRadius: '2rem',
-  padding: '1% 2%',
-  backgroundColor: '#ede9f4',
-  flexShrink: 1,
-  position: 'relative',
-};
-
-const resultsContainerStyle: CSSProperties = {
-  marginTop: '0.5rem',
-  position: 'absolute',
-  background: 'white',
-  zIndex: 99,
-  width: '100%', // Make results container match search bar width
-  left: 0, // Align it with the search bar's left position
-  borderRadius: '0 0 8px 8px',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-  overflow: 'hidden',
-};
-
-const resultItemStyle = {
-  padding: '0.5rem',
-  backgroundColor: '#f9f9f9',
-  borderBottom: '1px solid #ddd',
-  cursor: 'pointer',
-};

@@ -1,0 +1,7 @@
+.footer { position: relative; z-index: 8; display: flex; min-height: 64px; align-items: center; justify-content: space-between; gap: 20px; padding: 18px max(28px, 7vw); border-top: 1px solid rgba(32, 32, 32, 0.12); background: #fdfdfd; color: rgba(32, 32, 32, 0.5); font-size: 12px; letter-spacing: -0.01em; }
+.footer.home { width: 52%; margin-top: -76px; justify-content: flex-start; gap: 16px; padding-left: max(28px, 8.2vw); border-top: 0; background: transparent; }
+.footer nav { display: flex; align-items: center; gap: 8px; }
+.footer a { display: grid; width: 18px; height: 18px; place-items: center; }
+.footer img { width: 18px; height: 18px; opacity: 0.56; }
+@media (max-width: 920px) { .footer.home { width: 100%; margin-top: 0; justify-content: space-between; gap: 20px; padding: 18px max(28px, 7vw); border-top: 1px solid rgba(32, 32, 32, 0.12); background: #fdfdfd; } }
+@media (max-width: 480px) { .footer, .footer.home { padding: 16px 18px; } }

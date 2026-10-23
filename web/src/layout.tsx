@@ -12,9 +12,9 @@ export default function InnerLayout({
     const isHomePage = pathname === "/";
 
     return (
-        <section style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <section style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             {!isHomePage && <Header />}
-            <main style={{ margin: "15px", flex: 1 }}>
+            <main style={{ margin: isHomePage ? 0 : "15px", flex: 1, minWidth: 0 }}>
                 {children}
             </main>
             <Footer />

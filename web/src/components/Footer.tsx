@@ -1,35 +1,22 @@
-import React from 'react';
-import { IconBrandGithub, IconBrandDiscordFilled } from '@tabler/icons-react';
-import { ActionIcon, Flex, Group } from '@mantine/core';
+"use client";
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import styles from './Footer.module.css';
 
 export default function Footer() {
-    return (
-        <footer style={{ width: '100%' }}>
-            <Flex px={10}
-                w="100%"
-                h={60}
-                bg="#971515"
-                justify="space-between"
-                c="gray"
-                align="center"
-            >
-                <Group>
-                    © {new Date().getFullYear()} Odysseus Developers
-                </Group>
-                <Group gap="xs" wrap="nowrap">
-                    <Link href="https://discord.gg/vRjUxzrkEc">
-                        <ActionIcon size="md" variant="default" radius="xl">
-                            <IconBrandDiscordFilled size={18} stroke={1.5} />
-                        </ActionIcon>
-                    </Link>
-                    <Link href="https://github.com/bitsatvt/odysseus">
-                        <ActionIcon size="md" variant="default" radius="xl">
-                            <IconBrandGithub size={18} stroke={1.5} />
-                        </ActionIcon>
-                    </Link>
-                </Group >
-            </Flex>
-        </footer>
-    );
-};
+  const isHomePage = usePathname() === '/';
+  return (
+    <footer className={`${styles.footer} ${isHomePage ? styles.home : ''}`}>
+      <span>© {new Date().getFullYear()} Odysseus Developers</span>
+      <nav aria-label="Odysseus community links">
+        <Link href="https://discord.gg/vRjUxzrkEc" aria-label="Odysseus Discord">
+          <img src="/figma/discord.svg" alt="" />
+        </Link>
+        <Link href="https://github.com/bitsatvt/odysseus" aria-label="Odysseus GitHub">
+          <img src="/figma/github-fill.svg" alt="" />
+        </Link>
+      </nav>
+    </footer>
+  );
+}
