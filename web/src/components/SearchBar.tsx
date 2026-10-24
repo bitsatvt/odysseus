@@ -3,6 +3,7 @@
 import Typesense from "typesense";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { sitePath } from "@/site";
 import styles from "./SearchBar.module.css";
 
 interface Course { code: string; title: string; desc?: string; }
@@ -31,7 +32,7 @@ export default function SearchBar({ variant = "header", width }: SearchBarProps)
         port: process.env.NODE_ENV === "production" ? 443 : 8108,
         protocol: process.env.NODE_ENV === "production" ? "https" : "http",
       }],
-      apiKey: "search-only",
+      apiKey: process.env.NEXT_PUBLIC_TYPESENSE_SEARCH_KEY || "search-only",
     });
 
     async function handleSearch(searchQuery: string, currentSearchType: "courses" | "instructors") {
@@ -142,7 +143,7 @@ export default function SearchBar({ variant = "header", width }: SearchBarProps)
           {results.map((result, index) => {
             const course = result as Course;
             const instructor = result as Instructor;
-            const href = searchType === "courses" ? `/courses/${course.code}` : `/instructors/${instructor.id}`;
+            const href = sitePath(searchType === "courses" ? `/courses/${course.code}` : `/instructors/${instructor.id}`);
             return (
               <Link
                 key={`${href}-${index}`}

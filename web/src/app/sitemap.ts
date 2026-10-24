@@ -1,27 +1,31 @@
 import type { MetadataRoute } from "next";
 import prisma from "@/db";
+import { productionSiteUrl } from "@/site";
 
-const courses = await prisma.course.findMany({
-  select: {
-    id: true,
-  },
-});
+export const dynamic = "force-static";
 
-const instructors = await prisma.instructor.findMany({
-  select: {
-    id: true,
-  },
-});
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [courses, instructors] = await Promise.all([
+    prisma.course.findMany({
+      select: {
+        id: true,
+      },
+    }),
+    prisma.instructor.findMany({
+      select: {
+        id: true,
+      },
+    }),
+  ]);
 
-export default function sitemap(): MetadataRoute.Sitemap {
   // Generate paths for courses and instructors
   const coursePaths = courses.map((c) => ({
-    url: `https://odyadvisor.com/courses/${c.id}`,
+    url: `${productionSiteUrl}/courses/${c.id}`,
   }));
 
   const instructorPaths = instructors.map((i) => ({
-    url: `https://odyadvisor.com/instructors/${i.id}`,
+    url: `${productionSiteUrl}/instructors/${i.id}`,
   }));
 
-  return [...instructorPaths, ...coursePaths];
+  return [{ url: productionSiteUrl }, ...instructorPaths, ...coursePaths];
 }

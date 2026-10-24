@@ -1,6 +1,7 @@
 "use client";
 import SearchBar from "@/components/SearchBar";
 import Link from "next/link";
+import { sitePath } from "@/site";
 import styles from './page.module.css';
 
 export default function Page() {
@@ -11,7 +12,7 @@ export default function Page() {
       </div>
       <div className={styles.contentFade} aria-hidden="true" />
       <header className={styles.homeHeader}>
-        <Link className={styles.wordmark} href="/" aria-label="Odysseus Advisor home">
+        <Link className={styles.wordmark} href={sitePath("/")} aria-label="Odysseus Advisor home">
           <strong>ODYSSEUS</strong>
           <span>Virginia Tech</span>
         </Link>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { Course, Instructor, Section } from "../../prisma/generated/prisma/client";
+import { sitePath } from "@/site";
 import styles from "./InstructorClientComponent.module.css";
 
 type InstructorCourse = Course & { sections: Section[] };
@@ -59,7 +60,7 @@ export default function InstructorClientComponent({ instructor }: { instructor: 
                   : null;
                 return (
                   <tr key={course.id}>
-                    <td><Link href={`/courses/${course.id}`}>{course.id}</Link></td>
+                    <td><Link href={sitePath(`/courses/${course.id}`)}>{course.id}</Link></td>
                     <td>{decodeTitle(course.title)}</td>
                     <td>{averageGpa === null ? "N/A" : averageGpa.toFixed(2)}</td>
                     <td>{course.sections.length}</td>
