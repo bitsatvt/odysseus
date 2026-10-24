@@ -1,0 +1,47 @@
+.hero { padding: 42px; border-radius: 0 40px 40px 40px; background: #f1f2f3; }
+.identity { max-width: 760px; }
+.eyebrow { margin: 0 0 8px; color: #e64d1b; font-size: 12px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.identity h1 { margin: 0; font-size: clamp(42px, 6vw, 72px); line-height: .96; letter-spacing: -.05em; }
+.summary { max-width: 600px; margin: 20px 0 0; color: #555; font-size: 14px; line-height: 1.5; }
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 36px; overflow: hidden; border: 1px solid #d4d4d4; border-radius: 0 24px 24px 24px; background: white; }
+.metrics > div { min-height: 138px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; padding: 19px; border-right: 1px solid #dedede; }
+.metrics > div:last-child { border: 0; }
+.metrics span { color: #5b5b5b; font-size: 12px; }
+.metrics strong { font-size: clamp(25px, 3vw, 38px); line-height: 1; letter-spacing: -.04em; }
+.metrics small { color: #666; font-size: 11px; }
+.metrics .primaryMetric { color: white; background: #ee5723; }
+.primaryMetric span, .primaryMetric small { color: white; }
+.courses { margin-top: 48px; padding: 42px; border-radius: 0 40px 40px 40px; background: #f1f2f3; }
+.headingRow { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
+.headingRow h2 { margin: 0; font-size: clamp(34px, 4vw, 48px); line-height: 1; letter-spacing: -.04em; }
+.courseCount { margin: 0; padding: 8px 12px; border-radius: 999px; background: white; color: #555; font-size: 12px; }
+.search { width: min(340px, 100%); display: grid; gap: 7px; margin-bottom: 15px; color: #555; font-size: 12px; }
+.search input { width: 100%; box-sizing: border-box; padding: 11px 13px; border: 1px solid #bdbdbd; border-radius: 0 14px 14px 14px; background: white; font: inherit; }
+.search input:focus { outline: 2px solid #ed5722; outline-offset: 2px; }
+.tableWrap { max-height: 530px; overflow: auto; border: 1px solid #cecece; border-radius: 0 20px 20px 20px; background: white; scrollbar-gutter: stable; }
+.tableWrap:focus-visible { outline: 2px solid #ed5722; outline-offset: 3px; }
+.tableWrap table { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 13px; }
+.tableWrap thead { position: sticky; top: 0; z-index: 1; color: white; background: #202020; }
+.tableWrap th, .tableWrap td { padding: 15px 17px; border-bottom: 1px solid #e2e2e2; text-align: left; }
+.tableWrap th:nth-child(3), .tableWrap td:nth-child(3), .tableWrap th:nth-child(4), .tableWrap td:nth-child(4) { text-align: right; }
+.tableWrap tbody tr:hover { background: #faf4f1; }
+.tableWrap td a { color: #bd3c13; font-weight: 700; text-underline-offset: 3px; }
+.empty { padding: 36px !important; color: #666; text-align: center !important; }
+.scrollHint { display: none; margin: 10px 0 0; color: #666; font-size: 11px; text-align: center; }
+@media (max-width: 800px) {
+  .hero, .courses { padding: 30px 24px; }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .metrics > div { border-bottom: 1px solid #dedede; }
+  .metrics > div:nth-child(2) { border-right: 0; }
+}
+@media (max-width: 540px) {
+  .hero, .courses { padding: 28px 14px; border-radius: 0 28px 28px 28px; }
+  .identity h1 { font-size: 43px; }
+  .summary { font-size: 13px; }
+  .metrics { margin-top: 28px; }
+  .metrics > div { min-height: 112px; padding: 14px; }
+  .courses { margin-top: 32px; }
+  .headingRow { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .tableWrap table { min-width: 650px; }
+  .scrollHint { display: block; }
+}

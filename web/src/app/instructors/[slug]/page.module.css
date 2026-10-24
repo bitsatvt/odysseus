@@ -1,0 +1,8 @@
+.page { width: min(1085px, calc(100% - 40px)); margin: 52px auto 72px; color: #171717; }
+.trail { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 12px; font-weight: 650; }
+.marker { width: 11px; height: 11px; flex: 0 0 auto; background: #f15a24; }
+.badge, .nameChip { min-height: 30px; display: inline-flex; align-items: center; padding: 5px 12px; border: 1px solid #171717; }
+.badge { color: white; background: #171717; }
+.nameChip { max-width: min(360px, 65vw); overflow: hidden; background: white; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 760px) { .page { width: min(100% - 28px, 620px); margin-top: 30px; } }
+@media (max-width: 440px) { .page { width: calc(100% - 24px); } .trail { gap: 5px; font-size: 10px; } .badge, .nameChip { padding-inline: 8px; } }
