@@ -9,7 +9,7 @@ export default function Footer() {
             <Flex px={10}
                 w="100%"
                 h={60}
-                bg="#971515"
+                bg="#000000"
                 justify="space-between"
                 c="gray"
                 align="center"

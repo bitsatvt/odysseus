@@ -63,3 +63,10 @@ model Instructor {
   sections       Section[]
   courses        Course[]  @relation("InstructorCourses")
 }
+
+model User {
+  email        String   @id
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
