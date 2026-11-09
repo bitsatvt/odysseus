@@ -1,0 +1,27 @@
+{
+  "completed_utc": "2026-10-20T21:05:51.424178+00:00",
+  "database": "local odysseus-prisma",
+  "window": {
+    "banner_start": "202412",
+    "banner_end": "202606",
+    "udc_end_academic_year": "2026-27",
+    "udc_end_term": "Summer II"
+  },
+  "counts": {
+    "Group": 9432,
+    "Course": 8870,
+    "Instructor": 9808,
+    "Section": 176077
+  },
+  "new_sections": 15047,
+  "historical_sections_restored": 116989,
+  "original_database_sections_preserved": 44041,
+  "unresolved_instructor_sections": 2071,
+  "excluded_section_ids": [
+    "2025;09;86016",
+    "2026;01;10853",
+    "2026;01;10854"
+  ],
+  "grade_input_for_repeat_processing": "reviewedGradeDistribution.csv",
+  "raw_grade_source": "newGradeDistribution.csv"
+}
