@@ -22,9 +22,13 @@ export function siteUrl(path: string): string {
 }
 
 // Supabase reports email-link errors (e.g. an expired link) in the URL fragment or query string.
+// Show fixed text only: error_description comes from the URL, so anyone could craft a link with their own message.
 export function linkError(): string | null {
     const params = new URLSearchParams(window.location.hash.slice(1) || window.location.search);
-    return params.get('error_description');
+    if (!params.has('error') && !params.has('error_code')) return null;
+    return params.get('error_code') === 'otp_expired'
+        ? 'This link has expired. Request a new one.'
+        : 'This link is invalid or has already been used.';
 }
 
 // The profiles row is created by a database trigger at signup (supabase/migrations), so this only reads it.
