@@ -3,6 +3,12 @@ import { createClient } from '@/lib/supabase/server';
 
 export const USERNAME_RE = /^[A-Za-z0-9_]{3,24}$/;
 
+// Usernames are stored lowercase so the @unique index is effectively case-insensitive
+// and login lookups are exact matches.
+export function normalizeUsername(username: string): string {
+    return username.trim().toLowerCase();
+}
+
 export type CurrentUser = { id: string; email: string | null; username: string | null };
 
 // The verified Supabase user for this request, joined with the app profile in Prisma.
@@ -25,7 +31,7 @@ export async function syncAppUser(id: string, email: string | null | undefined, 
     if (existing) return existing.username;
     if (!email || typeof metadataUsername !== 'string' || !USERNAME_RE.test(metadataUsername)) return null;
     try {
-        const created = await prisma.user.create({ data: { id, email: email.toLowerCase(), username: metadataUsername } });
+        const created = await prisma.user.create({ data: { id, email: email.toLowerCase(), username: normalizeUsername(metadataUsername) } });
         return created.username;
     } catch {
         return null;
@@ -36,9 +42,6 @@ export async function syncAppUser(id: string, email: string | null | undefined, 
 export async function resolveEmail(identifier: string): Promise<string | null> {
     const value = identifier.trim();
     if (value.includes('@')) return value.toLowerCase();
-    const user = await prisma.user.findFirst({
-        where: { username: { equals: value, mode: 'insensitive' } },
-        select: { email: true },
-    });
+    const user = await prisma.user.findUnique({ where: { username: normalizeUsername(value) }, select: { email: true } });
     return user?.email ?? null;
 }

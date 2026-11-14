@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/db';
 import { createClient } from '@/lib/supabase/server';
-import { USERNAME_RE, syncAppUser } from '@/lib/auth';
+import { USERNAME_RE, normalizeUsername, syncAppUser } from '@/lib/auth';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -17,10 +17,7 @@ export async function POST(request: NextRequest) {
     }
     if (password.length < 8) return NextResponse.json({ error: 'Password must be at least 8 characters.' }, { status: 400 });
 
-    const taken = await prisma.user.findFirst({
-        where: { username: { equals: username, mode: 'insensitive' } },
-        select: { id: true },
-    });
+    const taken = await prisma.user.findUnique({ where: { username: normalizeUsername(username) }, select: { id: true } });
     if (taken) return NextResponse.json({ error: 'That username is taken.' }, { status: 409 });
 
     // The username rides in user_metadata until the email is confirmed; /auth/confirm then creates the Prisma row.
