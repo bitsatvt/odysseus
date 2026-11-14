@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Group, Text } from '@mantine/core';
 import type { User } from '@supabase/supabase-js';
-import { ensureProfile, getSupabase } from '@/lib/supabase';
+import { getSupabase, getUsername } from '@/lib/supabase';
 
 export default function AuthStatus() {
     const router = useRouter();
@@ -22,7 +22,7 @@ export default function AuthStatus() {
         }
 
         async function load(user: User | undefined) {
-            setUsername(user ? await ensureProfile(user) : null);
+            setUsername(user ? await getUsername(user) : null);
             setReady(true);
         }
 

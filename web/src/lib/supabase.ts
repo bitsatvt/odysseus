@@ -1,6 +1,7 @@
-import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { createClient, FunctionsHttpError, SupabaseClient, User } from '@supabase/supabase-js';
 
-// Temporary Supabase auth trial. Client-only: the site is a static export.
+// Temporary Supabase auth trial. Client-only: the site is a static export, so sessions live in the
+// browser and user data (profiles) lives in Supabase, not in the Prisma database.
 let client: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient {
@@ -15,14 +16,36 @@ export function getSupabase(): SupabaseClient {
     return client;
 }
 
-// Returns the user's username, creating the profiles row on first sign-in from the
-// username stored in user_metadata at signup (no session exists until the email is confirmed).
-export async function ensureProfile(user: User): Promise<string | null> {
+// Absolute URL on this site, used for links in Supabase emails (must be in the project's redirect allow list).
+export function siteUrl(path: string): string {
+    return `${window.location.origin}${path}`;
+}
+
+// Supabase reports email-link errors (e.g. an expired link) in the URL fragment or query string.
+export function linkError(): string | null {
+    const params = new URLSearchParams(window.location.hash.slice(1) || window.location.search);
+    return params.get('error_description');
+}
+
+// The profiles row is created by a database trigger at signup (supabase/migrations), so this only reads it.
+export async function getUsername(user: User): Promise<string | null> {
+    const { data } = await getSupabase().from('profiles').select('username').eq('id', user.id).maybeSingle();
+    return data?.username ?? null;
+}
+
+// Username-or-email login via the `login` Edge Function, which looks up the email server-side
+// so it is never exposed to the browser. The returned tokens become the browser session.
+export async function signInWithIdentifier(identifier: string, password: string): Promise<void> {
     const supabase = getSupabase();
-    const { data } = await supabase.from('profiles').select('username').eq('id', user.id).maybeSingle();
-    if (data) return data.username;
-    const username = user.user_metadata?.username;
-    if (typeof username !== 'string') return null;
-    const { error } = await supabase.from('profiles').insert({ id: user.id, username });
-    return error ? null : username;
+    const { data, error } = await supabase.functions.invoke('login', { body: { identifier, password } });
+    if (error) {
+        let message = 'Sign in failed. Please try again.';
+        if (error instanceof FunctionsHttpError) {
+            const body = await error.context.json().catch(() => null);
+            if (typeof body?.error === 'string') message = body.error;
+        }
+        throw new Error(message);
+    }
+    const { error: sessionError } = await supabase.auth.setSession(data.session);
+    if (sessionError) throw sessionError;
 }

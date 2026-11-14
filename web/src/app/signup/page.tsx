@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Alert, Button, Container, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
-import { ensureProfile, getSupabase } from '@/lib/supabase';
+import { getSupabase, siteUrl } from '@/lib/supabase';
 
 const USERNAME_RE = /^[A-Za-z0-9_]{3,24}$/;
 
@@ -28,20 +28,20 @@ export default function SignupPage() {
             if (rpcError) throw rpcError;
             if (!available) throw new Error('That username is taken.');
 
-            // The username rides in user_metadata; ensureProfile creates the profiles row once a session exists.
+            // The username rides in user_metadata; a trigger on auth.users creates the profiles row
+            // and rejects the signup if the username was taken in the meantime.
             const { data, error } = await supabase.auth.signUp({
                 email: email.trim(),
                 password,
-                options: { data: { username }, emailRedirectTo: window.location.origin },
+                options: { data: { username }, emailRedirectTo: siteUrl('/auth/confirm') },
             });
-            if (error) throw error;
+            if (error) {
+                if (error.message.includes('Database error')) throw new Error('That username is taken.');
+                throw error;
+            }
             if (!data.session) {
                 setSent(true);
                 return;
-            }
-            if (!(await ensureProfile(data.user!))) {
-                await supabase.auth.signOut();
-                throw new Error('That username is taken.');
             }
             router.push('/');
         } catch (e) {

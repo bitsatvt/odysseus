@@ -1,0 +1,7 @@
+# Temporary Supabase auth trial (static-export approach). Only the settings this repo relies on;
+# run `supabase link --project-ref <ref>` before `supabase db push` / `supabase functions deploy`.
+project_id = "odysseus"
+
+[functions.login]
+# The login function is called before the user has a session, so it must accept anonymous callers.
+verify_jwt = false
