@@ -63,3 +63,12 @@ model Instructor {
   sections       Section[]
   courses        Course[]  @relation("InstructorCourses")
 }
+
+// App-side profile for a Supabase Auth user. Supabase holds only credentials (auth.users);
+// id is the Supabase auth user id.
+model User {
+  id        String   @id @db.Uuid
+  username  String   @unique
+  email     String   @unique
+  createdAt DateTime @default(now())
+}

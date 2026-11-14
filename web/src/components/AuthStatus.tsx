@@ -1,37 +1,27 @@
 "use client"
-// Temporary Supabase auth trial: header sign-in state.
+// Header sign-in state. Asks the server (/api/auth/me), which verifies the session cookie
+// and reads the username from Prisma.
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button, Group, Text } from '@mantine/core';
-import type { User } from '@supabase/supabase-js';
-import { ensureProfile, getSupabase } from '@/lib/supabase';
 
 export default function AuthStatus() {
     const router = useRouter();
+    const pathname = usePathname();
     const [username, setUsername] = useState<string | null>(null);
     const [ready, setReady] = useState(false);
 
+    // Re-check on navigation so the header updates right after login/logout.
     useEffect(() => {
-        let supabase;
-        try {
-            supabase = getSupabase();
-        } catch {
-            setReady(true);
-            return;
-        }
-
-        async function load(user: User | undefined) {
-            setUsername(user ? await ensureProfile(user) : null);
-            setReady(true);
-        }
-
-        // Defer the query out of the callback; awaiting Supabase calls inside it can deadlock.
-        const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-            setTimeout(() => load(session?.user), 0);
-        });
-        return () => sub.subscription.unsubscribe();
-    }, []);
+        let cancelled = false;
+        fetch('/api/auth/me', { cache: 'no-store' })
+            .then((res) => res.json())
+            .then((data) => { if (!cancelled) setUsername(data.user?.username ?? null); })
+            .catch(() => { if (!cancelled) setUsername(null); })
+            .finally(() => { if (!cancelled) setReady(true); });
+        return () => { cancelled = true; };
+    }, [pathname]);
 
     if (!ready) return null;
 
@@ -48,8 +38,10 @@ export default function AuthStatus() {
         <Group gap="sm" wrap="nowrap">
             <Text fw={500}>{username}</Text>
             <Button size="xs" variant="default" onClick={async () => {
-                await getSupabase().auth.signOut();
+                await fetch('/api/auth/logout', { method: 'POST' });
+                setUsername(null);
                 router.push('/login');
+                router.refresh();
             }}>Sign out</Button>
         </Group>
     );

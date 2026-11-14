@@ -1,12 +1,9 @@
 "use client"
-// Temporary Supabase auth trial: email + username + password, then email confirmation link.
+// Email + username + password, then email confirmation link (handled by /auth/confirm).
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Alert, Button, Container, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
-import { ensureProfile, getSupabase } from '@/lib/supabase';
-
-const USERNAME_RE = /^[A-Za-z0-9_]{3,24}$/;
 
 export default function SignupPage() {
     const router = useRouter();
@@ -21,29 +18,19 @@ export default function SignupPage() {
         setError(null);
         setLoading(true);
         try {
-            if (!USERNAME_RE.test(username)) throw new Error('Username must be 3-24 letters, numbers, or underscores.');
-            if (password.length < 8) throw new Error('Password must be at least 8 characters.');
-            const supabase = getSupabase();
-            const { data: available, error: rpcError } = await supabase.rpc('username_available', { p_username: username });
-            if (rpcError) throw rpcError;
-            if (!available) throw new Error('That username is taken.');
-
-            // The username rides in user_metadata; ensureProfile creates the profiles row once a session exists.
-            const { data, error } = await supabase.auth.signUp({
-                email: email.trim(),
-                password,
-                options: { data: { username }, emailRedirectTo: window.location.origin },
+            const res = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, username, password }),
             });
-            if (error) throw error;
-            if (!data.session) {
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error ?? 'Sign up failed.');
+            if (data.confirmEmail) {
                 setSent(true);
                 return;
             }
-            if (!(await ensureProfile(data.user!))) {
-                await supabase.auth.signOut();
-                throw new Error('That username is taken.');
-            }
             router.push('/');
+            router.refresh();
         } catch (e) {
             setError(e instanceof Error ? e.message : String(e));
         } finally {
