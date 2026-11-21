@@ -1,74 +1,39 @@
-interface PrereqNode {
-  id: number;
-  type: boolean;
-  courseId: string | null;
-  children: PrereqNode[];
-}
-
-interface PostreqNode {
-  id: number;
-  type: boolean;
-  courseId: string | null;
-  children: PostreqNode[];
-}
-
+import { cache } from "react";
 import prisma from "@/db";
 
-export async function fetchPrereqTree(
-  id: number,
-  depth = 1,
-): Promise<PrereqNode> {
-  const group = await prisma.group.findUnique({
-    where: { id },
-    include: { requires: true, course: true },
-  });
-  const course = group?.course;
-  const courseId = course?.id || null;
-  const children: PrereqNode[] = [];
-
-  for (const r of group!.requires) {
-    let childDepth = courseId == null ? depth : depth - 1;
-    if (childDepth >= 0) {
-      const child = await fetchPrereqTree(r.id, childDepth);
-      children.push(child);
-    }
-  }
-
-  return {
-    id,
-    type: group!.type!,
-    courseId,
-    children,
-  };
+export interface RequirementNode {
+  id: number;
+  type: boolean;
+  courseId: string | null;
+  title?: string | null;
+  subject?: string;
+  children: RequirementNode[];
 }
 
-export async function fetchPostreqTree(
-  id: number,
-  currentCourseId: string,
-  depth = 1,
-): Promise<PostreqNode> {
-  const group = await prisma.group.findUnique({
-    where: { id },
-    include: { requiredBy: true, course: true },
-  });
-  const course = group?.course;
-  const courseId = course?.id || null;
-  const children: PostreqNode[] = [];
+// Shared branches are read once per render, even when several prerequisites use them.
+const getPrereqGroup = cache((id: number) => prisma.group.findUnique({
+  where: { id },
+  include: { requires: true, course: { select: { id: true, title: true, subject: true } } },
+}));
 
-  for (const r of group!.requiredBy) {
-    let childDepth = courseId == null ? depth : depth - 1;
-    if (childDepth >= 0) {
-      const child = await fetchPostreqTree(r.id, currentCourseId, childDepth);
-      if (child.courseId !== currentCourseId) {
-        children.push(child);
-      }
-    }
-  }
+export async function fetchPrereqTree(id: number, depth = 1, ancestors: number[] = []): Promise<RequirementNode> {
+  const group = await getPrereqGroup(id);
+  if (!group) return { id, type: false, courseId: null, children: [] };
+  const course = group.course;
+  const childDepth = course ? depth - 1 : depth;
+  const children = childDepth >= 0 && !ancestors.includes(id)
+    ? await Promise.all(group.requires.map((child) => fetchPrereqTree(child.id, childDepth, [...ancestors, id])))
+    : [];
+  return { id, type: group.type ?? false, courseId: course?.id ?? null, title: course?.title, subject: course?.subject, children: children.filter((child) => child.courseId || child.children.length > 0) };
+}
 
-  return {
-    id,
-    type: group!.type!,
-    courseId: courseId !== currentCourseId ? courseId : null,
-    children,
-  };
+export async function fetchPostreqTree(id: number, currentCourseId: string, depth = 1, ancestors: number[] = []): Promise<RequirementNode> {
+  const group = await prisma.group.findUnique({ where: { id }, include: { requiredBy: true, course: true } });
+  if (!group) return { id, type: false, courseId: null, children: [] };
+  const courseId = group.course?.id ?? null;
+  const childDepth = courseId ? depth - 1 : depth;
+  const children = childDepth >= 0 && !ancestors.includes(id)
+    ? await Promise.all(group.requiredBy.map((child) => fetchPostreqTree(child.id, currentCourseId, childDepth, [...ancestors, id])))
+    : [];
+  return { id, type: group.type ?? false, courseId: courseId === currentCourseId ? null : courseId, children: children.filter((child) => child.courseId !== currentCourseId && (child.courseId || child.children.length > 0)) };
 }

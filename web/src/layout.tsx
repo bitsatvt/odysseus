@@ -10,11 +10,12 @@ export default function InnerLayout({
 }) {
     const pathname = usePathname();
     const isHomePage = pathname === "/";
+    const isCoursePage = /(^|\/)courses\//.test(pathname);
 
     return (
         <section style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            {!isHomePage && <Header />}
-            <main style={{ margin: isHomePage ? 0 : "15px", flex: 1, minWidth: 0 }}>
+            {!isHomePage && !isCoursePage && <Header />}
+            <main style={{ margin: isHomePage || isCoursePage ? 0 : "15px", flex: 1, minWidth: 0 }}>
                 {children}
             </main>
             <Footer />

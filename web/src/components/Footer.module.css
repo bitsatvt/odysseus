@@ -5,3 +5,12 @@
 .footer img { width: 18px; height: 18px; opacity: 0.56; }
 @media (max-width: 920px) { .footer.home { width: 100%; margin-top: 0; justify-content: space-between; gap: 20px; padding: 18px max(28px, 7vw); border-top: 1px solid rgba(32, 32, 32, 0.12); background: #fdfdfd; } }
 @media (max-width: 480px) { .footer, .footer.home { padding: 16px 18px; } }
+.footer.course { width: 83.6%; max-width: 2140px; margin: 0 auto; justify-content: flex-start; gap: 16px; padding: 24px 0; border-top: 0; background: #fdfdfd; }
+.footer .backToTop { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; gap: 8px; width: auto; height: auto; min-height: 34px; margin-left: auto; padding: 5px 11px; border: 1px solid #777; border-radius: 10px; color: #333; background: #fdfdfd; font-size: 14px; }
+.footer .backToTop:hover { background: #ffeadc; }
+.footer .backToTop:focus-visible { outline: 2px solid #ff7014; outline-offset: 3px; }
+@media (max-width: 640px) {
+  .footer.course { width: calc(100% - 40px); display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; padding-block: 20px; }
+  .course nav { grid-column: 1; }
+  .course .backToTop { grid-column: 2; grid-row: 1 / 3; }
+}

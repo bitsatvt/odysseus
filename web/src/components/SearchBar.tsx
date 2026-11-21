@@ -11,7 +11,7 @@ interface Instructor { id: string; firstName: string; lastName: string; }
 type Result = Course | Instructor;
 
 interface SearchBarProps {
-  variant?: "hero" | "header";
+  variant?: "hero" | "header" | "course";
   width?: number;
 }
 

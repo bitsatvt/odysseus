@@ -74,12 +74,17 @@ export function SectionsGraph({ sections }: SectionsGraphProps) {
 
   return (
     <div className={styles.charts}>
-      <div className={styles.legend} aria-label="Chart legend">
-        {Object.entries(seriesColors).map(([grade, color]) => <span key={grade}><i style={{ background: color }} />{grade}</span>)}
+      <div className={styles.chartHeader}>
+        <details className={styles.chartHelp}>
+          <summary>How to read this chart</summary>
+          <p>The combined height shows average GPA on a 0–4 scale. Withdrawals (W) use the separate percentage scale below. Hover or tap a term to see its grade percentages.</p>
+        </details>
+        <div className={styles.legend} aria-label="Chart legend">
+          {Object.entries(seriesColors).map(([grade, color]) => <span key={grade}><i style={{ background: color }} />{grade}</span>)}
+        </div>
       </div>
-      <p className={styles.explanation}>Stacked height shows average GPA on a 0–4 scale. Hover or tap a term to see grade shares; withdrawal rate uses its own percentage axis.</p>
       <div className={styles.chartScroller} tabIndex={0} aria-label="Grade distribution by term. Scroll horizontally to view all terms.">
-        <div className={styles.chartCanvas} style={{ width: chartWidth }}>
+        <div className={styles.chartCanvas} style={{ minWidth: chartWidth }}>
           <AreaChart h={300} data={termData} dataKey="term" type="stacked"
             tooltipProps={{ content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} /> }}
             curveType="monotone" withXAxis={false} yAxisLabel="GPA" yAxisProps={{ domain: [0, 4], ticks: [0, 1, 2, 3, 4] }}

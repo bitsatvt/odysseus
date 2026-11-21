@@ -1,29 +1,21 @@
 .page {
   position: relative;
+  display: flow-root;
   min-height: calc(100vh - 76px);
-  overflow: hidden;
   background: #fdfdfd;
+}
+
+/* Clip the decorative artwork, leaving search results free to extend past the page. */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
   isolation: isolate;
+  pointer-events: none;
 }
-
-.homeHeader {
-  position: relative;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  height: 82px;
-  margin: 0 3.5%;
-  padding: 0 3.1%;
-  border-bottom: 1px solid rgba(32, 32, 32, 0.12);
-}
-
-.wordmark { display: inline-grid; gap: 0; line-height: 1; }
-.wordmark strong { color: #000; font-size: 16px; font-weight: 800; letter-spacing: -0.8px; }
-.wordmark span { margin-top: 5px; color: #fe8216; font-family: var(--font-outfit), sans-serif; font-size: 16px; }
 
 .hero {
   position: relative;
-  z-index: 3;
   display: grid;
   grid-template-columns: minmax(380px, 1fr) minmax(440px, 0.94fr);
   gap: clamp(30px, 5vw, 78px);
@@ -31,7 +23,8 @@
   margin: 48px auto 28px;
 }
 
-.heroCopy { padding-top: 6px; }
+/* Keep the dropdown above the preview and footer without covering their controls. */
+.heroCopy { position: relative; z-index: 9; align-self: start; padding-top: 6px; }
 
 .heroCopy h1 {
   max-width: 490px;
@@ -50,6 +43,7 @@
 
 .preview {
   position: relative;
+  z-index: 3;
   width: 100%;
   min-width: 0;
   height: min(631px, calc(100vh - 190px));
@@ -206,7 +200,6 @@
 
 @media (max-width: 920px) {
   .page { min-height: auto; }
-  .homeHeader { height: 74px; margin: 0 22px; padding: 0; }
   .hero { grid-template-columns: 1fr; width: min(620px, calc(100% - 44px)); margin-top: 42px; }
   .heroCopy { min-width: 0; }
   .heroCopy h1 { max-width: 520px; margin-bottom: 42px; font-size: clamp(42px, 9vw, 60px); }
@@ -218,7 +211,6 @@
 }
 
 @media (max-width: 560px) {
-  .homeHeader { margin: 0 18px; }
   .hero { width: calc(100% - 36px); margin-top: 30px; gap: 38px; }
   .heroCopy h1 { width: 100%; max-width: 100%; margin-bottom: 34px; font-size: clamp(34px, 9.4vw, 40px); line-height: 1.02; }
   .preview { height: auto; aspect-ratio: 499 / 631; border-radius: 16px; }
@@ -227,7 +219,6 @@
 }
 
 @media (max-width: 360px) {
-  .homeHeader { margin-inline: 16px; }
   .hero { width: calc(100% - 32px); }
   .heroCopy h1 { font-size: 32px; }
 }

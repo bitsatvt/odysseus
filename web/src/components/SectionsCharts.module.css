@@ -1,14 +1,20 @@
 .charts { padding: 22px 18px 15px; border: 1px solid #cecece; border-radius: 0 24px 24px 24px; background: white; }
-.legend { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 9px; font-size: 11px; }
+.chartHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px 24px; margin-bottom: 18px; }
+.legend { display: flex; flex: 0 0 auto; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 12px; min-height: 24px; font-size: 11px; }
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
 .legend i { width: 8px; height: 8px; display: block; border-radius: 50%; }
-.explanation { max-width: 670px; margin: 0 0 18px; color: #666; font-size: 12px; line-height: 1.45; }
+.chartHelp { max-width: 660px; color: #666; font-size: 12px; line-height: 1.5; }
+.chartHelp summary { width: fit-content; padding-block: 3px; color: #555; font-weight: 500; cursor: pointer; }
+.chartHelp summary::marker { color: #999; font-size: .8em; }
+.chartHelp summary:hover { color: #222; }
+.chartHelp summary:focus-visible { outline: 2px solid #ff7014; outline-offset: 3px; border-radius: 3px; }
+.chartHelp p { margin: 8px 0 0; padding: 10px 12px; border-left: 2px solid #ffb37e; border-radius: 0 6px 6px 0; background: #f7f7f8; }
 .chartScroller { max-width: 100%; overflow-x: auto; overflow-y: hidden; overscroll-behavior-inline: contain; scrollbar-gutter: stable; -webkit-overflow-scrolling: touch; }
 .chartScroller:focus-visible { outline: 2px solid #ed5722; outline-offset: 3px; border-radius: 6px; }
-.chartCanvas { min-width: 620px; }
+.chartCanvas { width: 100%; min-width: 620px; }
 .scrollHint { display: none; margin: 9px 0 0; color: #666; font-size: 11px; text-align: center; }
 @media (max-width: 680px) {
   .charts { padding-inline: 10px; }
-  .legend { justify-content: center; }
+  .chartHeader { flex-direction: column; gap: 10px; }
   .scrollHint { display: block; }
 }

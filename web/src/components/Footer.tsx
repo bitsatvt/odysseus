@@ -5,9 +5,11 @@ import { usePathname } from 'next/navigation';
 import styles from './Footer.module.css';
 
 export default function Footer() {
-  const isHomePage = usePathname() === '/';
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
+  const isCoursePage = /(^|\/)courses\//.test(pathname);
   return (
-    <footer className={`${styles.footer} ${isHomePage ? styles.home : ''}`}>
+    <footer className={`${styles.footer} ${isHomePage ? styles.home : ''} ${isCoursePage ? styles.course : ''}`}>
       <span>© {new Date().getFullYear()} Odysseus Developers</span>
       <nav aria-label="Odysseus community links">
         <Link href="https://discord.gg/vRjUxzrkEc" aria-label="Odysseus Discord">
@@ -17,6 +19,7 @@ export default function Footer() {
           <img src="/figma/github-fill.svg" alt="" />
         </Link>
       </nav>
+      {isCoursePage && <a className={styles.backToTop} href="#course-top"><span aria-hidden="true">↑</span> Back to top</a>}
     </footer>
   );
 }

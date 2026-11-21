@@ -1,22 +1,18 @@
 "use client";
 import SearchBar from "@/components/SearchBar";
-import Link from "next/link";
-import { sitePath } from "@/site";
+import Header from "@/components/Header";
 import styles from './page.module.css';
 
 export default function Page() {
   return (
     <div className={styles.page}>
-      <div className={styles.ambientBars} aria-hidden="true">
-        {Array.from({ length: 27 }).map((_, index) => <span key={index} />)}
+      <div className={styles.backdrop} aria-hidden="true">
+        <div className={styles.ambientBars}>
+          {Array.from({ length: 27 }).map((_, index) => <span key={index} />)}
+        </div>
+        <div className={styles.contentFade} />
       </div>
-      <div className={styles.contentFade} aria-hidden="true" />
-      <header className={styles.homeHeader}>
-        <Link className={styles.wordmark} href={sitePath("/")} aria-label="Odysseus Advisor home">
-          <strong>ODYSSEUS</strong>
-          <span>Virginia Tech</span>
-        </Link>
-      </header>
+      <Header variant="home" />
       <section className={styles.hero}>
         <div className={styles.heroCopy}>
           <h1><span>Plan your semester with</span><span>confidence.</span></h1>

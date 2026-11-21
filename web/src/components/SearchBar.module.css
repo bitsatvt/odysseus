@@ -79,3 +79,24 @@
 @media (max-width: 360px) {
   .typeToggle button { padding-inline: 8px; font-size: 13px; }
 }
+.course .controlRow { gap: 19px; }
+.course .inputShell { grid-template-columns: 34px minmax(0, 1fr); gap: 8px; }
+.course .searchIcon { width: 34px; height: 28px; }
+.course .input, .course .typeToggle button { height: 28px; font-size: 12px; font-weight: 400; }
+.course .typeToggle button { padding-inline: 10px; border-radius: 10px; }
+.course .results { top: 38px; left: 42px; width: calc(100% - 42px); }
+@media (min-width: 1600px) {
+  .course .input, .course .typeToggle button { height: 2.1875vw; font-size: .9375vw; border-radius: .78vw; }
+  .course .inputShell { grid-template-columns: 2.65vw minmax(0, 1fr); gap: .625vw; }
+  .course .searchIcon { width: 2.65vw; height: 2.1875vw; }
+  .course .searchIcon img { width: 1.33vw; height: 1.33vw; }
+}
+@media (max-width: 620px) {
+  .course .controlRow { display: flex; flex-wrap: wrap; gap: 10px; }
+  .course .inputShell { flex-basis: 100%; }
+  .course .typeToggle { margin-left: 42px; }
+  .course .typeToggle button { min-height: 34px; }
+  .course .input { height: 36px; font-size: 16px; }
+  .course .searchIcon { height: 36px; }
+  .course .results { top: 85px; }
+}
