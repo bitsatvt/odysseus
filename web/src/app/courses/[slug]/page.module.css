@@ -60,6 +60,9 @@
   .relationships { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .relationships dt { white-space: normal; }
 }
+@media (max-width: 480px) {
+  .departmentName { display: none; }
+}
 @media (min-width: 1600px) {
   .courseTrail::before { width: calc(7.6vw + 1.5em); }
   .courseTrail::after { left: calc(-1.5em - 3px); width: .4375em; height: .4375em; }

@@ -29,6 +29,9 @@
 .barLabel[data-dark="true"] { color: #fff; }
 .distribution > span:first-child .barLabel { color: #111; }
 .empty { padding: 30px !important; text-align: center !important; color: #666; }
+.pagination { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 12px; color: #666; font-size: .75em; }
+.pagination button { min-height: 29px; padding: 5px 12px; border: 1px solid #bdbdbd; border-radius: 10px; color: #222; background: #fdfdfd; font: inherit; cursor: pointer; }
+.pagination button:hover, .pagination button:focus-visible { border-color: #222; outline-color: #ff8216; }
 @media (min-width: 1600px) {
   .search { width: 9em; min-height: 1.9em; }
   .tableWrap td { height: 4em; padding: 1em 1.4em; }
@@ -46,4 +49,5 @@
   .search { width: 100%; min-height: 38px; }
   .search input { font-size: 16px; }
   .tableWrap table { min-width: 1000px; }
+  .pagination { justify-content: space-between; font-size: .8125em; }
 }

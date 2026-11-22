@@ -10,6 +10,18 @@ type SortKey = "instructor" | "recentTerm" | "avgGPA" | "numberSections" | Grade
 type Combined = { numberSections: number; recentTerm: number; gpaSum: number; grades: Record<GradeKey, number> };
 const gradeKeys: GradeKey[] = ["A", "B", "C", "D", "F", "W"];
 const gradeColors: Record<GradeKey, string> = { A: "#ff7014", B: "#faae65", C: "#ffe18a", D: "#aadaee", F: "#666666", W: "#1d1d1d" };
+const PAGE_SIZE = 12;
+
+function PaginatedRows<T>({ items, children }: { items: T[]; children: (visibleItems: T[]) => ReactNode }) {
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  return <>
+    {children(items.slice(0, visibleCount))}
+    {items.length > PAGE_SIZE && <div className={styles.pagination}>
+      <span>Showing {Math.min(visibleCount, items.length)} of {items.length}</span>
+      {visibleCount < items.length && <button type="button" onClick={() => setVisibleCount((current) => Math.min(current + PAGE_SIZE, items.length))}>Show more</button>}
+    </div>}
+  </>;
+}
 
 function GradeSegment({ grade, percentage }: { grade: GradeKey; percentage: number }) {
   const segment = useRef<HTMLSpanElement>(null);
@@ -70,6 +82,7 @@ export default function ProfessorsTable({ sections, rangeControl }: { sections: 
         return (aValue < bValue ? -1 : aValue > bValue ? 1 : 0) * (sort.direction === "asc" ? 1 : -1);
       });
   }, [query, sections, sort]);
+  const paginationKey = useMemo(() => `${query}:${sort.key}:${sort.direction}:${sections.map((section) => section.id).join(",")}`, [query, sections, sort]);
 
   const requestSort = (key: SortKey) => setSort((current) => ({ key, direction: current.key === key && current.direction === "desc" ? "asc" : "desc" }));
   const heading = (label: string, key: SortKey) => <th scope="col" aria-sort={sort.key === key ? sort.direction === "asc" ? "ascending" : "descending" : "none"}>
@@ -85,23 +98,25 @@ export default function ProfessorsTable({ sections, rangeControl }: { sections: 
           <input aria-label="Find an instructor" value={query} onChange={(event) => setQuery(event.currentTarget.value)} placeholder="Instructor name" />
         </label></div>
       </div>
-      <div className={styles.tableWrap} tabIndex={0} role="region" aria-label="Instructor statistics. Scroll horizontally on smaller screens.">
-        <table>
-          <colgroup><col className={styles.nameColumn} /><col className={styles.termColumn} /><col className={styles.distributionColumn} /><col className={styles.withdrawalColumn} /><col className={styles.gpaColumn} /><col className={styles.sectionsColumn} /></colgroup>
-          <thead><tr>{heading("Instructor", "instructor")}{heading("Most recent term", "recentTerm")}{heading("Distribution", "A")}{heading("W%", "W")}{heading("GPA", "avgGPA")}{heading("# Sections", "numberSections")}</tr></thead>
-          <tbody>
-            {rows.map((row) => <tr key={row.instructor}>
-              <td><Link href={`../instructors/${row.instructor}`}>{formatName(row.instructor)}</Link></td>
-              <td>{row.recentTerm}</td>
-              <td><div className={styles.distribution} role="img" aria-label={gradeKeys.map((grade) => `${grade} ${row.grades[grade].toFixed(1)}%`).join(", ")}>
-                {gradeKeys.map((grade) => <GradeSegment key={grade} grade={grade} percentage={row.grades[grade]} />)}
-              </div></td>
-              <td>{Number(row.grades.W.toFixed(1))}%</td><td>{row.avgGPA.toFixed(2)}</td><td>{row.numberSections}</td>
-            </tr>)}
-            {!rows.length && <tr><td colSpan={6} className={styles.empty}>{sections.length ? "No instructors match this search." : "No instructor data available."}</td></tr>}
-          </tbody>
-        </table>
-      </div>
+      <PaginatedRows key={paginationKey} items={rows}>{(visibleRows) =>
+        <div className={styles.tableWrap} tabIndex={0} role="region" aria-label="Instructor statistics. Scroll horizontally on smaller screens.">
+          <table>
+            <colgroup><col className={styles.nameColumn} /><col className={styles.termColumn} /><col className={styles.distributionColumn} /><col className={styles.withdrawalColumn} /><col className={styles.gpaColumn} /><col className={styles.sectionsColumn} /></colgroup>
+            <thead><tr>{heading("Instructor", "instructor")}{heading("Most recent term", "recentTerm")}{heading("Distribution", "A")}{heading("W%", "W")}{heading("GPA", "avgGPA")}{heading("# Sections", "numberSections")}</tr></thead>
+            <tbody>
+              {visibleRows.map((row) => <tr key={row.instructor}>
+                <td><Link href={`../instructors/${row.instructor}`}>{formatName(row.instructor)}</Link></td>
+                <td>{row.recentTerm}</td>
+                <td><div className={styles.distribution} role="img" aria-label={gradeKeys.map((grade) => `${grade} ${row.grades[grade].toFixed(1)}%`).join(", ")}>
+                  {gradeKeys.map((grade) => <GradeSegment key={grade} grade={grade} percentage={row.grades[grade]} />)}
+                </div></td>
+                <td>{Number(row.grades.W.toFixed(1))}%</td><td>{row.avgGPA.toFixed(2)}</td><td>{row.numberSections}</td>
+              </tr>)}
+              {!rows.length && <tr><td colSpan={6} className={styles.empty}>{sections.length ? "No instructors match this search." : "No instructor data available."}</td></tr>}
+            </tbody>
+          </table>
+        </div>}
+      </PaginatedRows>
     </section>
   );
 }

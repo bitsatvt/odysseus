@@ -43,7 +43,7 @@ export default function CourseView({ course, prereqTree, postreqTree }: CourseVi
       <article className={styles.page} id="course-top">
         <div className={styles.overview}>
           <nav className={styles.courseTrail} aria-label="Course classification">
-            <span className={styles.subjectBadge}><SubjectIcon subject={course.subject} /><span><strong>{course.subject}</strong>{department && ` - ${department}`}</span></span>
+            <span className={styles.subjectBadge}><SubjectIcon subject={course.subject} /><span><strong>{course.subject}</strong>{department && <span className={styles.departmentName}> - {department}</span>}</span></span>
             <span className={styles.trailArrow} aria-hidden="true">→</span>
             <span className={styles.courseChip}>{courseLabel(course.id)}: {title}</span>
           </nav>

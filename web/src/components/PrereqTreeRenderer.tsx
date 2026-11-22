@@ -13,7 +13,8 @@ function Branch({ node, level = 0 }: { node: RequirementNode; level?: number }) 
       {node.courseId && (
         <Link className={`${styles.course} ${level > 1 ? styles.distant : ""}`} href={`./${node.courseId}`} title={`${node.courseId}: ${courseTitle(node.title)}`}>
           <SubjectIcon subject={node.subject || node.courseId.split("-")[0]} />
-          <span><strong>{node.courseId}</strong> {courseTitle(node.title)}</span>
+          <strong className={styles.courseCode}>{node.courseId}</strong>
+          <span className={styles.courseTitle}>{courseTitle(node.title)}</span>
         </Link>
       )}
       {node.children.length > 0 && (
